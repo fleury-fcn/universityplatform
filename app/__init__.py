@@ -1,8 +1,10 @@
-
 from flask import Flask
 from flask_migrate import Migrate
 from .extensions import db, login_manager, mail
 import os
+from dotenv import load_dotenv  # Nouvelle importation
+
+load_dotenv()  # Charge les variables d'environnement
 
 migrate = Migrate()
 
@@ -10,11 +12,19 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('app.config.Config')
 
-    # MySQL Configuration
-    app.config['MYSQL_DATABASE_HOST'] = '127.0.0.1'
-    app.config['MYSQL_DATABASE_USER'] = 'fleury'
-    app.config['MYSQL_DATABASE_PASSWORD'] = 'NouveauMotDePasse123!'
-    app.config['MYSQL_DATABASE_DB'] = 'OpenIsta'
+    # Configuration MySQL avec variables d'environnement
+    app.config['MYSQL_DATABASE_HOST'] = os.getenv('MYSQL_HOST', '127.0.0.1')
+    app.config['MYSQL_DATABASE_USER'] = os.getenv('MYSQL_USER', 'fleury')
+    app.config['MYSQL_DATABASE_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'NouveauMotDePasse123!')
+    app.config['MYSQL_DATABASE_DB'] = os.getenv('MYSQL_DATABASE', 'OpenIsta')
+    
+    # Configuration SQLAlchemy
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+pymysql://{app.config['MYSQL_DATABASE_USER']}:"
+        f"{app.config['MYSQL_DATABASE_PASSWORD']}@"
+        f"{app.config['MYSQL_DATABASE_HOST']}/"
+        f"{app.config['MYSQL_DATABASE_DB']}"
+    )
 
     # Initialize extensions
     db.init_app(app)
@@ -37,10 +47,8 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
     
-    # Configuration
+    # Configuration des uploads
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads', 'messages')
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     return app
-
-    
