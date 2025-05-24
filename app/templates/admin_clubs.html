@@ -326,9 +326,11 @@
                         </span>
                     </td>
                     <td>
-                        <button class="btn btn-primary view-btn" data-club-id="{{ club.id }}">
-    <i class="fas fa-eye"></i> Voir
-</button>
+                        <button class="btn btn-primary view-club-btn" 
+                                    data-club-id="{{ club.id }}"
+                                    onclick="viewClubDetails({{ club.id }})">
+                                <i class="fas fa-eye"></i> Voir
+                            </button>
                         <button class="btn btn-sm btn-danger" 
                                 onclick="confirmDeleteClub({{ club.id }}, '{{ club.title }}')">
                             <i class="fas fa-trash"></i> Suppr.
@@ -621,6 +623,45 @@ document.querySelectorAll('.view-btn').forEach(btn => {
         e.stopPropagation();
         const clubId = this.dataset.clubId;
         viewClubDetails(clubId);
+    });
+});
+
+// Fonction pour voir les détails du club
+function viewClubDetails(clubId) {
+    if (!clubId) {
+        console.error('Aucun ID de club fourni');
+        return;
+    }
+    
+    // Version simple avec redirection
+    window.location.href = `/clubs/${clubId}`;
+    
+    // Version alternative avec AJAX (si vous préférez)
+    /*
+    fetch(`/clubs/${clubId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Club non trouvé');
+            return response.text();
+        })
+        .then(html => {
+            document.getElementById('content-container').innerHTML = html;
+            history.pushState(null, null, `/clubs/${clubId}`);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur: ' + error.message);
+        });
+    */
+}
+
+// Initialisation des événements au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    // Version alternative si vous préférez les écouteurs d'événements
+    document.querySelectorAll('.view-club-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const clubId = this.dataset.clubId;
+            viewClubDetails(clubId);
+        });
     });
 });
 </script>
