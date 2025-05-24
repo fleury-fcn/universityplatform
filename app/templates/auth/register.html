@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Inscription</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #fd7e14;
+            --info: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .register-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+
+        .register-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .register-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .register-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 15px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary);
+            padding: 5px;
+            background-color: white;
+        }
+
+        .register-body {
+            padding: 30px;
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+            outline: none;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .strength-meter {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1em;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #091f4e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(10, 36, 99, 0.2);
+        }
+
+        .btn-logout {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-logout:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.2);
+        }
+
+        .register-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .register-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .register-footer a:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .requirements {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+
+        .already-logged-in {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .already-logged-in p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 576px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .register-header {
+                padding: 20px;
+            }
+            
+            .register-body {
+                padding: 20px;
+            }
+            
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        {% if current_user.is_authenticated %}
+            <div class="already-logged-in">
+                <img src="{{ url_for('static', filename='images/logo-ista.png') }}" alt="Logo ISTA" class="logo">
+                <h2>Vous êtes déjà connecté</h2>
+                <p>Bonjour {{ current_user.prenom }} {{ current_user.nom }} !</p>
+                
+                <div class="btn-group">
+                    <a href="{{ url_for('principale.Page_Principale') }}" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Retour à l'accueil
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="register-header">
+                <img src="{{ url_for('static', filename='images/logo-ista.png') }}" alt="Logo ISTA" class="logo">
+                <h1>Inscription OpenISTA</h1>
+                <p>Créez votre compte pour accéder à la plateforme</p>
+            </div>
+            
+            <div class="register-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    {% if category == 'success' %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% elif category == 'danger' %}
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle"></i>
+                                    {% endif %}
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prenom">Prénom</label>
+                            <input type="text" id="prenom" name="prenom" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nom">Nom</label>
+                            <input type="text" id="nom" name="nom" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input type="text" id="username" name="username" class="form-control" required>
+                        <p class="requirements">3 caractères minimum, sans espaces</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email institutionnel</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="prenom.nom@ista.ma" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Mot de passe</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                        <div class="password-strength">
+                            <div class="strength-meter" id="strengthMeter"></div>
+                        </div>
+                        <p class="requirements">8 caractères minimum, avec majuscules, chiffres et caractères spéciaux</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm_password">Confirmer le mot de passe</label>
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                        <i class="fas fa-eye password-toggle" id="toggleConfirmPassword"></i>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Rôle</label>
+                        <select id="role" name="role" class="form-control form-select" required>
+                            <option value="" disabled selected>Sélectionnez votre rôle</option>
+                            <option value="etudiant">Étudiant</option>
+                            <option value="professeur">Professeur</option>
+                            <option value="administrateur">Administrateur</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Créer mon compte
+                    </button>
+                </form>
+                
+                <div class="register-footer">
+                    <p>Déjà inscrit ? <a href="{{ url_for('auth.login') }}">Connectez-vous ici</a></p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Fonctionnalité pour afficher/masquer les mots de passe
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        const toggleConfirmPassword = document.querySelector('#toggleConfirmPassword');
+        const confirmPassword = document.querySelector('#confirm_password');
+        
+        if (togglePassword && password) {
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        if (toggleConfirmPassword && confirmPassword) {
+            toggleConfirmPassword.addEventListener('click', function() {
+                const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPassword.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        // Vérification de la force du mot de passe
+        if (password) {
+            password.addEventListener('input', function() {
+                const strengthMeter = document.getElementById('strengthMeter');
+                const strength = checkPasswordStrength(this.value);
+                
+                strengthMeter.style.width = strength.percentage + '%';
+                strengthMeter.style.backgroundColor = strength.color;
+            });
+        }
+        
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            
+            // Longueur minimale
+            if (password.length >= 8) strength += 1;
+            
+            // Contient des lettres minuscules et majuscules
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 1;
+            
+            // Contient des chiffres
+            if (/\d/.test(password)) strength += 1;
+            
+            // Contient des caractères spéciaux
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+            
+            // Calcul du pourcentage et couleur
+            const percentage = strength * 25;
+            let color = '#dc3545'; // Rouge
+            
+            if (strength >= 3) color = '#fd7e14'; // Orange
+            if (strength >= 4) color = '#28a745'; // Vert
+            
+            return { percentage, color };
+        }
+        
+        // Validation du formulaire avant soumission
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (password.value !== confirmPassword.value) {
+                    e.preventDefault();
+                    alert('Les mots de passe ne correspondent pas');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

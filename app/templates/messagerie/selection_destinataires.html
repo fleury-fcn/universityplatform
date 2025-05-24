@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="messagerie-container">
+    <div class="welcome-banner">
+        <h1><i class="fas fa-users"></i> Sélection des destinataires</h1>
+        <p>Sélectionnez les utilisateurs à qui envoyer votre message</p>
+        <div class="date-display">
+            <i class="far fa-calendar-alt"></i> {{ current_date }}
+        </div>
+    </div>
+
+    <div class="message-form-container">
+        <form method="POST" action="{{ url_for('messagerie.selection_destinataires') }}">
+            <div class="form-group">
+                <label><i class="fas fa-search"></i> Rechercher des utilisateurs</label>
+                <input type="text" id="userSearch" class="form-control" placeholder="Tapez pour filtrer...">
+            </div>
+
+            <div class="users-list-container">
+                <div class="users-list-header">
+                    <span class="header-checkbox">
+                        <input type="checkbox" id="selectAll">
+                    </span>
+                    <span class="header-name">Utilisateur</span>
+                    <span class="header-email">Email</span>
+                    <span class="header-status">Statut</span>
+                </div>
+                
+                <div class="users-list">
+                    {% for user in all_users %}
+                    <div class="user-item" data-email="{{ user.email }}" data-name="{{ user.nom_complet }}">
+                        <label class="user-select">
+                            <input type="checkbox" name="destinataires" value="{{ user.email }}"
+                                   {% if user.email in destinataires_pre %}checked{% endif %}>
+                            <span class="checkmark"></span>
+                        </label>
+                        <div class="user-avatar">
+                            <img src="{{ user.get_avatar_url() }}" alt="{{ user.nom_complet }}">
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name">{{ user.nom_complet }}</span>
+                            <span class="user-email">{{ user.email }}</span>
+                        </div>
+                        <div class="user-status-container">
+                            <span class="user-status {{ user.status }}" 
+                                  title="{% if user.status == 'online' %}En ligne{% elif user.status == 'away' %}Absent{% else %}Hors ligne{% endif %}">
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('messagerie.envoyer_message') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Valider la sélection
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Styles généraux */
+    .messagerie-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-banner {
+        background: linear-gradient(135deg, #0a2463, #3a7bd5);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .users-list-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin: 1.5rem 0;
+        overflow: hidden;
+    }
+
+    .users-list-header {
+        display: grid;
+        grid-template-columns: 50px 1fr 1fr 80px;
+        align-items: center;
+        padding: 1rem;
+        background-color: #0a2463;
+        color: white;
+        font-weight: bold;
+    }
+
+    .users-list {
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .user-item {
+        display: grid;
+        grid-template-columns: 50px 1fr 1fr 80px;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s;
+    }
+
+    .user-item:hover {
+        background-color: #f0f8ff;
+    }
+
+    .user-select {
+        position: relative;
+        width: 20px;
+        height: 20px;
+        margin: 0 auto;
+    }
+
+    .user-select input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 20px;
+        width: 20px;
+        background-color: #eee;
+        border-radius: 4px;
+        border: 2px solid #ddd;
+    }
+
+    .user-select input:checked ~ .checkmark {
+        background-color: #0a2463;
+        border-color: #0a2463;
+    }
+
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 6px;
+        top: 2px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .user-select input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    .user-avatar img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #eee;
+    }
+
+    .user-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user-name {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .user-email {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .user-status-container {
+        display: flex;
+        justify-content: center;
+    }
+
+    .user-status {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .user-status.online {
+        background-color: #28a745; /* Green */
+    }
+
+    .user-status.offline {
+        background-color: #dc3545; /* Red */
+    }
+
+    .user-status.away {
+        background-color: #ffc107; /* Yellow */
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .users-list-header,
+        .user-item {
+            grid-template-columns: 40px 1fr 80px;
+        }
+        
+        .header-email,
+        .user-email {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .users-list-header,
+        .user-item {
+            grid-template-columns: 40px 1fr 40px;
+        }
+        
+        .header-status,
+        .user-status-container {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Filtrage des utilisateurs
+        $('#userSearch').on('input', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            $('.user-item').each(function() {
+                const name = $(this).data('name').toLowerCase();
+                const email = $(this).data('email').toLowerCase();
+                // Show or hide the user item based on the search term
+                $(this).toggle(name.includes(searchTerm) || email.includes(searchTerm));
+            });
+        });
+
+        // Sélection/désélection de tous
+        $('#selectAll').change(function() {
+            $('.user-item:visible input[type="checkbox"]').prop('checked', $(this).prop('checked'));
+        });
+
+        // Mise à jour de la case "Tout sélectionner"
+        $('.user-item input[type="checkbox"]').change(function() {
+            const allChecked = $('.user-item:visible input[type="checkbox"]:checked').length === 
+                             $('.user-item:visible input[type="checkbox"]').length;
+            $('#selectAll').prop('checked', allChecked);
+        });
+    });
+</script>
+{% endblock %}

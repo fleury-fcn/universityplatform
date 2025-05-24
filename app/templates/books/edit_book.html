@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-edit"></i> Modifier le livre</h2>
+    <hr>
+    
+    <form method="POST" enctype="multipart/form-data" class="mt-4">
+        
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="title" class="form-label">Titre du livre*</label>
+                    <input type="text" class="form-control" id="title" name="title" 
+                           value="{{ form.title if form and form.title else book.title }}" required>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="author" class="form-label">Auteur*</label>
+                    <input type="text" class="form-control" id="author" name="author" 
+                           value="{{ form.author if form and form.author else book.author }}" required>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" 
+                              rows="5">{{ form.description if form and form.description else book.description }}</textarea>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="category" class="form-label">Catégorie*</label>
+                    <select class="form-select" id="category" name="category" required>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" {% if (form and form.category == cat) or (not form and cat == book.category) %}selected{% endif %}>
+                                {{ cat|capitalize }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="language" class="form-label">Langue*</label>
+                            <select class="form-select" id="language" name="language" required>
+                                {% for lang in languages %}
+                                    <option value="{{ lang }}" {% if (form and form.language == lang) or (not form and lang == book.language) %}selected{% endif %}>
+                                        {% if lang == 'fr' %}Français
+                                        {% elif lang == 'en' %}Anglais
+                                        {% else %}Arabe{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="level" class="form-label">Niveau*</label>
+                            <select class="form-select" id="level" name="level" required>
+                                {% for lvl in levels %}
+                                    <option value="{{ lvl }}" {% if (form and form.level == lvl) or (not form and lvl == book.level) %}selected{% endif %}>
+                                        {% if lvl == 'bac' %}Baccalauréat
+                                        {% elif lvl == 'master' %}Master
+                                        {% else %}Doctorat{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label class="form-label">Fichier actuel</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" 
+                               value="{{ book.file_path }}" readonly>
+                        <a href="{{ url_for('books.download_book', book_id=book.id) }}" 
+                           class="btn btn-outline-primary" download>
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="file" class="form-label">Nouveau fichier (remplacement)</label>
+                    <input type="file" class="form-control" id="file" name="file"
+                           accept=".pdf,.doc,.docx,.ppt,.pptx,.epub">
+                    <div class="form-text">
+                        Laisser vide pour conserver le fichier actuel
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i> Le fichier actuel sera définitivement supprimé si vous le remplacez
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('books.book_details', book_id=book.id) }}" 
+               class="btn btn-secondary me-md-2">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Enregistrer les modifications
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Nouveau message</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --online: #28a745;
+            --offline: #dc3545;
+            --away: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--primary);
+            color: var(--text-light);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary);
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .nav-menu {
+            margin-top: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #3a7bd5);
+            color: var(--text-light);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .welcome-banner p {
+            opacity: 0.9;
+        }
+
+        .date-display {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Messagerie Styles */
+        .messagerie-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .action-btn {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+            color: var(--primary);
+            border: 2px solid transparent;
+            text-decoration: none;
+            display: block;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(10, 36, 99, 0.2);
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .action-btn:hover i {
+            color: white;
+        }
+
+        .action-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Message Form Styles */
+        .message-form-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-top: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e3e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f8fafc;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+            background-color: white;
+        }
+
+        textarea.form-control {
+            min-height: 300px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #08204f;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #e9ecef;
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #dde0e4;
+            transform: translateY(-2px);
+        }
+
+        /* Styles pour les pièces jointes */
+        .attachments-section {
+            margin: 1.5rem 0;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: #e0d31e;
+        }
+
+        .attachments-list {
+            margin-top: 1rem;
+        }
+
+        .attachment-preview {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .attachment-icon {
+            margin-right: 1rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .attachment-name {
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.95rem;
+        }
+
+        .attachment-size {
+            color: #666;
+            font-size: 0.85rem;
+            margin-right: 1rem;
+        }
+
+        .remove-attachment {
+            color: var(--danger);
+            cursor: pointer;
+            margin-left: 0.8rem;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .remove-attachment:hover {
+            transform: scale(1.1);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-button {
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .file-input-button:hover {
+            background: #08204f;
+            transform: translateY(-2px);
+        }
+
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* Styles pour le sélecteur de destinataires */
+        .select2-container--default .select2-selection--multiple {
+            border: 2px solid #e0e3e9;
+            border-radius: 8px;
+            min-height: 48px;
+            padding: 4px;
+            background-color: #e6c200;;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            color: white;
+            padding: 0 8px;
+            margin: 3px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+            margin-right: 4px;
+        }
+
+        /* Indicateur de présence */
+        .presence-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .online {
+            background-color: var(--online);
+            box-shadow: 0 0 5px var(--online);
+        }
+
+        .offline {
+            background-color: var(--offline);
+        }
+
+        .away {
+            background-color: var(--away);
+            box-shadow: 0 0 5px var(--away);
+        }
+
+        /* Option personnalisée dans le select */
+        .user-option {
+            display: flex;
+            align-items: center;
+            padding: 5px;
+        }
+
+        .user-option img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .user-option .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-option .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-option .user-email {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        /* Bouton pour sélectionner tous les utilisateurs */
+        .select-all-btn {
+            background: #e6c200;;
+            color: var(--dark);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .select-all-btn:hover {
+            background: #e6c200;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                padding: 1rem;
+            }
+            .message-form-container {
+                padding: 1.5rem;
+            }
+            .welcome-banner h1 {
+                font-size: 1.5rem;
+            }
+            .date-display {
+                position: static;
+                margin-top: 1rem;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <img src="{{ current_user.get_avatar_url() }}" alt="Photo de profil" class="avatar">
+                <h3>{{ current_user.nom_complet }}</h3>
+                <span class="role-badge role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item">
+                    <i class="fas fa-home"></i> Accueil
+                </a>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                    <i class="fas fa-edit"></i> Inscriptions
+                </a>
+                <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                    <i class="fas fa-book-open"></i> Cours
+                </a>
+                <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Syllabus
+                </a>
+                <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Bibliothèque
+                </a>
+                <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Tuyaux
+                </a>
+                <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Clubs
+                </a>
+                <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item active">
+                    <i class="fas fa-envelope"></i> Messages
+                </a>
+                <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i> Profil
+                </a>
+                {% if current_user.role == 'administrateur' %}
+                <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Administration
+                </a>
+                {% endif %}
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="messagerie-container">
+                <div class="welcome-banner">
+                    <h1><i class="fas fa-paper-plane"></i> Nouveau message</h1>
+                    <p>Envoyez un message à un autre utilisateur</p>
+                    <div class="date-display">
+                        <i class="far fa-calendar-alt"></i> {{ current_date }}
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <a href="{{ url_for('messagerie.envoyer_message') }}" class="action-btn active">
+                        <i class="fas fa-plus"></i>
+                        Nouveau message
+                    </a>
+                    <a href="{{ url_for('messagerie.PageMessagerie') }}" class="action-btn">
+                        <i class="fas fa-inbox"></i>
+                        Boîte de réception
+                    </a>
+                    <a href="{{ url_for('messagerie.PageMessagerie') }}?tab=sent" class="action-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Messages envoyés
+                    </a>
+                    <a href="{{ url_for('messagerie.corbeille') }}" class="action-btn">
+                        <i class="fas fa-trash"></i>
+                        Corbeille
+                    </a>
+                </div>
+
+                <div class="message-form-container">
+                    <form method="POST" action="{{ url_for('messagerie.envoyer_message') }}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            
+                                <label for="recipients"><i class="fas fa-users"></i> Destinataires</label>
+                                <div class="recipients-selection">
+                                    <a href="{{ url_for('messagerie.selection_destinataires') }}" class="btn btn-secondary">
+                                        <i class="fas fa-user-plus"></i> Sélectionner des destinataires
+                                    </a>
+                                    <div id="selected-recipients">
+                                        {% for email in destinataires_pre %}
+                                            <input type="hidden" name="recipients" value="{{ email }}">
+                                            <span class="recipient-tag">{{ email }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                        
+                        <div class="form-group">
+                            <label for="subject"><i class="fas fa-tag"></i> Objet (facultatif)</label>
+                            <input type="text" class="form-control" id="subject" name="subject" placeholder="Objet du message">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="content"><i class="fas fa-comment-alt"></i> Message</label>
+                            <textarea class="form-control" id="content" name="content" placeholder="Écrivez votre message ici..." required></textarea>
+                        </div>
+
+                        <!-- Section des pièces jointes -->
+                        <div class="form-group attachments-section">
+                            <label><i class="fas fa-paperclip"></i> Pièces jointes</label>
+                            <div class="file-input-wrapper">
+                                <button type="button" class="file-input-button">
+                                    <i class="fas fa-plus"></i> Ajouter des fichiers
+                                </button>
+                                <input type="file" class="file-input" id="attachments" name="attachments" multiple>
+                            </div>
+                            
+                            <div class="attachments-list" id="attachmentsList">
+                                <!-- Les pièces jointes apparaîtront ici -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <a href="{{ url_for('messagerie.PageMessagerie') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Envoyer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialisation de Select2 avec personnalisation
+            $('#recipients').select2({
+                placeholder: "Rechercher et sélectionner des destinataires...",
+                allowClear: true,
+                templateResult: formatUserOption,
+                templateSelection: formatUserSelection,
+                escapeMarkup: function(m) { return m; },
+                width: '100%'
+            });
+
+            // Fonction pour formater les options dans le dropdown
+            function formatUserOption(user) {
+                if (!user.id) return user.text;
+                
+                var $option = $(user.element);
+                var presence = $option.data('presence');
+                var avatar = $option.data('avatar');
+                var email = user.text.match(/\((.*)\)/)[1];
+                var name = user.text.split(' (')[0];
+                
+                var presenceClass = 'offline';
+                var presenceText = 'Hors ligne';
+                
+                if (presence === 'online') {
+                    presenceClass = 'online';
+                    presenceText = 'En ligne';
+                } else if (presence === 'away') {
+                    presenceClass = 'away';
+                    presenceText = 'Absent';
+                }
+                
+                return $(
+                    '<div class="user-option">' +
+                        '<img src="' + avatar + '" alt="' + name + '">' +
+                        '<div class="user-info">' +
+                            '<span class="user-name">' + name + 
+                                '<span class="presence-indicator ' + presenceClass + '" title="' + presenceText + '"></span>' +
+                            '</span>' +
+                            '<span class="user-email">' + email + '</span>' +
+                        '</div>' +
+                    '</div>'
+                );
+            }
+
+            // Fonction pour formater la sélection
+            function formatUserSelection(user) {
+                if (!user.id) return user.text;
+                
+                var $option = $(user.element);
+                var name = user.text.split(' (')[0];
+                return name;
+            }
+
+            // Bouton pour sélectionner tous les utilisateurs
+            $('#selectAllBtn').click(function() {
+                $('#recipients option').prop('selected', true);
+                $('#recipients').trigger('change');
+            });
+
+            // Mise à jour en temps réel des statuts de présence
+            function updatePresenceStatus() {
+                $.get("{{ url_for('messagerie.get_presence_updates') }}", function(data) {
+                    data.forEach(function(user) {
+                        var option = $('#recipients option[value="' + user.email + '"]');
+                        option.data('presence', user.status);
+                    });
+                    
+                    // Rafraîchir le select2 si ouvert
+                    if ($('#recipients').data('select2').dropdown.$dropdown.is(':visible')) {
+                        $('#recipients').select2('close');
+                        $('#recipients').select2('open');
+                    }
+                });
+            }
+
+            // Mettre à jour les statuts toutes les 30 secondes
+            setInterval(updatePresenceStatus, 30000);
+            updatePresenceStatus(); // Premier chargement
+
+            // Gestion des pièces jointes
+            $('#attachments').change(function() {
+                const files = this.files;
+                const attachmentsList = $('#attachmentsList');
+                attachmentsList.empty();
+                
+                if (files.length > 0) {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const fileType = file.type.split('/')[0];
+                        let iconClass = 'fa-file';
+                        
+                        if (fileType === 'image') iconClass = 'fa-file-image';
+                        else if (fileType === 'video') iconClass = 'fa-file-video';
+                        else if (fileType === 'audio') iconClass = 'fa-file-audio';
+                        else if (file.name.endsWith('.pdf')) iconClass = 'fa-file-pdf';
+                        else if (file.name.endsWith('.doc') || file.name.endsWith('.docx')) iconClass = 'fa-file-word';
+                        else if (file.name.endsWith('.xls') || file.name.endsWith('.xlsx')) iconClass = 'fa-file-excel';
+                        
+                        attachmentsList.append(`
+                            <div class="attachment-preview" data-index="${i}">
+                                <i class="fas ${iconClass} attachment-icon"></i>
+                                <span class="attachment-name">${file.name}</span>
+                                <span class="attachment-size">${formatFileSize(file.size)}</span>
+                                <i class="fas fa-times remove-attachment" data-index="${i}"></i>
+                            </div>
+                        `);
+                    }
+                }
+            });
+
+            // Suppression de pièces jointes
+            $(document).on('click', '.remove-attachment', function() {
+                const index = $(this).data('index');
+                const files = $('#attachments')[0].files;
+                const newFiles = Array.from(files).filter((_, i) => i !== index);
+                
+                // Mise à jour de l'input file
+                const dataTransfer = new DataTransfer();
+                newFiles.forEach(file => dataTransfer.items.add(file));
+                $('#attachments')[0].files = dataTransfer.files;
+                
+                // Mise à jour de l'affichage
+                $(`[data-index="${index}"]`).remove();
+                
+                // Déclencher manuellement l'événement change
+                $('#attachments').trigger('change');
+            });
+
+            // Formatage de la taille des fichiers
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+            }
+
+            // Script pour la mise en forme du texte
+            const contentTextarea = document.getElementById('content');
+            if (contentTextarea) {
+                contentTextarea.addEventListener('keydown', function(e) {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        
+                        this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);
+                        this.selectionStart = this.selectionEnd = start + 1;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

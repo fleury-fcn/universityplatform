@@ -1,0 +1,453 @@
+<div class="club-container">
+    <!-- Bannière du club -->
+    <div class="club-banner" style="background-image: url('{{ club.banner_url }}');">
+        <div class="club-header">
+            <img src="{{ club.logo_url }}" alt="Logo {{ club.title }}" class="club-logo">
+            <h1>{{ club.title }}</h1>
+            <div class="club-meta">
+                <span class="badge badge-category">{{ club.category }}</span>
+                <span><i class="fas fa-users"></i> {{ club.member_count }} membres</span>
+                <span><i class="fas fa-calendar-alt"></i> Créé le {{ club.created_at }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="club-content">
+        <!-- Description et informations -->
+        <section class="club-info card">
+            <div class="card-header">
+                <h2><i class="fas fa-info-circle"></i> Description</h2>
+            </div>
+            <div class="card-body">
+                <p>{{ club.description }}</p>
+                
+                <div class="club-details">
+                    <div class="detail-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Fréquence des réunions</h4>
+                            <p>{{ club.meeting_frequency or "Non spécifiée" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <i class="fas fa-user-shield"></i>
+                        <div>
+                            <h4>Administrateur</h4>
+                            <p>
+                                {% for member in club.members if member.user_id == club.admin_id %}
+                                    {{ member.full_name }}
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if club.tags %}
+                <div class="club-tags">
+                    {% for tag in club.tags %}
+                    <span class="tag">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Liste des membres -->
+        <section class="members-section card">
+            <div class="card-header">
+                <h2><i class="fas fa-users"></i> Membres ({{ club.member_count }})</h2>
+                {% if not club.is_member and current_user.is_authenticated %}
+                <button class="btn btn-primary" onclick="showJoinModal()">
+                    <i class="fas fa-plus"></i> Rejoindre
+                </button>
+                {% endif %}
+            </div>
+            
+            <div class="card-body">
+                {% if club.members %}
+                <div class="members-list">
+                    {% for member in club.members %}
+                    <div class="member-item {% if member.is_current_user %}current-user{% endif %}" data-member-id="{{ member.id }}">
+                        <div class="member-avatar">
+                            <img src="{{ url_for('static', filename='images/default-avatar.jpg') }}" alt="{{ member.full_name }}">
+                        </div>
+                        
+                        <div class="member-info">
+                            <h4>{{ member.full_name }}</h4>
+                            <p class="member-meta">
+                                <span>{{ member.department }}</span>
+                                <span>Niveau {{ member.level }}</span>
+                                <span>Membre depuis {{ member.joined_at }}</span>
+                            </p>
+                        </div>
+                        
+                        {% if member.can_remove %}
+                        <div class="member-actions">
+                            <button class="btn btn-sm btn-danger" 
+                                    onclick="confirmRemoveMember({{ member.id }}, '{{ member.full_name }}')">
+                                <i class="fas fa-user-minus"></i> Retirer
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-user-friends"></i>
+                    <p>Ce club n'a pas encore de membres</p>
+                    {% if current_user.is_authenticated %}
+                    <button class="btn btn-primary" onclick="showJoinModal()">
+                        <i class="fas fa-plus"></i> Devenir premier membre
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Modale de confirmation de suppression -->
+<div id="confirmRemoveModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('confirmRemoveModal')">&times;</span>
+        <h3><i class="fas fa-exclamation-triangle"></i> Confirmer la suppression</h3>
+        <p id="removeMemberMessage">Êtes-vous sûr de vouloir retirer ce membre du club?</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal('confirmRemoveModal')">Annuler</button>
+            <button class="btn btn-danger" id="confirmRemoveBtn">Confirmer</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Styles de base */
+    .club-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .club-banner {
+        height: 300px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        border-radius: 10px 10px 0 0;
+        overflow: hidden;
+    }
+    
+    .club-banner::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+    }
+    
+    .club-header {
+        position: relative;
+        z-index: 2;
+        padding: 2rem;
+        color: white;
+        text-align: center;
+    }
+    
+    .club-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 3px solid white;
+        object-fit: cover;
+        margin-bottom: 1rem;
+    }
+    
+    .club-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .club-meta {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    
+    .badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .badge-category {
+        background-color: var(--primary);
+        color: white;
+    }
+    
+    /* Contenu du club */
+    .club-content {
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    @media (min-width: 992px) {
+        .club-content {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    
+    /* Cartes */
+    .card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .card-header {
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header h2 {
+        font-size: 1.5rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    /* Liste des membres */
+    .members-list {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .member-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s;
+        border: 1px solid #eee;
+    }
+    
+    .member-item.current-user {
+        background-color: #f0f7ff;
+        border-left: 3px solid var(--primary);
+    }
+    
+    .member-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .member-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 1rem;
+    }
+    
+    .member-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .member-info {
+        flex: 1;
+    }
+    
+    .member-info h4 {
+        margin: 0 0 0.3rem 0;
+    }
+    
+    .member-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .member-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .member-actions {
+        margin-left: auto;
+    }
+    
+    /* État vide */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #ddd;
+    }
+    
+    /* Tags */
+    .club-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .tag {
+        background-color: #f0f0f0;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    
+    /* Détails */
+    .club-details {
+        margin-top: 1.5rem;
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .detail-item {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+    
+    .detail-item i {
+        font-size: 1.5rem;
+        color: var(--primary);
+    }
+    
+    /* Modales */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 2rem;
+        border-radius: 10px;
+        max-width: 500px;
+        position: relative;
+    }
+    
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    // Gestion des membres
+    let currentMemberToRemove = null;
+    
+    function confirmRemoveMember(memberId, memberName) {
+        currentMemberToRemove = memberId;
+        const modal = document.getElementById('confirmRemoveModal');
+        document.getElementById('removeMemberMessage').textContent = 
+            `Êtes-vous sûr de vouloir retirer ${memberName} du club?`;
+        modal.style.display = 'block';
+        
+        // Reset previous event listeners
+        const confirmBtn = document.getElementById('confirmRemoveBtn');
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+        
+        document.getElementById('confirmRemoveBtn').onclick = removeMember;
+    }
+    
+    async function removeMember() {
+        if (!currentMemberToRemove) return;
+        
+        try {
+            const response = await fetch(`/clubs/members/${currentMemberToRemove}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Suppression optimiste de l'élément du DOM
+                const memberElement = document.querySelector(`.member-item[data-member-id="${currentMemberToRemove}"]`);
+                if (memberElement) {
+                    memberElement.style.opacity = '0.5';
+                    setTimeout(() => memberElement.remove(), 300);
+                }
+                
+                // Mise à jour du compteur
+                const memberCountElement = document.querySelector('.members-section h2');
+                if (memberCountElement) {
+                    const currentCount = parseInt(memberCountElement.textContent.match(/\d+/)[0]);
+                    memberCountElement.textContent = memberCountElement.textContent.replace(
+                        `(${currentCount})`, `(${currentCount - 1})`
+                    );
+                }
+                
+                showNotification('success', data.message);
+            } else {
+                throw new Error(data.message || 'Erreur lors de la suppression');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('error', error.message);
+        } finally {
+            closeModal('confirmRemoveModal');
+            currentMemberToRemove = null;
+        }
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+    
+    function showNotification(type, message) {
+        // Implémentez votre système de notifications ici
+        alert(message); // Solution temporaire
+    }
+</script>

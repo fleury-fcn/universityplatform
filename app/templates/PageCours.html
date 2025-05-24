@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Mes Cours</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --professor: #8e44ad;
+            --student: #3498db;
+            --admin: #e74c3c;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar - Identique à la page principale */
+        .sidebar {
+            background: var(--primary);
+            color: var(--text-light);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary);
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .user-role {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            color: var(--text-light);
+            font-weight: bold;
+        }
+
+        .role-student { background: var(--student); }
+        .role-professor { background: var(--professor); }
+        .role-admin { background: var(--admin); }
+
+        .nav-menu {
+            margin-top: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #3a7bd5);
+            color: var(--text-light);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::after {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .welcome-banner h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .date-display {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Filtres Académiques - Style cohérent avec la page principale */
+        .academic-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+        }
+
+        .specialization-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .specialization-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .specialization-btn {
+            padding: 0.5rem 1rem;
+            background: #e8f4fc;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            border: 1px solid #d0e3f7;
+            color: var(--primary);
+        }
+
+        .specialization-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Course Cards - Style harmonisé */
+        .courses-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .courses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 1rem;
+        }
+
+        .courses-header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        .course-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-code {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .course-credits {
+            background: var(--secondary);
+            color: var(--dark);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .course-body {
+            padding: 1.5rem;
+        }
+
+        .course-title {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .course-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .course-description {
+            color: #555;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+
+        .course-professor {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .professor-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            border-radius: 50%;
+            background: #f0f0f0;
+            color: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Resources Section */
+        .resources-section {
+            margin-top: 3rem;
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .resources-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .resources-header h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .resource-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid #eee;
+        }
+
+        .resource-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s;
+        }
+
+        .resource-item:hover {
+            background: #f0f7ff;
+        }
+
+        .resource-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .resource-icon {
+            color: var(--primary);
+            font-size: 1.2rem;
+            width: 30px;
+            text-align: center;
+        }
+
+        .resource-name {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .resource-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.2rem;
+        }
+
+        .resource-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Buttons - Style identique à la page principale */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(10, 36, 99, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .course-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .course-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .academic-filters {
+                flex-direction: column;
+            }
+            
+            .courses-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .main-content {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .specialization-buttons {
+                flex-direction: column;
+            }
+            
+            .resource-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .resource-actions {
+                align-self: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar identique à la page principale -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar-container">
+                            <img src="{{ current_user.get_avatar_url() }}" 
+                                 alt="Photo de profil" class="avatar" id="avatarPreview">
+                            <div>
+                <h3 style="color: var(--text-light);">{{ current_user.nom_complet }}</h3>
+                <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item active">
+                    <i class="fas fa-home"></i> Accueil
+                </a>
+
+                </a>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                    <i class="fas fa-edit"></i> Inscriptions Académique
+                </a>
+
+                <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                    <i class="fas fa-book-open"></i> Cours de l'ISTA
+                 </a>
+
+                <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Consulter ou Téléchrger Syllabus
+                 </a>
+
+                 <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i>  Bibliothèque Livres
+                 </a>
+
+                 <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Tuyaux d'Examens
+                </a>
+                 
+                 <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Clubs
+                </a>
+                    
+                
+                <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
+                    <i class="fas fa-envelope"></i> Messages
+                    <span class="badge"></span>
+                </a>
+
+                
+               
+                
+                <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i> Mon Profil
+                </a>
+
+                
+               
+                {% if current_user.role == 'administrateur' %}
+                <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Paramètres Système
+                </a>
+                {% endif %}
+                
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Welcome Banner -->
+            <section class="welcome-banner">
+                <h1>Mes Cours, {{ current_user.prenom }} !</h1>
+                <p>Consultez vos cours selon votre filière et spécialité</p>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i> {{ current_date }}
+                </div>
+            </section>
+
+            <!-- Courses Container -->
+            <div class="courses-container">
+                <div class="courses-header">
+                    <h1><i class="fas fa-book-open"></i> Mes Cours</h1>
+                    {% if current_user.role == 'administrateur' %}
+                    <a href="{{ url_for('courses.ajouter_cours') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Ajouter Cours
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Filtres Académiques -->
+                <div class="academic-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Cycle</label>
+                        <select class="filter-select" id="academic-cycle">
+                            <option value="all">Tous les cycles</option>
+                            <option value="bac">Baccalauréat</option>
+                            <option value="master">Master</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Année</label>
+                        <select class="filter-select" id="academic-year">
+                            <option value="all">Toutes les années</option>
+                            <option value="1">1ère Année de Bac</option>
+                            <option value="2">2ème Année de Bac</option>
+                            <option value="3">3ème Année de Bac</option>
+                            <option value="4">1ère Année de Master</option>
+                            <option value="5">2ème Année de Master</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Département</label>
+                        <select class="filter-select" id="department">
+                            <option value="all">Tous départements</option>
+                            <option value="actuariat">Actuariat</option>
+                            <option value="genie">Génie Statistique</option>
+                            <option value="probastate">Probabilite et Statistique</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Parcours Master</label>
+                        <select class="filter-select" id="parcours">
+                            <option value="all">Tous Parcours</option>
+                            <option value="said">Statistique Appliquée et Informatique Decisionnelle </option>
+                            <option value="psm">Probabilité, Statistique et Modélisation</option>
+                            <option value="af">Actuariat et Finance</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Semestre</label>
+                        <select class="filter-select" id="semester">
+                            <option value="all">Tous semestres</option>
+                            <option value="1">Semestre 1</option>
+                            <option value="2">Semestre 2</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Spécialisations (dynamique selon département) -->
+                <div id="specialization-section" class="specialization-section" style="display: none;">
+                    <label class="filter-label">Spécialisation</label>
+                    <div id="specialization-btns" class="specialization-buttons">
+                        <!-- Rempli dynamiquement via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Course Cards -->
+<div class="course-cards">
+    {% for cours in cours_list %}
+    <div class="course-card" 
+         data-cycle="{{ cours.cycle }}" 
+         data-year="{{ cours.annee }}" 
+         data-department="{{ cours.departement }}" 
+         data-parcours="{{ cours.parcours }}" 
+         data-semester="{{ cours.semestre }}" 
+         data-specialization="{{ cours.specialisation }}">
+        <div class="course-header">
+            <span class="course-code">{{ cours.code }}</span>
+            <span class="course-credits">{{ cours.credits }} Crédits</span>
+        </div>
+        <div class="course-body">
+            <h3 class="course-title">{{ cours.titre }}</h3>
+            <div class="course-meta">
+                <span><i class="fas fa-calendar-alt"></i> {{ cours.horaire }}</span>
+                <span><i class="fas fa-map-marker-alt"></i> {{ cours.lieu }}</span>
+            </div>
+            <p class="course-description">
+                {{ cours.description }}
+            </p>
+            <div class="course-footer">
+                <div class="course-professor">
+                    <img src="{{ url_for('static', filename='images/professors/' + cours.professeur.avatar) if cours.professeur.avatar else url_for('static', filename='images/professors/default.jpg') }}" 
+                         class="professor-avatar">
+                    <span>{{ cours.professeur.prenom }} {{ cours.professeur.nom }}</span>
+                </div>
+                <div class="course-actions">
+                    <button class="action-btn" title="Ressources" 
+                            onclick="location.href='{{ url_for('courses.ressources_cours', cours_id=cours.id) }}'">
+                        <i class="fas fa-file-alt"></i>
+                    </button>
+                    <button class="action-btn" title="Télécharger" 
+                            onclick="location.href='{{ url_for('courses.telecharger_cours', cours_id=cours.id) }}'">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    {% if current_user.role == 'administrateur' %}
+                    <button class="action-btn" title="Modifier" 
+                            onclick="location.href='{{ url_for('courses.modifier_cours', cours_id=cours.id) }}'">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+                <!-- Resources Section -->
+                <div class="resources-section">
+                    <div class="resources-header">
+                        <h2><i class="fas fa-file-alt"></i> Dernières Ressources</h2>
+                        <a href="#" class="btn btn-secondary">
+                            Voir toutes les ressources
+                        </a>
+                    </div>
+                    <div class="resource-list">
+                        <div class="resource-item">
+                            <div class="resource-info">
+                                <div class="resource-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <div>
+                                    <div class="resource-name">Cours 1 - Théorie du Risque</div>
+                                    <div class="resource-meta">ACTU202 • Ajouté le 15/09/2023 • 2.4 MB</div>
+                                </div>
+                            </div>
+                            <div class="resource-actions">
+                                <button class="action-btn" title="Télécharger">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-item">
+                            <div class="resource-info">
+                                <div class="resource-icon">
+                                    <i class="fas fa-file-code"></i>
+                                </div>
+                                <div>
+                                    <div class="resource-name">TP Machine Learning</div>
+                                    <div class="resource-meta">DATA501 • Ajouté le 18/09/2023 • 1.8 MB</div>
+                                </div>
+                            </div>
+                            <div class="resource-actions">
+                                <button class="action-btn" title="Télécharger">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Gestion des filtres
+       document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des spécialisations par département
+    const departmentSelect = document.getElementById('department');
+    const parcoursSelect = document.getElementById('parcours');
+    const specializationSection = document.getElementById('specialization-section');
+    const specializationBtns = document.getElementById('specialization-btns');
+    
+    departmentSelect.addEventListener('change', function() {
+        const department = this.value;
+        specializationSection.style.display = 'none';
+        specializationBtns.innerHTML = '';
+        
+        if (department === 'actuariat') {
+            specializationSection.style.display = 'block';
+            specializationBtns.innerHTML = `
+                <button class="specialization-btn active" data-specialization="all">Toutes spécialités</button>
+                <button class="specialization-btn" data-specialization="risques">Analyse des Risques</button>
+                <button class="specialization-btn" data-specialization="predictive">Analyse Prédictive</button>
+            `;
+        } else if (department === 'genie') {
+            specializationSection.style.display = 'block';
+            specializationBtns.innerHTML = `
+                <button class="specialization-btn active" data-specialization="all">Toutes spécialités</button>
+                <button class="specialization-btn" data-specialization="data">Sciences des Données</button>
+                <button class="specialization-btn" data-specialization="eco">Sciences Économiques</button>
+            `;
+        } else if (department === 'probastate') {
+            specializationSection.style.display = 'none';
+        }
+        
+        filterCourses();
+    });
+    
+    parcoursSelect.addEventListener('change', function() {
+        const parcours = this.value;
+        if (parcours === 'master') {
+            specializationSection.style.display = 'none';
+        }
+        filterCourses();
+    });
+            
+            // Gestion des boutons de spécialisation
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('specialization-btn')) {
+                    document.querySelectorAll('.specialization-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    e.target.classList.add('active');
+                    filterCourses();
+                }
+            });
+            
+            // Filtrage des cours
+            function filterCourses() {
+                const cycle = document.getElementById('academic-cycle').value;
+                const year = document.getElementById('academic-year').value;
+                const department = document.getElementById('department').value;
+                const parcours = document.getElementById('parcours').value;
+                const semester = document.getElementById('semester').value;
+                const activeSpecialization = document.querySelector('.specialization-btn.active');
+                const specialization = activeSpecialization ? activeSpecialization.dataset.specialization : 'all';
+                
+                document.querySelectorAll('.course-card').forEach(card => {
+                    const cardCycle = card.dataset.cycle;
+                    const cardYear = card.dataset.year;
+                    const cardDept = card.dataset.department;
+                    const cardParc = card.dataset.parcours;
+                    const cardSemester = card.dataset.semester;
+                    const cardSpecialization = card.dataset.specialization;
+                    
+                    const showCard = 
+                        (cycle === 'all' || cardCycle === cycle) &&
+                        (year === 'all' || cardYear === year) &&
+                        (department === 'all' || cardDept === department) &&
+                        (parcours === 'all' || cardParc === parcours) &&
+                        (semester === 'all' || cardSemester === semester) &&
+                        (specialization === 'all' || cardSpecialization === specialization || cardSpecialization === 'all');
+                    
+                    card.style.display = showCard ? 'block' : 'none';
+                });
+            }
+            
+            // Écouteurs pour les autres filtres
+            document.getElementById('academic-cycle').addEventListener('change', filterCourses);
+            document.getElementById('academic-year').addEventListener('change', filterCourses);
+            document.getElementById('semester').addEventListener('change', filterCourses);
+            
+            // Initialisation
+            filterCourses();
+        });
+    </script>
+</body>
+</html>

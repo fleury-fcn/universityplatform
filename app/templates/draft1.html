@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Administration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.css">
+    <style>
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--primary);
+            color: white;
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary);
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .user-role {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .role-admin { background-color: var(--accent); }
+        .role-professor { background-color: #8e44ad; }
+        .role-student { background-color: #3498db; }
+
+        .nav-menu {
+            margin-top: 2rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .nav-item i {
+            margin-right: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background-color: var(--secondary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #1e3c72);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-banner p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .date-display {
+            position: absolute;
+            right: 2rem;
+            top: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0a1e4a;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e6c200;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        /* Tableau des utilisateurs */
+        .admin-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section-header h2 {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .section-header h2 i {
+            margin-right: 0.8rem;
+        }
+
+        .search-box {
+            position: relative;
+            width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.7rem 1rem 0.7rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(10, 36, 99, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .users-table th, .users-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .users-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .users-table tr:hover {
+            background-color: #f5f7fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .status-inactive {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            background-color: #0f0227;
+            border: 1px solid var(--danger);
+        }
+
+        .role-admin { background-color: #0f0227; }
+        .role-professor { background-color: #0f0227; }
+        .role-student { background-color: #0f0227; }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background-color: #eee;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .action-btn.edit-user {
+            color: var(--primary);
+        }
+
+        .action-btn.edit-user:hover {
+            background-color: rgba(10, 36, 99, 0.1);
+        }
+
+        .action-btn.impersonate-user {
+            color: #8e44ad;
+        }
+
+        .action-btn.impersonate-user:hover {
+            background-color: rgba(142, 68, 173, 0.1);
+        }
+
+        .action-btn.delete-user {
+            color: var(--danger);
+        }
+
+        .action-btn.delete-user:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        /* Statistiques */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .stat-detail {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 0.3rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        /* Activity Log */
+        .activity-log {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .log-entry {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .log-time {
+            width: 80px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .log-message {
+            flex: 1;
+        }
+
+        .log-message strong {
+            color: var(--primary);
+            margin-right: 0.5rem;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1.5rem;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalopen 0.3s;
+        }
+
+        @keyframes modalopen {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(10, 36, 99, 0.2);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23555' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 250px;
+                transform: translateX(-250px);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            .quick-actions {
+                flex-direction: column;
+            }
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .search-box {
+                width: 100%;
+            }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background-color: var(--success);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            font-size: 1.5rem;
+        }
+
+        .toast.error {
+            background-color: var(--danger);
+        }
+
+        .toast.warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* System alerts */
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s forwards;
+        }
+
+        .alert.danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .alert.warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .alert i {
+            margin-right: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Password strength meter */
+        .password-strength {
+            height: 5px;
+            background: #eee;
+            margin-top: 0.5rem;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .strength-meter {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        /* Form rows */
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* System info cards */
+        .info-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .info-card h4 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .info-card h4 i {
+            margin-right: 0.8rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .info-value {
+            font-weight: 600;
+        }
+
+        /* Progress bars */
+        .progress-container {
+            margin-top: 1rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0;
+            transition: width 0.5s;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+
+        .badge-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <img src="{{ current_user.get_avatar_url() }}" alt="Photo de profil" class="avatar">
+                <h3>{{ current_user.nom_complet }}</h3>
+                <span class="user-role role-admin">Administrateur</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item">
+                    <i class="fas fa-home"></i> Accueil
+                </a>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                    <i class="fas fa-edit"></i> Inscriptions Académique
+                </a>
+                <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                    <i class="fas fa-book-open"></i> Cours de l'ISTA
+                </a>
+                <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Syllabus
+                </a>
+                <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Bibliothèque
+                </a>
+                <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Tuyaux d'Examens
+                </a>
+                <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Clubs
+                </a>
+                <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
+                    <i class="fas fa-envelope"></i> Messages
+                </a>
+                <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i> Mon Profil
+                </a>
+                <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item active">
+                    <i class="fas fa-cog"></i> Administration
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- System Alerts -->
+            <div class="alert-container">
+                {% if stats.disk_usage > 85 %}
+                <div class="alert danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Espace disque critique (>85%)</span>
+                </div>
+                {% endif %}
+                {% if stats.memory_usage > 90 %}
+                <div class="alert danger">
+                    <i class="fas fa-memory"></i>
+                    <span>Utilisation mémoire élevée (>90%)</span>
+                </div>
+                {% endif %}
+                {% if stats.cpu_usage > 90 %}
+                <div class="alert warning">
+                    <i class="fas fa-microchip"></i>
+                    <span>Utilisation CPU élevée (>90%)</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <section class="welcome-banner">
+                <h1>Tableau de bord d'administration</h1>
+                <p>Gestion complète de la plateforme OpenISTA</p>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i> {{ current_date }}
+                </div>
+            </section>
+
+            <!-- Statistiques -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value">{{ stats.total_users }}</div>
+                    <div class="stat-label">Utilisateurs total</div>
+                    <div class="stat-detail">{{ stats.active_users }} actifs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div class="stat-value">{{ stats.total_tuyaux }}</div>
+                    <div class="stat-label">Tuyaux partagés</div>
+                    <div class="stat-detail">{{ stats.tuyaux_last_month }} ce mois</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-book"></i></div>
+                    <div class="stat-value">{{ stats.total_courses }}</div>
+                    <div class="stat-label">Cours enregistrés</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-sign-in-alt"></i></div>
+                    <div class="stat-value">{{ stats.today_logins }}</div>
+                    <div class="stat-label">Connexions aujourd'hui</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-hdd"></i></div>
+                    <div class="stat-value">{{ stats.disk_usage }}%</div>
+                    <div class="stat-label">Espace disque utilisé</div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ stats.disk_usage }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-memory"></i></div>
+                    <div class="stat-value">{{ stats.memory_usage }}%</div>
+                    <div class="stat-label">Mémoire utilisée</div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ stats.memory_usage }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions rapides -->
+            <div class="quick-actions">
+                <button class="btn btn-primary" id="addUserBtn">
+                    <i class="fas fa-user-plus"></i> Ajouter un utilisateur
+                </button>
+                <button class="btn btn-secondary" id="sendNotificationBtn">
+                    <i class="fas fa-bell"></i> Envoyer une notification
+                </button>
+                <button class="btn btn-secondary" id="systemCheckBtn">
+                    <i class="fas fa-heartbeat"></i> Vérifier le système
+                </button>
+                <button class="btn btn-secondary" id="backupBtn">
+                    <i class="fas fa-database"></i> Sauvegarde
+                </button>
+                <button class="btn btn-secondary" id="exportDataBtn">
+                    <i class="fas fa-file-export"></i> Exporter données
+                </button>
+                <button class="btn btn-secondary" id="optimizeDbBtn">
+                    <i class="fas fa-magic"></i> Optimiser la base
+                </button>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="tabs">
+                <div class="tab active" data-tab="users">Utilisateurs</div>
+                <div class="tab" data-tab="stats">Statistiques</div>
+                <div class="tab" data-tab="activity">Activité</div>
+                <div class="tab" data-tab="settings">Paramètres</div>
+                <div class="tab" data-tab="system">Système</div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-content active" id="users-tab">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-users"></i> Gestion des utilisateurs</h2>
+                        <div class="search-box">
+                            <input type="text" placeholder="Rechercher un utilisateur..." id="userSearch">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Rôle</th>
+                                <th>Statut</th>
+                                <th>Dernière activité</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                                        <img src="{{ user.get_avatar_url() }}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                        {{ user.nom_complet }}
+                                    </div>
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <span class="role-badge role-{{ user.role }}">
+                                        {{ user.role|capitalize }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge {% if user.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                        {% if user.is_active %}Actif{% else %}Inactif{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if user.last_login %}
+                                        {{ user.last_login.strftime('%d/%m/%Y %H:%M') }}
+                                    {% else %}
+                                        Jamais connecté
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="action-btn edit-user" data-user-id="{{ user.id }}" title="Modifier">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="action-btn impersonate-user" data-user-id="{{ user.id }}" title="Se connecter comme">
+                                            <i class="fas fa-user-secret"></i>
+                                        </button>
+                                        {% if user.is_active %}
+                                        <button class="action-btn deactivate-user" data-user-id="{{ user.id }}" title="Désactiver">
+                                            <i class="fas fa-user-slash"></i>
+                                        </button>
+                                        {% else %}
+                                        <button class="action-btn activate-user" data-user-id="{{ user.id }}" title="Activer">
+                                            <i class="fas fa-user-check"></i>
+                                        </button>
+                                        {% endif %}
+                                        <button class="action-btn reset-password" data-user-id="{{ user.id }}" title="Réinitialiser mot de passe">
+                                            <i class="fas fa-key"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Statistics Tab -->
+            <div class="tab-content" id="stats-tab">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-line"></i> Statistiques avancées</h2>
+                        <div>
+                            <select id="statsPeriod" class="form-control">
+                                <option value="7">7 derniers jours</option>
+                                <option value="30" selected>30 derniers jours</option>
+                                <option value="90">3 derniers mois</option>
+                                <option value="365">1 an</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                        <div class="chart-container">
+                            <canvas id="userRoleChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="contentTypeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                    <div class="admin-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-graduation-cap"></i> Inscriptions par département</h2>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="departmentChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="admin-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-layer-group"></i> Inscriptions par niveau</h2>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="levelChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Tab -->
+            <div class="tab-content" id="activity-tab">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-clipboard-list"></i> Journal des activités</h2>
+                        <button class="btn btn-secondary" id="clearLogsBtn">
+                            <i class="fas fa-trash"></i> Effacer le journal
+                        </button>
+                    </div>
+                    <div class="activity-log">
+                        {% for log in activity_logs %}
+                        <div class="log-entry">
+                            <div class="log-time">{{ log.timestamp.strftime('%H:%M') }}</div>
+                            <div class="log-message">
+                                <strong>{{ log.user.nom_complet if log.user else 'Système' }}</strong>
+                                {{ log.action }}
+                                <span style="color: #888; font-size: 0.8rem; margin-left: 0.5rem;">
+                                    {{ log.timestamp.strftime('%d/%m/%Y') }}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-bar"></i> Activité des utilisateurs</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="userActivityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settings-tab">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-sliders-h"></i> Paramètres système</h2>
+                    </div>
+                    <form id="systemSettingsForm">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                            <div>
+                                <div class="form-group">
+                                    <label for="maintenanceMode">Mode maintenance</label>
+                                    <select id="maintenanceMode" name="maintenanceMode" class="form-control form-select">
+                                        <option value="0" {% if not system_settings.maintenance_mode %}selected{% endif %}>Désactivé</option>
+                                        <option value="1" {% if system_settings.maintenance_mode %}selected{% endif %}>Activé</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="registrationEnabled">Inscriptions</label>
+                                    <select id="registrationEnabled" name="registrationEnabled" class="form-control form-select">
+                                        <option value="1" {% if system_settings.registration_enabled %}selected{% endif %}>Autorisées</option>
+                                        <option value="0" {% if not system_settings.registration_enabled %}selected{% endif %}>Fermées</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    <label for="sessionTimeout">Délai d'inactivité (minutes)</label>
+                                    <input type="number" id="sessionTimeout" name="sessionTimeout" class="form-control" value="{{ system_settings.session_timeout }}" min="5" max="1440">
+                                </div>
+                                <div class="form-group">
+                                    <label for="maxUploadSize">Taille max. upload (MB)</label>
+                                    <input type="number" id="maxUploadSize" name="maxUploadSize" class="form-control" value="{{ system_settings.max_upload_size }}" min="1" max="100">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="systemMessage">Message système</label>
+                            <textarea id="systemMessage" name="systemMessage" class="form-control" rows="3" placeholder="Message affiché à tous les utilisateurs">{{ system_settings.system_message }}</textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="cancelSettingsBtn">Annuler</button>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- System Tab -->
+            <div class="tab-content" id="system-tab">
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-server"></i> Informations système</h2>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="info-card">
+                            <h4><i class="fas fa-info-circle"></i> Système</h4>
+                            <div class="info-item">
+                                <span class="info-label">Système d'exploitation</span>
+                                <span class="info-value">{{ system_info.os }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Version Python</span>
+                                <span class="info-value">{{ system_info.python_version }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Version Flask</span>
+                                <span class="info-value">{{ system_info.flask_version }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Base de données</span>
+                                <span class="info-value">{{ system_info.database }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Uptime</span>
+                                <span class="info-value">{{ system_info.uptime }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h4><i class="fas fa-microchip"></i> Ressources</h4>
+                            <div class="info-item">
+                                <span class="info-label">CPU</span>
+                                <span class="info-value">{{ system_info.cpu_count }} cœurs ({{ stats.cpu_usage }}% utilisé)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Mémoire</span>
+                                <span class="info-value">{{ system_info.total_memory }} ({{ stats.memory_usage }}% utilisé)</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Stockage</span>
+                                <span class="info-value">{{ system_info.total_disk }} ({{ stats.disk_usage }}% utilisé)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="margin-top: 1.5rem;">
+                        <h4><i class="fas fa-database"></i> Base de données</h4>
+                        <div class="info-item">
+                            <span class="info-label">Taille totale</span>
+                            <span class="info-value">{{ system_info.db_size_human }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Utilisateurs</span>
+                            <span class="info-value">{{ stats.total_users }} enregistrés</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Contenu</span>
+                            <span class="info-value">{{ stats.total_courses }} cours, {{ stats.total_tuyaux }} tuyaux</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Dernière sauvegarde</span>
+                            <span class="info-value">Il y a 2 jours</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="margin-top: 1.5rem;">
+                        <h4><i class="fas fa-tasks"></i> Maintenance</h4>
+                        <button class="btn btn-secondary" id="optimizeDbBtn">
+                            <i class="fas fa-magic"></i> Optimiser la base de données
+                        </button>
+                        <button class="btn btn-secondary" id="clearCacheBtn" style="margin-top: 1rem;">
+                            <i class="fas fa-broom"></i> Vider le cache
+                        </button>
+                        <button class="btn btn-secondary" id="restartAppBtn" style="margin-top: 1rem;">
+                            <i class="fas fa-sync-alt"></i> Redémarrer l'application
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Ajouter un utilisateur</h3>
+                <button class="close-btn" id="closeUserModal">&times;</button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId" name="userId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prenom">Prénom</label>
+                        <input type="text" id="prenom" name="prenom" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nom">Nom</label>
+                        <input type="text" id="nom" name="nom" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email institutionnel</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="prenom.nom@ista.ma" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        <i class="fas fa-eye password-toggle" id="togglePassword" style="position: absolute; right: 10px; top: 10px; cursor: pointer;"></i>
+                    </div>
+                    <div class="password-strength">
+                        <div class="strength-meter" id="strengthMeter"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">Confirmer le mot de passe</label>
+                    <div style="position: relative;">
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                        <i class="fas fa-eye password-toggle" id="toggleConfirmPassword" style="position: absolute; right: 10px; top: 10px; cursor: pointer;"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">Rôle</label>
+                    <select id="role" name="role" class="form-control form-select" required>
+                        <option value="">Sélectionner un rôle</option>
+                        <option value="etudiant">Étudiant</option>
+                        <option value="professeur">Professeur</option>
+                        <option value="administrateur">Administrateur</option>
+                    </select>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelUserBtn">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Envoyer une notification</h3>
+                <button class="close-btn" id="closeNotificationModal">&times;</button>
+            </div>
+            <form id="notificationForm">
+                <div class="form-group">
+                    <label for="notificationRecipients">Destinataires</label>
+                    <select id="notificationRecipients" name="recipients" class="form-control form-select" multiple>
+                        <option value="all" selected>Tous les utilisateurs</option>
+                        <option value="students">Étudiants</option>
+                        <option value="professors">Professeurs</option>
+                        <option value="admins">Administrateurs</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="notificationSubject">Sujet</label>
+                    <input type="text" id="notificationSubject" name="subject" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="notificationMessage">Message</label>
+                    <textarea id="notificationMessage" name="message" class="form-control" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="notificationPriority">Priorité</label>
+                    <select id="notificationPriority" name="priority" class="form-control form-select">
+                        <option value="normal">Normale</option>
+                        <option value="high">Haute</option>
+                        <option value="urgent">Urgente</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelNotificationBtn">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- System Check Modal -->
+    <div id="systemCheckModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Vérification du système</h3>
+                <button class="close-btn" id="closeSystemCheckModal">&times;</button>
+            </div>
+            <div id="systemCheckResults">
+                <div class="system-check-item">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Vérification en cours...</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="closeSystemCheckBtn">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="confirmationTitle">Confirmation</h3>
+                <button class="close-btn" id="closeConfirmationModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationMessage">Êtes-vous sûr de vouloir effectuer cette action ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelConfirmBtn">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmActionBtn">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backup Options Modal -->
+    <div id="backupOptionsModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Options de sauvegarde</h3>
+                <button class="close-btn" id="closeBackupOptionsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Sélectionnez les données à sauvegarder</label>
+                    <div style="margin-top: 0.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem;">
+                            <input type="checkbox" name="backupUsers" checked> Utilisateurs
+                        </label>
+                        <label style="display: block; margin-bottom: 0.5rem;">
+                            <input type="checkbox" name="backupCourses" checked> Cours
+                        </label>
+                        <label style="display: block; margin-bottom: 0.5rem;">
+                            <input type="checkbox" name="backupTuyaux" checked> Tuyaux
+                        </label>
+                        <label style="display: block; margin-bottom: 0.5rem;">
+                            <input type="checkbox" name="backupFiles" checked> Fichiers uploadés
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="backupType">Type de sauvegarde</label>
+                    <select id="backupType" class="form-control">
+                        <option value="full">Complète</option>
+                        <option value="incremental">Incrémentale</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelBackupBtn">Annuler</button>
+                <button type="button" class="btn btn-primary" id="startBackupBtn">Démarrer la sauvegarde</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Opération réussie</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script>
+        // Variables globales
+        let currentAction = null;
+        let currentUserId = null;
+        let activityChart, userRoleChart, contentTypeChart, departmentChart, levelChart, userActivityChart;
+
+        // Fonction utilitaire pour gérer les erreurs API
+        function handleApiErrors(response) {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Erreur serveur');
+                });
+            }
+            return response.json();
+        }
+
+        // Initialisation des événements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les graphiques avec les données du backend
+            initCharts();
+
+            // Gestion des onglets
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(`${this.dataset.tab}-tab`).classList.add('active');
+                });
+            });
+
+            // Gestion des modals
+            setupModal('userModal', 'addUserBtn', 'closeUserModal');
+            setupModal('notificationModal', 'sendNotificationBtn', 'closeNotificationModal');
+            setupModal('systemCheckModal', 'systemCheckBtn', 'closeSystemCheckModal');
+            setupModal('confirmationModal', null, 'closeConfirmationModal');
+            setupModal('backupOptionsModal', 'backupBtn', 'closeBackupOptionsModal');
+
+            // Événements des boutons d'action
+            document.querySelectorAll('.edit-user').forEach(btn => {
+                btn.addEventListener('click', () => openEditUserModal(btn.dataset.userId));
+            });
+
+            document.querySelectorAll('.impersonate-user').forEach(btn => {
+                btn.addEventListener('click', () => confirmAction(
+                    'Se connecter comme cet utilisateur', 
+                    'Vous allez être connecté en tant que cet utilisateur. Continuer ?',
+                    () => impersonateUser(btn.dataset.userId)
+                ));
+            });
+
+            document.querySelectorAll('.deactivate-user').forEach(btn => {
+                btn.addEventListener('click', () => confirmAction(
+                    'Désactiver un utilisateur', 
+                    'Êtes-vous sûr de vouloir désactiver ce compte utilisateur ?',
+                    () => deactivateUser(btn.dataset.userId)
+                ));
+            });
+
+            document.querySelectorAll('.activate-user').forEach(btn => {
+                btn.addEventListener('click', () => confirmAction(
+                    'Activer un utilisateur', 
+                    'Êtes-vous sûr de vouloir réactiver ce compte utilisateur ?',
+                    () => activateUser(btn.dataset.userId)
+                ));
+            });
+
+            document.querySelectorAll('.reset-password').forEach(btn => {
+                btn.addEventListener('click', () => confirmAction(
+                    'Réinitialiser le mot de passe', 
+                    'Un nouveau mot de passe aléatoire sera envoyé à cet utilisateur. Continuer ?',
+                    () => resetUserPassword(btn.dataset.userId)
+                ));
+            });
+
+            // Événements des formulaires
+            document.getElementById('userForm').addEventListener('submit', handleUserFormSubmit);
+            document.getElementById('notificationForm').addEventListener('submit', handleNotificationFormSubmit);
+            document.getElementById('systemSettingsForm').addEventListener('submit', handleSystemSettingsSubmit);
+
+            // Événements des autres boutons
+            document.getElementById('optimizeDbBtn').addEventListener('click', () => confirmAction(
+                'Optimiser la base de données', 
+                'Cette opération peut améliorer les performances mais peut prendre du temps. Continuer ?',
+                optimizeDatabase
+            ));
+            
+            document.getElementById('clearCacheBtn').addEventListener('click', () => confirmAction(
+                'Vider le cache', 
+                'Êtes-vous sûr de vouloir vider le cache système ?',
+                clearCache
+            ));
+            
+            document.getElementById('restartAppBtn').addEventListener('click', () => confirmAction(
+                'Redémarrer l\'application', 
+                'L\'application sera temporairement indisponible. Continuer ?',
+                restartApplication
+            ));
+            
+            document.getElementById('exportDataBtn').addEventListener('click', exportData);
+            document.getElementById('clearLogsBtn').addEventListener('click', () => confirmAction(
+                'Effacer le journal', 
+                'Êtes-vous sûr de vouloir effacer tous les logs d\'activité ?',
+                clearActivityLogs
+            ));
+
+            // Recherche d'utilisateurs
+            document.getElementById('userSearch').addEventListener('input', searchUsers);
+
+            // Changement de période pour les stats
+            document.getElementById('statsPeriod').addEventListener('change', updateCharts);
+
+            // Gestion des mots de passe
+            document.getElementById('togglePassword').addEventListener('click', togglePasswordVisibility);
+            document.getElementById('toggleConfirmPassword').addEventListener('click', toggleConfirmPasswordVisibility);
+            document.getElementById('password').addEventListener('input', checkPasswordStrength);
+
+            // Démarrer la sauvegarde
+            document.getElementById('startBackupBtn').addEventListener('click', startBackup);
+        });
+
+        // Fonctions pour les modals
+        function setupModal(modalId, openBtnId, closeBtnId) {
+            const modal = document.getElementById(modalId);
+            
+            if (openBtnId) {
+                document.getElementById(openBtnId).addEventListener('click', () => {
+                    modal.style.display = 'block';
+                });
+            }
+            
+            document.getElementById(closeBtnId).addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        function confirmAction(title, message, action) {
+            currentAction = action;
+            document.getElementById('confirmationTitle').textContent = title;
+            document.getElementById('confirmationMessage').textContent = message;
+            document.getElementById('confirmationModal').style.display = 'block';
+        }
+
+        document.getElementById('confirmActionBtn').addEventListener('click', () => {
+            if (currentAction) {
+                currentAction();
+                document.getElementById('confirmationModal').style.display = 'none';
+            }
+        });
+
+        // Fonctions pour les utilisateurs
+        function openEditUserModal(userId) {
+            const modal = document.getElementById('userModal');
+            const form = document.getElementById('userForm');
+            
+            if (userId) {
+                // Mode édition
+                document.getElementById('userModalTitle').textContent = 'Modifier un utilisateur';
+                document.getElementById('userId').value = userId;
+                document.getElementById('password').required = false;
+                document.getElementById('confirm_password').required = false;
+                
+                // Récupérer les données de l'utilisateur
+                fetch(`/api/users/${userId}`)
+                    .then(handleApiErrors)
+                    .then(user => {
+                        document.getElementById('prenom').value = user.firstName;
+                        document.getElementById('nom').value = user.lastName;
+                        document.getElementById('username').value = user.username;
+                        document.getElementById('email').value = user.email;
+                        document.getElementById('role').value = user.role;
+                    })
+                    .catch(error => {
+                        showToast(error.message, 'error');
+                        console.error('Error:', error);
+                    });
+            } else {
+                // Mode création
+                document.getElementById('userModalTitle').textContent = 'Ajouter un utilisateur';
+                form.reset();
+                document.getElementById('password').required = true;
+                document.getElementById('confirm_password').required = true;
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function handleUserFormSubmit(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            const userId = formData.get('userId');
+            const isEdit = !!userId;
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Enregistrement...';
+            
+            // Préparer les données pour l'API
+            const userData = {
+                prenom: formData.get('prenom'),
+                nom: formData.get('nom'),
+                username: formData.get('username'),
+                email: formData.get('email'),
+                role: formData.get('role')
+            };
+            
+            // Ajouter le mot de passe seulement en création ou si modifié
+            if (!isEdit || formData.get('password')) {
+                userData.password = formData.get('password');
+            }
+            
+            const method = isEdit ? 'PUT' : 'POST';
+            const url = isEdit ? `/api/users/${userId}` : '/admin/users';
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(handleApiErrors)
+            .then(data => {
+                showToast(`Utilisateur ${isEdit ? 'modifié' : 'créé'} avec succès`);
+                form.reset();
+                document.getElementById('userModal').style.display = 'none';
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = isEdit ? 'Enregistrer' : 'Ajouter un Utilisateur';
+            });
+        }
+
+        function impersonateUser(userId) {
+            fetch(`/admin/impersonate/${userId}`)
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        throw new Error('Erreur lors de la connexion');
+                    }
+                })
+                .catch(error => {
+                    showToast(error.message, 'error');
+                });
+        }
+
+        function deleteUser(userId) {
+            fetch(`/api/users/${userId}`, {
+                method: 'DELETE'
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Utilisateur supprimé avec succès');
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            });
+        }
+
+        function resetUserPassword(userId) {
+            fetch(`/api/users/${userId}/reset-password`, {
+                method: 'POST'
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Mot de passe réinitialisé avec succès');
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            });
+        }
+
+        function deactivateUser(userId) {
+            fetch(`/api/users/${userId}/deactivate`, {
+                method: 'POST'
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Utilisateur désactivé avec succès');
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            });
+        }
+
+        function activateUser(userId) {
+            fetch(`/api/users/${userId}/activate`, {
+                method: 'POST'
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Utilisateur activé avec succès');
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            });
+        }
+
+        function searchUsers() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.users-table tbody tr');
+            
+            rows.forEach(row => {
+                const name = row.cells[0].textContent.toLowerCase();
+                const email = row.cells[1].textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Fonctions pour les notifications
+        function handleNotificationFormSubmit(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Envoi en cours...';
+            
+            const formData = {
+                recipients: Array.from(form.recipients.selectedOptions).map(opt => opt.value),
+                subject: form.subject.value,
+                message: form.message.value,
+                priority: form.priority.value
+            };
+            
+            fetch('/api/notifications', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Notification envoyée avec succès');
+                form.reset();
+                document.getElementById('notificationModal').style.display = 'none';
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Envoyer';
+            });
+        }
+
+        // Fonctions système
+        function handleSystemSettingsSubmit(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Enregistrement...';
+            
+            const formData = {
+                maintenanceMode: form.maintenanceMode.value,
+                registrationEnabled: form.registrationEnabled.value,
+                sessionTimeout: form.sessionTimeout.value,
+                maxUploadSize: form.maxUploadSize.value,
+                systemMessage: form.systemMessage.value
+            };
+            
+            fetch('/api/system-settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Paramètres système mis à jour');
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enregistrer';
+            });
+        }
+
+        function startBackup() {
+            const backupType = document.getElementById('backupType').value;
+            const includeUsers = document.querySelector('input[name="backupUsers"]').checked;
+            const includeCourses = document.querySelector('input[name="backupCourses"]').checked;
+            const includeTuyaux = document.querySelector('input[name="backupTuyaux"]').checked;
+            const includeFiles = document.querySelector('input[name="backupFiles"]').checked;
+            
+            showToast('Création de la sauvegarde en cours...', 'warning');
+            
+            fetch('/api/backup/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: backupType,
+                    includeUsers,
+                    includeCourses,
+                    includeTuyaux,
+                    includeFiles
+                })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `backup_${new Date().toISOString().slice(0, 10)}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                showToast('Sauvegarde téléchargée avec succès');
+                document.getElementById('backupOptionsModal').style.display = 'none';
+            })
+            .catch(error => {
+                showToast('Erreur lors de la sauvegarde', 'error');
+            });
+        }
+
+        function exportData() {
+            const type = prompt('Quelles données souhaitez-vous exporter ? (users, courses, tuyaux, registrations)');
+            
+            if (type && ['users', 'courses', 'tuyaux', 'registrations'].includes(type)) {
+                showToast(`Export des ${type} en cours...`, 'warning');
+                
+                fetch(`/api/export/${type}`)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `export_${type}_${new Date().toISOString().slice(0, 10)}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        showToast('Export terminé');
+                    })
+                    .catch(error => {
+                        showToast('Erreur lors de l\'export', 'error');
+                    });
+            }
+        }
+
+        function clearActivityLogs() {
+            fetch('/api/activity-logs', {
+                method: 'DELETE'
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Journal d\'activité effacé');
+                document.querySelector('.activity-log').innerHTML = '<div class="log-entry"><div class="log-message">Aucune activité récente</div></div>';
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            });
+        }
+
+        function optimizeDatabase() {
+            fetch('/api/database/optimize', {
+                method: 'POST'
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Base de données optimisée avec succès');
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            });
+        }
+
+        function clearCache() {
+            fetch('/api/system/maintenance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: 'clear_cache' })
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Cache vidé avec succès');
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            });
+        }
+
+        function restartApplication() {
+            fetch('/api/system/maintenance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: 'restart_app' })
+            })
+            .then(handleApiErrors)
+            .then(() => {
+                showToast('Redémarrage en cours...', 'warning');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
+            })
+            .catch(error => {
+                showToast(error.message, 'error');
+            });
+        }
+
+        // Fonctions pour les graphiques
+        function initCharts() {
+            // Graphique d'activité
+            const activityCtx = document.getElementById('activityChart').getContext('2d');
+            activityChart = new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ date_labels|tojson }},
+                    datasets: [
+                        {
+                            label: 'Connexions',
+                            data: {{ login_data|tojson }},
+                            borderColor: '#0a2463',
+                            backgroundColor: 'rgba(10, 36, 99, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Tuyaux partagés',
+                            data: {{ tuyaux_data|tojson }},
+                            borderColor: '#d7263d',
+                            backgroundColor: 'rgba(215, 38, 61, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Activité des 30 derniers jours'
+                        }
+                    }
+                }
+            });
+
+            // Graphique des rôles utilisateurs
+            const userRoleCtx = document.getElementById('userRoleChart').getContext('2d');
+            userRoleChart = new Chart(userRoleCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: {{ roles_labels|tojson }},
+                    datasets: [{
+                        data: {{ roles_data|tojson }},
+                        backgroundColor: [
+                            '#3498db',
+                            '#8e44ad',
+                            '#d7263d'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Répartition des rôles'
+                        }
+                    }
+                }
+            });
+
+            // Graphique des types de contenu
+            const contentTypeCtx = document.getElementById('contentTypeChart').getContext('2d');
+            contentTypeChart = new Chart(contentTypeCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ content_labels|tojson }},
+                    datasets: [{
+                        label: 'Contenu créé',
+                        data: {{ content_data|tojson }},
+                        backgroundColor: [
+                            'rgba(10, 36, 99, 0.7)',
+                            'rgba(215, 38, 61, 0.7)',
+                            'rgba(255, 215, 0, 0.7)',
+                            'rgba(40, 167, 69, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Contenu par type'
+                        }
+                    }
+                }
+            });
+
+            // Graphique des inscriptions par département
+            const departmentCtx = document.getElementById('departmentChart').getContext('2d');
+            departmentChart = new Chart(departmentCtx, {
+                type: 'pie',
+                data: {
+                    labels: {{ by_department|map(attribute='departement')|tojson }},
+                    datasets: [{
+                        data: {{ by_department|map(attribute='count')|tojson }},
+                        backgroundColor: [
+                            '#3498db', '#8e44ad', '#d7263d', '#ffd700', 
+                            '#28a745', '#17a2b8', '#6610f2', '#6f42c1'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Inscriptions par département'
+                        }
+                    }
+                }
+            });
+
+            // Graphique des inscriptions par niveau
+            const levelCtx = document.getElementById('levelChart').getContext('2d');
+            levelChart = new Chart(levelCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ by_level|map(attribute='niveau')|tojson }},
+                    datasets: [{
+                        label: 'Nombre d\'inscriptions',
+                        data: {{ by_level|map(attribute='count')|tojson }},
+                        backgroundColor: 'rgba(10, 36, 99, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Inscriptions par niveau'
+                        }
+                    }
+                }
+            });
+
+            // Graphique d'activité des utilisateurs
+            const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+            userActivityChart = new Chart(userActivityCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ active_users|map(attribute='nom_complet')|tojson }},
+                    datasets: [{
+                        label: 'Activité',
+                        data: {{ active_users|map(attribute='activity_count')|tojson }},
+                        backgroundColor: 'rgba(215, 38, 61, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Utilisateurs les plus actifs'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts() {
+            const days = parseInt(document.getElementById('statsPeriod').value);
+            
+            fetch(`/api/stats?days=${days}`)
+                .then(handleApiErrors)
+                .then(data => {
+                    activityChart.data.labels = data.date_labels;
+                    activityChart.data.datasets[0].data = data.login_data;
+                    activityChart.data.datasets[1].data = data.tuyaux_data;
+                    activityChart.options.plugins.title.text = `Activité des ${days} derniers jours`;
+                    activityChart.update();
+                })
+                .catch(error => {
+                    showToast('Erreur lors du chargement des statistiques', 'error');
+                });
+        }
+
+        // Fonctions utilitaires
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toast.className = 'toast';
+            toast.classList.add(type === 'error' ? 'error' : type === 'warning' ? 'warning' : 'success');
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const icon = document.getElementById('togglePassword');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function toggleConfirmPasswordVisibility() {
+            const passwordInput = document.getElementById('confirm_password');
+            const icon = document.getElementById('toggleConfirmPassword');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = this.value;
+            const meter = document.getElementById('strengthMeter');
+            let strength = 0;
+            
+            // Contient des minuscules
+            if (/[a-z]/.test(password)) strength += 1;
+            // Contient des majuscules
+            if (/[A-Z]/.test(password)) strength += 1;
+            // Contient des chiffres
+            if (/[0-9]/.test(password)) strength += 1;
+            // Contient des caractères spéciaux
+            if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+            // Longueur minimale
+            if (password.length >= 8) strength += 1;
+            
+            // Mettre à jour la barre de force
+            const width = (strength / 5) * 100;
+            meter.style.width = `${width}%`;
+            
+            // Changer la couleur selon la force
+            if (strength <= 2) {
+                meter.style.backgroundColor = 'var(--danger)';
+            } else if (strength <= 4) {
+                meter.style.backgroundColor = 'var(--warning)';
+            } else {
+                meter.style.backgroundColor = 'var(--success)';
+            }
+        }
+
+        // Mise à jour en temps réel des stats système
+        function updateSystemStats() {
+            fetch('/api/system/stats')
+                .then(handleApiErrors)
+                .then(data => {
+                    // Mettre à jour les indicateurs visuels
+                    document.querySelector('.stat-card:nth-child(5) .stat-value').textContent = `${data.disk.percent}%`;
+                    document.querySelector('.stat-card:nth-child(5) .progress-fill').style.width = `${data.disk.percent}%`;
+                    
+                    document.querySelector('.stat-card:nth-child(6) .stat-value').textContent = `${data.memory.percent}%`;
+                    document.querySelector('.stat-card:nth-child(6) .progress-fill').style.width = `${data.memory.percent}%`;
+                    
+                    // Gérer les alertes
+                    const alertContainer = document.querySelector('.alert-container');
+                    alertContainer.innerHTML = '';
+                    
+                    if (data.disk.percent > 85) {
+                        alertContainer.innerHTML += `
+                            <div class="alert danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Espace disque critique (>85%)</span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (data.memory.percent > 90) {
+                        alertContainer.innerHTML += `
+                            <div class="alert danger">
+                                <i class="fas fa-memory"></i>
+                                <span>Utilisation mémoire élevée (>90%)</span>
+                            </div>
+                        `;
+                    }
+                    
+                    if (data.cpu > 90) {
+                        alertContainer.innerHTML += `
+                            <div class="alert warning">
+                                <i class="fas fa-microchip"></i>
+                                <span>Utilisation CPU élevée (>90%)</span>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => console.error('Error updating system stats:', error));
+        }
+
+        // Mettre à jour les stats système toutes les 30 secondes
+        setInterval(updateSystemStats, 30000);
+        updateSystemStats(); // Exécuter immédiatement au chargement
+    </script>
+</body>
+</html>

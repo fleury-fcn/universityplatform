@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Inscription Académique</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --professor: #8e44ad;
+            --student: #3498db;
+            --admin: #e74c3c;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --warning-bg: #fff3cd;
+            --warning-border: #ffeeba;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--primary);
+            color: var(--text-light);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary);
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .user-role {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            color: var(--text-light);
+            font-weight: bold;
+        }
+
+        .role-student { background: var(--student); }
+        .role-professor { background: var(--professor); }
+        .role-admin { background: var(--admin); }
+
+        .nav-menu {
+            margin-top: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #3a7bd5);
+            color: var(--text-light);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::after {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .welcome-banner h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .date-display {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Registration Container */
+        .registration-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 1rem;
+        }
+
+        .header-section h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Onglets de navigation */
+        .tab-container {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+            outline: none;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Registration Steps */
+        .registration-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #e0e0e0;
+            color: var(--dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-weight: bold;
+            border: 3px solid white;
+        }
+
+        .step.active .step-number {
+            background: var(--primary);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: var(--success);
+            color: white;
+        }
+
+        .progress-bar {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--secondary);
+            transition: width 0.3s;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid;
+            display: inline-block;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(10, 36, 99, 0.2);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Document Styles */
+        .document-list {
+            margin-top: 1.5rem;
+        }
+
+        .document-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .document-name {
+            flex: 1;
+            font-weight: 600;
+            min-width: 200px;
+        }
+
+        .document-status {
+            margin: 0 1rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .document-status.pending { background: var(--warning-bg); color: #856404; }
+        .document-status.valid { background: #d4edda; color: #155724; }
+        .document-status.rejected { background: #f8d7da; color: #721c24; }
+
+        .upload-btn {
+            margin-left: auto;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin-top: 2rem;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -2rem;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--secondary);
+            border: 2px solid var(--primary);
+        }
+
+        .timeline-date {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            animation: slideIn 0.3s forwards;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .registration-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .step {
+                margin-bottom: 1.5rem;
+            }
+            
+            .progress-bar {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .document-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .upload-btn {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .download-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar-container">
+                            <img src="{{ current_user.get_avatar_url() }}" 
+                                 alt="Photo de profil" class="avatar" id="avatarPreview">
+                            <div>
+                <h3 style="color: var(--text-light);">{{ current_user.nom_complet }}</h3>
+                <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item active">
+                    <i class="fas fa-home"></i> Accueil
+                </a>
+
+                </a>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                    <i class="fas fa-edit"></i> Inscriptions Académique
+                </a>
+
+                <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                    <i class="fas fa-book-open"></i> Cours de l'ISTA
+                 </a>
+
+                <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Consulter ou Téléchrger Syllabus
+                 </a>
+
+                 <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i>  Bibliothèque Livres
+                 </a>
+
+                 <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Tuyaux d'Examens
+                </a>
+                 
+                 <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Clubs
+                </a>
+                    
+                
+                <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
+                    <i class="fas fa-envelope"></i> Messages
+                    <span class="badge"></span>
+                </a>
+
+                
+                <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i> Mon Profil
+                </a>
+
+                
+               
+                {% if current_user.role == 'administrateur' %}
+                <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Paramètres Système
+                </a>
+                {% endif %}
+                
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Flash Messages -->
+            <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Welcome Banner -->
+            <section class="welcome-banner">
+                <h1>Inscription Académique, {{ current_user.prenom }} !</h1>
+                <p>Gérez votre parcours académique à l'ISTA</p>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i> {{ current_date }}
+                </div>
+            </section>
+
+            <!-- Registration Container -->
+            <div class="registration-container">
+                <div class="header-section">
+                    <h1><i class="fas fa-user-graduate"></i> Gestion Académique ISTA</h1>
+                    <p>Inscription des étudiants et gestion des dossiers académiques</p>
+                </div>
+
+                <!-- Onglets de navigation -->
+                <div class="tab-container">
+                    <button class="tab active" data-tab="inscription">Inscription Académique</button>
+                    <button class="tab" data-tab="documents">Documents</button>
+                    <button class="tab" data-tab="historique">Historique</button>
+                    <button class="tab" data-tab="recherche">Recherche d'Étudiants</button>
+                </div>
+
+                <!-- Contenu des onglets -->
+                <form method="POST" enctype="multipart/form-data">
+                    <!-- <input type="hidden" name="current_tab" value="inscription" id="current-tab"> -->
+                    
+                    <!-- Onglet Inscription -->
+                    <div class="tab-content active" id="inscription-content">
+                        <div class="registration-steps">
+                            <div class="progress-bar"><div class="progress" id="registration-progress"></div></div>
+                            
+                            <div class="step active" data-step="1">
+                                <div class="step-number">1</div>
+                                <div class="step-label">Informations Personnelles</div>
+                            </div>
+                            
+                            <div class="step" data-step="2">
+                                <div class="step-number">2</div>
+                                <div class="step-label">Parcours Académique</div>
+                            </div>
+                            
+                            <div class="step" data-step="3">
+                                <div class="step-number">3</div>
+                                <div class="step-label">Validation</div>
+                            </div>
+                        </div>
+
+                        <div class="registration-form">
+                            <!-- Étape 1: Informations personnelles -->
+                            <div class="form-section active" id="step-1">
+                                <h2><i class="fas fa-user-circle"></i> Informations Personnelles</h2>
+                                <p>Veuillez compléter vos informations personnelles.</p>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="nom">Nom *</label>
+                                        <input type="text" id="nom" name="nom" class="form-control" 
+                                               value="{{ inscription.nom if inscription }}" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="prenom">Prénom *</label>
+                                        <input type="text" id="prenom" name="prenom" class="form-control" 
+                                               value="{{ inscription.prenom if inscription }}" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="matricule">Matricule *</label>
+                                        <input type="text" id="matricule" name="matricule" class="form-control" 
+                                               value="{{ inscription.matricule if inscription }}" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="genre">Genre *</label>
+                                        <select id="genre" name="genre" class="form-control" required>
+                                            <option value="">Sélectionnez...</option>
+                                            <option value="male" {% if inscription and inscription.genre == 'male' %}selected{% endif %}>Masculin</option>
+                                            <option value="female" {% if inscription and inscription.genre == 'female' %}selected{% endif %}>Féminin</option>
+                                            <option value="other" {% if inscription and inscription.genre == 'other' %}selected{% endif %}>Autre</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="date_naissance">Date de Naissance *</label>
+                                        <input type="text" id="date_naissance" name="date_naissance" class="form-control" placeholder="dd/mm/yyyy" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="email_institutionnel">Email Institutionnel *</label>
+                                        <input type="email" id="email_institutionnel" name="email_institutionnel" class="form-control" 
+                                               value="{{ inscription.email_institutionnel if inscription }}" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="btn-group" style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+                                    <button type="button" class="btn btn-outline" disabled>
+                                        <i class="fas fa-arrow-left"></i> Précédent
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextStep(1)">
+                                        Suivant <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Étape 2: Parcours académique -->
+                            <div class="form-section" id="step-2">
+                                <h2><i class="fas fa-road"></i> Parcours Académique</h2>
+                                <p>Sélectionnez votre programme d'études pour cette année.</p>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="annee_academique">Année Académique *</label>
+                                        <select id="annee_academique" name="annee_academique" class="form-control" required>
+                                            <option value="">Sélectionnez...</option>
+                                            <option value="2023-2024" {% if inscription and inscription.annee_academique == '2023-2024' %}selected{% endif %}>2023-2024</option>
+                                            <option value="2022-2023" {% if inscription and inscription.annee_academique == '2022-2023' %}selected{% endif %}>2022-2023</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="niveau">Niveau *</label>
+                                        <select id="niveau" name="niveau" class="form-control" required>
+                                            <option value="">Sélectionnez...</option>
+                                            <option value="bac1" {% if inscription and inscription.niveau == 'bac1' %}selected{% endif %}>Bac 1</option>
+                                            <option value="bac2" {% if inscription and inscription.niveau == 'bac2' %}selected{% endif %}>Bac 2</option>
+                                            <option value="bac3" {% if inscription and inscription.niveau == 'bac3' %}selected{% endif %}>Bac 3</option>
+                                            <option value="master1" {% if inscription and inscription.niveau == 'master1' %}selected{% endif %}>Master 1</option>
+                                            <option value="master2" {% if inscription and inscription.niveau == 'master2' %}selected{% endif %}>Master 2</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="departement">Département *</label>
+                                        <select id="departement" name="departement" class="form-control" required>
+                                            <option value="">Sélectionnez...</option>
+                                            <option value="actuariat" {% if inscription and inscription.departement == 'actuariat' %}selected{% endif %}>Actuariat</option>
+                                            <option value="genie" {% if inscription and inscription.departement == 'genie' %}selected{% endif %}>Génie Statistique</option>
+                                            <option value="probastate" {% if inscription and inscription.departement == 'probastate' %}selected{% endif %}>ProbaState</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group" id="specialisation-group" style="display:{% if inscription and inscription.specialisation %}block{% else %}none{% endif %};">
+                                        <label for="specialisation">Spécialisation</label>
+                                        <select id="specialisation" name="specialisation" class="form-control">
+                                            <option value="">Choisissez une spécialisation</option>
+                                            {% if inscription and inscription.departement == 'actuariat' %}
+                                                <option value="risques" {% if inscription.specialisation == 'risques' %}selected{% endif %}>Analyse des Risques</option>
+                                                <option value="predictive" {% if inscription.specialisation == 'predictive' %}selected{% endif %}>Analyse Prédictive</option>
+                                            {% elif inscription and inscription.departement == 'genie' %}
+                                                <option value="data" {% if inscription.specialisation == 'data' %}selected{% endif %}>Sciences des Données</option>
+                                                <option value="eco" {% if inscription.specialisation == 'eco' %}selected{% endif %}>Sciences Économiques</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="btn-group" style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+                                    <button type="button" class="btn btn-outline" onclick="prevStep(2)">
+                                        <i class="fas fa-arrow-left"></i> Précédent
+                                    </button>
+                                    <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+                                        Suivant <i class="fas fa-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Étape 3: Validation -->
+                            <div class="form-section" id="step-3">
+                                <h2><i class="fas fa-check-circle"></i> Validation Finale</h2>
+                                <p>Vérifiez les informations avant soumission.</p>
+                                
+                                <div class="form-group">
+                                    <h3>Récapitulatif</h3>
+                                    
+                                    <div class="summary-item">
+                                        <strong>Nom complet:</strong>
+                                        <span id="summary-nom">{% if inscription %}{{ inscription.prenom }} {{ inscription.nom }}{% endif %}</span>
+                                    </div>
+                                    
+                                    <div class="summary-item">
+                                        <strong>Matricule:</strong>
+                                        <span id="summary-matricule">{% if inscription %}{{ inscription.matricule }}{% endif %}</span>
+                                    </div>
+                                    
+                                    <div class="summary-item">
+                                        <strong>Programme:</strong>
+                                        <span id="summary-program">
+                                            {% if inscription %}
+                                                {{ inscription.niveau|upper }} {{ inscription.departement }}
+                                                {% if inscription.specialisation %} - {{ inscription.specialisation }}{% endif %}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="form-group" style="margin-top:1.5rem;">
+                                        <label>
+                                            <input type="checkbox" id="confirmation" name="confirmation" required>
+                                            Je certifie que les informations fournies sont exactes et j'accepte le règlement académique.
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="btn-group" style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+                                    <button type="button" class="btn btn-outline" onclick="prevStep(3)">
+                                        <i class="fas fa-arrow-left"></i> Précédent
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="submit-registration">
+                                        <i class="fas fa-paper-plane"></i> Soumettre l'inscription
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Onglet Documents -->
+                    <div class="tab-content" id="documents-content">
+                        <h2><i class="fas fa-file-upload"></i> Documents Requis</h2>
+                        <p>Veuillez téléverser les documents nécessaires pour compléter votre inscription.</p>
+                        
+                        <div class="document-list">
+                            <div class="document-item">
+                                <span class="document-name">Diplôme du Baccalauréat</span>
+                                <span class="document-status {% if documents and 'diplome' in documents %}valid{% else %}pending{% endif %}" id="diplome-status">
+                                    <i class="fas fa-{% if documents and 'diplome' in documents %}check-circle{% else %}clock{% endif %}"></i>
+                                    {% if documents and 'diplome' in documents %}Reçu{% else %}En attente{% endif %}
+                                </span>
+                                <button type="button" class="btn btn-outline upload-btn" data-doc-type="diplome">
+                                    <i class="fas fa-upload"></i> Téléverser
+                                </button>
+                                <input type="file" id="diplome-upload" name="diplome" class="file-input" accept=".pdf,.jpg,.jpeg,.png" hidden>
+                            </div>
+                            
+                            <div class="document-item">
+                                <span class="document-name">Relevé de notes</span>
+                                <span class="document-status {% if documents and 'releve' in documents %}valid{% else %}pending{% endif %}" id="releve-status">
+                                    <i class="fas fa-{% if documents and 'releve' in documents %}check-circle{% else %}clock{% endif %}"></i>
+                                    {% if documents and 'releve' in documents %}Reçu{% else %}En attente{% endif %}
+                                </span>
+                                <button type="button" class="btn btn-outline upload-btn" data-doc-type="releve">
+                                    <i class="fas fa-upload"></i> Téléverser
+                                </button>
+                                <input type="file" id="releve-upload" name="releve" class="file-input" accept=".pdf,.jpg,.jpeg,.png" hidden>
+                            </div>
+                            
+                            <div class="document-item">
+                                <span class="document-name">Photo d'identité</span>
+                                <span class="document-status {% if documents and 'photo' in documents %}valid{% else %}pending{% endif %}" id="photo-status">
+                                    <i class="fas fa-{% if documents and 'photo' in documents %}check-circle{% else %}clock{% endif %}"></i>
+                                    {% if documents and 'photo' in documents %}Reçu{% else %}En attente{% endif %}
+                                </span>
+                                <button type="button" class="btn btn-outline upload-btn" data-doc-type="photo">
+                                    <i class="fas fa-upload"></i> Téléverser
+                                </button>
+                                <input type="file" id="photo-upload" name="photo" class="file-input" accept=".jpg,.jpeg,.png" hidden>
+                            </div>
+                            
+                            <div class="document-item">
+                                <span class="document-name">Copie CIN/Passeport</span>
+                                <span class="document-status {% if documents and 'cin' in documents %}valid{% else %}pending{% endif %}" id="cin-status">
+                                    <i class="fas fa-{% if documents and 'cin' in documents %}check-circle{% else %}clock{% endif %}"></i>
+                                    {% if documents and 'cin' in documents %}Reçu{% else %}En attente{% endif %}
+                                </span>
+                                <button type="button" class="btn btn-outline upload-btn" data-doc-type="cin">
+                                    <i class="fas fa-upload"></i> Téléverser
+                                </button>
+                                <input type="file" id="cin-upload" name="cin" class="file-input" accept=".pdf,.jpg,.jpeg,.png" hidden>
+                            </div>
+                        </div>
+                        
+                        <div class="btn-group" style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer les documents
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+
+<!-- Onglet Recherche d'étudiants -->
+ 
+<div class="tab-content" id="recherche-content">
+    <div class="search-section">
+        <h2><i class="fas fa-search"></i> Recherche d'Étudiants</h2>
+        <p>Recherchez un étudiant pour consulter ou modifier son dossier académique.</p>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="search-matricule">Matricule</label>
+                <input type="text" id="search-matricule" class="form-control" placeholder="Entrez le matricule">
+            </div>
+            
+            <div class="form-group">
+                <label for="search-nom">Nom</label>
+                <input type="text" id="search-nom" class="form-control" placeholder="Entrez le nom">
+            </div>
+            
+            <div class="form-group">
+                <label for="search-prenom">Prénom</label>
+                <input type="text" id="search-prenom" class="form-control" placeholder="Entrez le prénom">
+            </div>
+            
+            <div class="form-group">
+                <label for="search-niveau">Niveau</label>
+                <select id="search-niveau" class="form-control">
+                    <option value="">Tous niveaux</option>
+                    <option value="bac1">Bac 1</option>
+                    <option value="bac2">Bac 2</option>
+                    <option value="bac3">Bac 3</option>
+                    <option value="master">Master</option>
+                </select>
+            </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="searchStudents()">
+            <i class="fas fa-search"></i> Rechercher
+        </button>
+        
+        <div class="download-options">
+            <h3>Télécharger les listes d'étudiants :</h3>
+            <a href="#" class="download-btn" onclick="downloadStudentList('bac1')">
+                <i class="fas fa-download"></i> Liste Bac 1
+            </a>
+            <a href="#" class="download-btn" onclick="downloadStudentList('bac2')">
+                <i class="fas fa-download"></i> Liste Bac 2
+            </a>
+            <a href="#" class="download-btn" onclick="downloadStudentList('bac3')">
+                <i class="fas fa-download"></i> Liste Bac 3
+            </a>
+            <a href="#" class="download-btn" onclick="downloadStudentList('master')">
+                <i class="fas fa-download"></i> Liste Master
+            </a>
+        </div>
+    </div>
+    
+    <div class="search-results" id="search-results">
+        <!-- Les résultats seront ajoutés dynamiquement -->
+    </div>
+</div>
+
+<!-- #################### Javascript code #################-->
+    <script>
+        // Fonction pour valider le format de la date
+        function isValidDate(dateString) {
+            const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$/; // dd/mm/yyyy
+            return dateString.match(regex) !== null;
+        }
+    
+        // Gestion des onglets
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tabId = this.getAttribute('data-tab');
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tabId}-content`).classList.add('active');
+                
+                // Mettre à jour le champ caché pour le traitement du formulaire
+                document.getElementById('current-tab').value = tabId;
+                
+                // Charger l'historique si c'est l'onglet concerné
+                if (tabId === 'historique') {
+                    loadHistory();
+                }
+            });
+        });
+    
+        // Gestion des étapes d'inscription
+        function goToStep(step) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            const progress = document.getElementById('registration-progress');
+            progress.style.width = `${(step - 1) * 50}%`;
+            
+            document.querySelectorAll('.step').forEach(stepEl => {
+                stepEl.classList.remove('active', 'completed');
+                const stepNum = parseInt(stepEl.getAttribute('data-step'));
+                if (stepNum < step) stepEl.classList.add('completed');
+                else if (stepNum === step) stepEl.classList.add('active');
+            });
+        }
+    
+        function nextStep(currentStep) {
+            // Validation des champs
+            let valid = true;
+            document.querySelectorAll(`#step-${currentStep} [required]`).forEach(field => {
+                if (!field.value) {
+                    field.style.borderColor = 'var(--accent)';
+                    valid = false;
+                } else {
+                    field.style.borderColor = '#ddd';
+                }
+            });
+            
+            // Validation de la date
+            if (currentStep === 1) {
+                const date_naissance = document.getElementById('date_naissance').value;
+                if (!isValidDate(date_naissance)) {
+                    alert('Veuillez entrer une date valide au format dd/mm/yyyy');
+                    return;
+                }
+            }
+            
+            if (!valid) {
+                alert('Veuillez remplir tous les champs obligatoires');
+                return;
+            }
+            
+            // Mise à jour du récapitulatif
+            if (currentStep === 1) {
+                document.getElementById('summary-nom').textContent = 
+                    `${document.getElementById('nom').value} ${document.getElementById('prenom').value}`;
+                document.getElementById('summary-matricule').textContent = 
+                    document.getElementById('matricule').value;
+            } else if (currentStep === 2) {
+                const level = document.getElementById('niveau').options[document.getElementById('niveau').selectedIndex].text;
+                const dept = document.getElementById('departement').options[document.getElementById('departement').selectedIndex].text;
+                let program = `${level} ${dept}`;
+                
+                const spec = document.getElementById('specialisation');
+                if (spec.style.display !== 'none' && spec.value) {
+                    program += ` - ${spec.options[spec.selectedIndex].text}`;
+                }
+                
+                document.getElementById('summary-program').textContent = program;
+            }
+            
+            goToStep(currentStep + 1);
+        }
+    
+        function prevStep(currentStep) {
+            goToStep(currentStep - 1);
+        }
+    
+        // Gestion des spécialisations
+        document.getElementById('departement').addEventListener('change', function() {
+            const specGroup = document.getElementById('specialisation-group');
+            const specSelect = document.getElementById('specialisation');
+            
+            specGroup.style.display = 'none';
+            specSelect.innerHTML = '<option value="">Choisissez une spécialisation</option>';
+            
+            if (this.value === 'actuariat') {
+                specGroup.style.display = 'block';
+                specSelect.innerHTML += `
+                    <option value="risques">Analyse des Risques</option>
+                    <option value="predictive">Analyse Prédictive</option>
+                `;
+            } else if (this.value === 'genie') {
+                specGroup.style.display = 'block';
+                specSelect.innerHTML += `
+                    <option value="data">Sciences des Données</option>
+                    <option value="eco">Sciences Économiques</option>
+                `;
+            }
+        });
+    
+        // Gestion des documents
+        document.querySelectorAll('.upload-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const docType = this.getAttribute('data-doc-type');
+                const fileInput = document.getElementById(`${docType}-upload`);
+                fileInput.click();
+            });
+        });
+    
+        document.querySelectorAll('.file-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const docType = this.id.replace('-upload', '');
+                if (this.files.length > 0) {
+                    const statusElement = document.getElementById(`${docType}-status`);
+                    statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+                    statusElement.className = 'document-status pending';
+                    
+                    // En production: vous enverriez le fichier via AJAX ici
+                    setTimeout(() => {
+                        statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Reçu';
+                        statusElement.className = 'document-status valid';
+                    }, 1500);
+                }
+            });
+        });
+    
+      // Recherche d'étudiants
+function searchStudents() {
+    const matricule = document.getElementById('search-matricule').value.trim();
+    const nom = document.getElementById('search-nom').value.trim();
+    const prenom = document.getElementById('search-prenom').value.trim();
+    const niveau = document.getElementById('search-niveau').value;
+
+    const params = new URLSearchParams();
+    if (matricule) params.append('matricule', matricule);
+    if (nom) params.append('nom', nom);
+    if (prenom) params.append('prenom', prenom);
+    if (niveau) params.append('niveau', niveau);
+
+    if (params.toString()) {
+        fetch(`/api/recherche/inscriptions?${params.toString()}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur dans la recherche');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Vérifiez ce qui est retourné
+                const resultsDiv = document.getElementById('search-results');
+                resultsDiv.innerHTML = '';
+
+                if (data.total > 0) {
+                    data.data.forEach(student => {
+                        resultsDiv.innerHTML += `
+                            <div class="student-card">
+                                <h4>${student.prenom || 'N/A'} ${student.nom || 'N/A'}</h4>
+                                <p>Matricule: ${student.matricule || 'N/A'}</p>
+                                <p>Genre: ${student.genre || 'N/A'}</p>
+                                <p>Date de naissance: ${student.date_naissance ? new Date(student.date_naissance).toLocaleDateString() : 'N/A'}</p>
+                                <p>Email: ${student.email_institutionnel || 'N/A'}</p>
+                                <p>Année académique: ${student.annee_academique || 'N/A'}</p>
+                                <p>Niveau: ${student.niveau || 'N/A'}</p>
+                                <p>Département: ${student.departement || 'N/A'}</p>
+                                <p>Spécialisation: ${student.specialisation || 'N/A'}</p>
+                                <p>Filière: ${student.filiere || 'N/A'}</p>
+                                <p>Actif: ${student.est_actif ? 'Oui' : 'Non'}</p>
+                                <p>Confirmé: ${student.est_confirme ? 'Oui' : 'Non'}</p>
+                                <button onclick="loadHistory(${student.id})">Voir Historique</button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    alert('Aucun étudiant trouvé avec les critères fournis.');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Une erreur s\'est produite lors de la recherche.');
+            });
+    } else {
+        alert('Veuillez entrer au moins un critère de recherche.');
+    }
+}
+
+// Téléchargement de la liste des étudiants par niveau
+function downloadStudentList(niveau) {
+    let filename = '';
+    switch(niveau) {
+        case 'bac1':
+            filename = 'liste_etudiants_bac1_2023-2024.xlsx';
+            break;
+        case 'bac2':
+            filename = 'liste_etudiants_bac2_2023-2024.xlsx';
+            break;
+        case 'bac3':
+            filename = 'liste_etudiants_bac3_2023-2024.xlsx';
+            break;
+        case 'master':
+            filename = 'liste_etudiants_master_2023-2024.xlsx';
+            break;
+        default:
+            alert('Niveau non valide.');
+            return;
+    }
+    alert(`Téléchargement du fichier: ${filename}\n\nEn production, cela générerait un vrai fichier Excel.`);
+}
+    </script>
+</body>
+</html>

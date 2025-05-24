@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Messagerie</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--primary);
+            color: var(--text-light);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary);
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .nav-menu {
+            margin-top: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #3a7bd5);
+            color: var(--text-light);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .date-display {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Messagerie Styles */
+        .messagerie-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .action-btn {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+            color: var(--primary);
+            border: 2px solid transparent;
+            text-decoration: none;
+            display: block;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(10, 36, 99, 0.2);
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .action-btn:hover i {
+            color: white;
+        }
+
+        .news-tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .messages-list {
+            margin-top: 1rem;
+        }
+
+        .message-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .message-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left-color: var(--secondary);
+        }
+
+        .message-item.unread {
+            border-left-color: var(--accent);
+            background-color: #f0f8ff;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-subject a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .message-subject a:hover {
+            text-decoration: underline;
+        }
+
+        .message-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0a1e4a;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+            .message-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <img src="{{ current_user.get_avatar_url() }}" alt="Photo de profil" class="avatar">
+                <h3>{{ current_user.nom_complet }}</h3>
+                <span class="role-badge role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item">
+                    <i class="fas fa-home"></i> Accueil
+                    
+                </a>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                    <i class="fas fa-edit"></i> Inscriptions Académique
+                </a>
+                <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                    <i class="fas fa-book-open"></i> Cours de l'ISTA
+                </a>
+                <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Syllabus
+                </a>
+                <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Bibliothèque
+                </a>
+                <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Tuyaux d'Examens
+                </a>
+                <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Clubs
+                </a>
+                <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item active">
+                    <i class="fas fa-envelope"></i> Messages
+                </a>
+                <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i> Mon Profil
+                </a>
+                {% if current_user.role == 'administrateur' %}
+                <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Paramètres
+                </a>
+                {% endif %}
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="messagerie-container">
+                <div class="welcome-banner">
+                    <h1><i class="fas fa-envelope"></i> Messagerie</h1>
+                    <p>Gérez vos communications avec les autres utilisateurs</p>
+                    <div class="date-display">
+                        <i class="far fa-calendar-alt"></i> {{ current_date }}
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <a href="{{ url_for('messagerie.envoyer_message') }}" class="action-btn">
+                        <i class="fas fa-plus"></i>
+                        Nouveau message
+                    </a>
+                    <a href="{{ url_for('messagerie.PageMessagerie') }}" class="action-btn">
+                        <i class="fas fa-inbox"></i>
+                        Boîte de réception
+                    </a>
+                    <a href="{{ url_for('messagerie.PageMessagerie') }}?tab=sent" class="action-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Messages envoyés
+                    </a>
+                    <a href="{{ url_for('messagerie.corbeille') }}" class="action-btn">
+                        <i class="fas fa-trash"></i>
+                        Corbeille
+                    </a>
+                </div>
+
+                <div class="messagerie-tabs">
+                    <ul class="news-tabs">
+                        <li class="tab {% if active_tab == 'received' %}active{% endif %}" data-tab="received">Messages reçus</li>
+                        <li class="tab {% if active_tab == 'sent' %}active{% endif %}" data-tab="sent">Messages envoyés</li>
+                    </ul>
+                    
+                    <div class="tab-content {% if active_tab == 'received' %}active{% endif %}" id="received">
+                        {% if received_messages %}
+                        <div class="messages-list">
+                            {% for message in received_messages %}
+                            <div class="message-item {% if not message.read_at %}unread{% endif %}">
+                                <div class="message-header">
+                                    <span class="sender">{{ message.sender.nom_complet }}</span>
+                                    <span class="date">{{ message.sent_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                                </div>
+                                <div class="message-subject">
+                                    <a href="{{ url_for('messagerie.voir_message', message_id=message.id) }}">
+                                        {{ message.subject or '(sans objet)' }}
+                                    </a>
+                                </div>
+                                <div class="message-actions">
+                                    <a href="{{ url_for('messagerie.envoyer_message') }}?reply_to={{ message.id }}" class="btn btn-primary">
+                                        <i class="fas fa-reply"></i> Répondre
+                                    </a>
+                                    <form method="POST" action="{{ url_for('messagerie.supprimer_message', message_id=message.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-inbox fa-3x"></i>
+                            <h3>Aucun message reçu</h3>
+                            <p>Votre boîte de réception est vide</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="tab-content {% if active_tab == 'sent' %}active{% endif %}" id="sent">
+                        {% if sent_messages %}
+                        <div class="messages-list">
+                            {% for message in sent_messages %}
+                            <div class="message-item">
+                                <div class="message-header">
+                                    <span class="recipient">À: {% for recipient in message.recipients %}
+        {{ recipient.nom_complet }}{% if not loop.last %}, {% endif %}
+    {% endfor %}</span>
+                                    <span class="date">{{ message.sent_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                                </div>
+                                <div class="message-subject">
+                                    <a href="{{ url_for('messagerie.voir_message', message_id=message.id) }}">
+                                        {{ message.subject or '(sans objet)' }}
+                                    </a>
+                                </div>
+                                <div class="message-actions">
+                                    <form method="POST" action="{{ url_for('messagerie.supprimer_message', message_id=message.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-paper-plane fa-3x"></i>
+                            <h3>Aucun message envoyé</h3>
+                            <p>Vous n'avez pas encore envoyé de messages</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Gestion des onglets
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                window.location.href = `{{ url_for('messagerie.PageMessagerie') }}?tab=${tabId}`;
+            });
+        });
+
+        // Activer le bon onglet au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab') || 'received';
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('data-tab') === activeTab) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+                if (content.id === activeTab) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

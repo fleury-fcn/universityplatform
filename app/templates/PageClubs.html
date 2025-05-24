@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Clubs Étudiants</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --professor: #8e44ad;
+            --student: #3498db;
+            --admin: #e74c3c;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--primary);
+            color: var(--text-light);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary);
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .user-role {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            color: var(--text-light);
+            font-weight: bold;
+        }
+
+        .role-student { background: var(--student); }
+        .role-professor { background: var(--professor); }
+        .role-admin { background: var(--admin); }
+
+        .nav-menu {
+            margin-top: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        /* Search and Filters */
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            border-radius: 30px;
+            border: 2px solid #ddd;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23777' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 1rem center;
+            background-size: 1.2rem;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+        }
+
+        .filter-select {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            min-width: 200px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+        }
+
+        /* Club Categories */
+        .club-categories {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            background: #f0f0f0;
+            color: var(--dark);
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .category-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Club Cards */
+        .club-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .club-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .club-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .club-banner {
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .club-banner::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));
+        }
+
+        .club-logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid white;
+            position: absolute;
+            bottom: -35px;
+            left: 20px;
+            z-index: 2;
+            object-fit: cover;
+            background: white;
+        }
+
+        .club-content {
+            padding: 2rem 1.5rem 1.5rem;
+            margin-top: 35px;
+        }
+
+        .club-title {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .club-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .club-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .club-meta i {
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        .club-description {
+            color: #555;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .club-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .club-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .club-tag {
+            background: #f0f0f0;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(10, 36, 99, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--dark);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: transparent;
+            color: var(--dark);
+        }
+
+        .btn-danger {
+            background-color: var(--accent);
+            color: white;
+            border: 2px solid var(--accent);
+        }
+
+        .btn-danger:hover {
+            background-color: transparent;
+            color: var(--accent);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            top: 10px;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        #join-club-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        #join-club-form input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        #join-club-form button {
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #join-club-form button:hover {
+            background-color: #0a1e4a;
+        }
+
+        /* Members List */
+        .members-list {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .members-list h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        #members-ul {
+            list-style: none;
+        }
+
+        #members-ul li {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #members-ul li:last-child {
+            border-bottom: none;
+        }
+
+        /* Bouton d'administration des clubs */
+.admin-club-btn-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+}
+
+.admin-club-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #0a2463 0%, #1a3a8f 100%);
+    color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(10, 36, 99, 0.3);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.admin-club-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(10, 36, 99, 0.4);
+    background: linear-gradient(135deg, #1a3a8f 0%, #0a2463 100%);
+}
+
+.admin-club-btn:active {
+    transform: translateY(1px);
+}
+
+.admin-club-btn i {
+    font-size: 1.2rem;
+}
+
+/* Animation pour attirer l'attention */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.admin-club-btn.pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Version mobile */
+@media (max-width: 768px) {
+    .admin-club-btn-container {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .admin-club-btn span {
+        display: none;
+    }
+    
+    .admin-club-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        padding: 0;
+    }
+    
+    .admin-club-btn i {
+        font-size: 1.5rem;
+    }
+}
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .club-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .club-categories {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 1.5rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .filter-select, .search-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar-container">
+                            <img src="{{ current_user.get_avatar_url() }}" 
+                                 alt="Photo de profil" class="avatar" id="avatarPreview">
+                            <div>
+                <h3 style="color: var(--text-light);">{{ current_user.nom_complet }}</h3>
+                <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item active">
+                    <i class="fas fa-home"></i> Accueil
+                </a>
+
+                </a>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                    <i class="fas fa-edit"></i> Inscriptions Académique
+                </a>
+
+                <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                    <i class="fas fa-book-open"></i> Cours de l'ISTA
+                 </a>
+
+                <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Consulter ou Téléchrger Syllabus
+                 </a>
+
+                 <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i>  Bibliothèque Livres
+                 </a>
+
+                 <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Tuyaux d'Examens
+                </a>
+                 
+                 <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Clubs
+                </a>
+                    
+                
+                <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
+                    <i class="fas fa-envelope"></i> Messages
+                    <span class="badge"></span>
+                </a>
+                
+                <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i> Mon Profil
+                </a>
+
+                
+               
+                {% if current_user.role == 'administrateur' %}
+                <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Paramètres Système
+                </a>
+                {% endif %}
+                
+            </nav>
+        </aside>
+
+
+
+     <!-- Main Content -->
+<main class="main-content">
+    <div class="page-header">
+        <h1 class="page-title"><i class="fas fa-users"></i> Clubs Étudiants</h1>
+    </div>
+
+    <!-- Courses Container -->
+            <div class="courses-container">
+                <div class="courses-header">
+                    
+                    {% if current_user.role == 'administrateur' %}
+                    <div class="admin-club-btn-container">
+                        <a href="{{ url_for('clubs.admin_clubs') }}" class="admin-club-btn">
+                            <i class="fas fa-cogs"></i>
+                            <span>Gérer les clubs</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+    <!-- Search and Filters -->
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Rechercher un club...">
+        <select class="filter-select" id="category-filter">
+            <option value="sport">Statistique et Probabilite</option>
+                        <option value="technologie">Informatique</option>
+                        <option value="art">Actuariat</option>
+                        <option value="entrepreneuriat">Art et Culture</option>
+                        <option value="science">Sciences</option>
+                        <option value="social">Divers</option>
+        </select>
+        <select class="filter-select" id="department-filter">
+            <option value="">Tous départements</option>
+            <option value="actuariat">Actuariat</option>
+            <option value="genie">Génie Statistique</option>
+            <option value="probastate">Probabilite et Statistique</option>
+        </select>
+    </div>
+
+    <!-- Club Categories -->
+    <div class="club-categories">
+        <button class="category-btn active">Tous les clubs</button>
+        <button class="category-btn">Actuariat et Statistique Appliquée</button>
+        <button class="category-btn">Informatique Decisionnelle</button>
+        <button class="category-btn">Actuariat</button>
+        <button class="category-btn">Actualité Economique</button>
+        <button class="category-btn">Génie en Herbes</button>
+        <button class="category-btn">English Club</button>
+    </div>
+
+    <!-- Club Cards -->
+    <div class="club-cards">
+        {% for club in clubs %}
+        <div class="club-card" data-club-id="{{ club.id }}">
+            <div class="club-banner" style="background-image: url('{{ club.banner_url }}');">
+                <img src="{{ club.logo_url }}" alt="Logo {{ club.title }}" class="club-logo">
+            </div>
+            <div class="club-content">
+                <h3 class="club-title">{{ club.title }}</h3>
+                <div class="club-meta">
+                    <span class="member-count"><i class="fas fa-users"></i> {{ club.member_count }} membres</span>
+                    <span><i class="fas fa-calendar-alt"></i> {{ club.meeting_frequency }}</span>
+                </div>
+                <p class="club-description">
+                    {{ club.description }}
+                </p>
+                
+                    <!-- Dans chaque carte de club -->
+ {% if club.is_admin %} 
+<div class="members-section">
+    <h4><i class="fas fa-users"></i> Membres ({{ club.member_count }})</h4>
+    <div class="members-list">
+        <ul>
+            {% for member in club.members %}
+            <li data-member-id="{{ member.id }}">
+                {{ member.first_name }} {{ member.last_name }}
+                <button class="btn btn-sm btn-danger" 
+                        onclick="removeMember(event, {{ member.id }}, {{ club.id }})"
+                        {% if not (club.is_admin or member.user_id == current_user.id) %}disabled{% endif %}>
+                    <i class="fas fa-times"></i>
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+ {% endif %} 
+
+                   <!-- Dans chaque carte de club -->
+ {% if club.is_etudiant %} 
+<div class="members-section">
+    <h4><i class="fas fa-users"></i> Membres ({{ club.member_count }})</h4>
+    <div class="members-list">
+        <ul>
+            {% for member in club.members %}
+            <li data-member-id="{{ member.id }}">
+                {{ member.first_name }} {{ member.last_name }}
+            
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+ {% endif %} 
+                
+                <div class="club-actions">
+                    <div class="club-tags">
+                        {% for tag in club.tags %}
+                        <span class="club-tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% if club.is_member %}
+                    <button class="btn btn-secondary btn-member-action" onclick="leaveClub(event, {{ club.id }})">
+                        <i class="fas fa-check"></i> Déjà membre
+                    </button>
+                    {% else %}
+                    <button class="btn btn-primary btn-member-action" onclick="joinClub(event, {{ club.id }})">
+                        <i class="fas fa-plus"></i> Rejoindre
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Join Club Modal -->
+    <div id="join-club-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Rejoindre le Club</h2>
+            <form id="join-club-form">
+                <input type="text" id="first_name" placeholder="Prénom" required>
+                <input type="text" id="last_name" placeholder="Nom" required>
+                <input type="text" id="level" placeholder="Niveau" required>
+                <input type="text" id="department" placeholder="Département" required>
+                <input type="text" id="academic_year" placeholder="Année Académique" required>
+                <button type="submit">Rejoindre</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+
+
+
+
+<script>
+
+// Initialisation au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    initFilters();
+    initModal();
+});
+
+function initFilters() {
+    // Gestion des catégories
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterClubs();
+        });
+    });
+
+    // Gestion des autres filtres
+    document.getElementById('category-filter').addEventListener('change', filterClubs);
+    document.getElementById('department-filter').addEventListener('change', filterClubs);
+    document.querySelector('.search-input').addEventListener('input', filterClubs);
+}
+
+function initModal() {
+    const modal = document.getElementById('join-club-modal');
+    document.querySelector('.close').onclick = () => modal.style.display = 'none';
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+}
+
+function filterClubs() {
+    const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+    const category = document.getElementById('category-filter').value.toLowerCase();
+    const activeCategory = document.querySelector('.category-btn.active').textContent.trim().toLowerCase();
+
+    document.querySelectorAll('.club-card').forEach(card => {
+        const title = card.querySelector('.club-title').textContent.toLowerCase();
+        const description = card.querySelector('.club-description').textContent.toLowerCase();
+        const tags = Array.from(card.querySelectorAll('.club-tag')).map(tag => tag.textContent.toLowerCase());
+        
+        const matchesSearch = title.includes(searchTerm) || 
+                            description.includes(searchTerm) ||
+                            tags.some(tag => tag.includes(searchTerm));
+        
+        const matchesCategory = category === '' || 
+                             activeCategory === 'tous les clubs' || 
+                             tags.some(tag => tag.includes(category));
+        
+        card.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+    });
+}
+
+async function joinClub(event, clubId) {
+    event.stopPropagation();
+    const modal = document.getElementById('join-club-modal');
+    modal.style.display = 'block';
+    
+    document.getElementById('join-club-form').onsubmit = async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            firstName: document.getElementById('first_name').value.trim(),
+            lastName: document.getElementById('last_name').value.trim(),
+            level: document.getElementById('level').value.trim(),
+            department: document.getElementById('department').value.trim(),
+            academicYear: document.getElementById('academic_year').value.trim() || '2023-2024'
+        };
+
+        try {
+            const response = await fetch(`/clubs/${clubId}/join`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Erreur lors de la requête');
+            }
+
+            if (data.success) {
+                modal.style.display = 'none';
+                this.reset();
+                // Mise à jour optimisée de l'interface
+                const card = document.querySelector(`.club-card[data-club-id="${clubId}"]`);
+                if (card) {
+                    // Changer le bouton Rejoindre en Déjà membre
+                    const joinBtn = card.querySelector('.btn-member-action');
+                    joinBtn.innerHTML = '<i class="fas fa-check"></i> Déjà membre';
+                    joinBtn.classList.replace('btn-primary', 'btn-secondary');
+                    joinBtn.onclick = (e) => leaveClub(e, clubId);
+                    
+                    // Mettre à jour le compteur
+                    const countElem = card.querySelector('.member-count');
+                    if (countElem) {
+                        countElem.textContent = `${parseInt(countElem.textContent) + 1} membres`;
+                    }
+                }
+            } else {
+                throw new Error(data.message || 'Erreur lors de l\'adhésion');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert(`Erreur: ${error.message}`);
+        }
+    };
+}
+
+// Après l'appel réussi à join_club
+if (data.success) {
+    // 1. Mettre à jour le bouton
+    const joinBtn = document.querySelector(`.club-card[data-club-id="${clubId}"] .btn-member-action`);
+    joinBtn.innerHTML = '<i class="fas fa-check"></i> Déjà membre';
+    joinBtn.classList.replace('btn-primary', 'btn-secondary');
+    joinBtn.onclick = (e) => leaveClub(e, clubId);
+    
+    // 2. Mettre à jour le compteur
+    const countElem = document.querySelector(`.club-card[data-club-id="${clubId}"] .member-count`);
+    countElem.textContent = `${parseInt(countElem.textContent) + 1} membres`;
+    
+    // 3. Afficher un message de confirmation
+    showAlert('success', `Vous avez rejoint le club "${clubTitle}" !`);
+    
+    // 4. Ajouter à la liste des membres (si visible)
+    const membersList = document.querySelector(`.club-card[data-club-id="${clubId}"] .members-list ul`);
+    if (membersList) {
+        const newMember = document.createElement('li');
+        newMember.dataset.memberId = data.member.id;
+        newMember.innerHTML = `
+            ${formData.firstName} ${formData.lastName}
+            <button class="btn btn-sm btn-danger" onclick="removeMember(event, ${data.member.id}, ${clubId})">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        membersList.appendChild(newMember);
+    }
+}
+
+
+async function leaveClub(event, clubId) {
+    event.stopPropagation();
+    if (!confirm('Voulez-vous vraiment quitter ce club?')) return;
+    
+    try {
+        const response = await fetch(`/clubs/leave/${clubId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (response.ok) {
+            location.reload();
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert("Erreur de connexion");
+    }
+}
+
+async function removeMember(event, memberId, clubId) {
+    event.stopPropagation();
+    if (!confirm('Supprimer ce membre du club?')) return;
+    
+    try {
+        const response = await fetch(`/clubs/members/${memberId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (response.ok) {
+            // Mise à jour de l'interface sans rechargement
+            document.querySelector(`li[data-member-id="${memberId}"]`).remove();
+            const countElem = document.querySelector(`.club-card[data-club-id="${clubId}"] .member-count`);
+            if (countElem) {
+                countElem.textContent = `${parseInt(countElem.textContent) - 1} membres`;
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert("Erreur lors de la suppression");
+    }
+
+
+
+    // Ajoute une animation au bouton au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    const adminBtn = document.querySelector('.admin-club-btn');
+    if (adminBtn) {
+        // Animation au chargement
+        adminBtn.classList.add('pulse');
+        
+        // Stop l'animation après 5 secondes
+        setTimeout(() => {
+            adminBtn.classList.remove('pulse');
+        }, 5000);
+        
+        // Réactive l'animation au survol
+        adminBtn.addEventListener('mouseenter', () => {
+            adminBtn.classList.add('pulse');
+        });
+        
+        adminBtn.addEventListener('mouseleave', () => {
+            adminBtn.classList.remove('pulse');
+        });
+    }
+});
+}
+</script>
+</body>
+</html>

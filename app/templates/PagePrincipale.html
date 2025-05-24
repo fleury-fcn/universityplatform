@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Tableau de Bord</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --professor: #8e44ad;
+            --student: #3498db;
+            --admin: #e74c3c;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --warning-bg: #fff3cd;
+            --warning-border: #ffeeba;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--primary);
+            color: var(--text-light);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--secondary);
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .user-role {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            color: var(--text-light);
+            font-weight: bold;
+        }
+
+        .role-student { background: var(--student); }
+        .role-professor { background: var(--professor); }
+        .role-admin { background: var(--admin); }
+
+        .nav-menu {
+            margin-top: 2rem;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary), #3a7bd5);
+            color: var(--text-light);
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-banner::after {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .welcome-banner h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .date-display {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Registration Phase */
+        .registration-phase {
+            background: var(--warning-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .registration-phase h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .registration-phase h3 i {
+            color: var(--accent);
+        }
+
+        .registration-phase p {
+            color: var(--dark);
+            margin-bottom: 0;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .icon-urgent { background: var(--accent); }
+        .icon-courses { background: var(--primary); }
+        .icon-events { background: var(--professor); }
+        .icon-resources { background: #27ae60; }
+        .icon-news { background: #9b59b6; }
+
+        .task-item {
+            padding: 0.8rem 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-priority {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .priority-high { background: var(--accent); }
+        .priority-medium { background: #f39c12; }
+        .priority-low { background: #2ecc71; }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .action-btn {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+            color: var(--primary);
+            border: 2px solid transparent;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(10, 36, 99, 0.2);
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: var(--primary);
+        }
+
+        .action-btn:hover i {
+            color: white;
+        }
+
+        /* News Tabs */
+        .news-tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .department-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        .department-btn {
+            padding: 0.5rem 1rem;
+            background: #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .department-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .year-options {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .year-btn {
+            padding: 0.4rem 0.8rem;
+            background: #f0f0f0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .year-btn.active {
+            background: var(--secondary);
+            color: var(--text-dark);
+        }
+
+        .specialization-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        .specialization-btn {
+            padding: 0.5rem 1rem;
+            background: #e8f4fc;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            border: 1px solid #d0e3f7;
+        }
+
+        .specialization-btn.active {
+            background: var(--student);
+            color: white;
+            border-color: var(--student);
+        }
+
+        /* Student Directory */
+        .student-directory {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .student-directory:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .directory-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            min-width: 200px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+        }
+
+        .student-list {
+            margin-top: 1rem;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .student-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left-color: var(--secondary);
+        }
+
+        .student-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 1.2rem;
+            object-fit: cover;
+            border: 2px solid var(--light);
+        }
+
+        .student-info h4 {
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .student-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(10, 36, 99, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .registration-phase {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .directory-filters {
+                flex-direction: column;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-btn i {
+                font-size: 1.5rem;
+            }
+            
+            .main-content {
+                padding: 1.5rem;
+            }
+            
+            .news-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar-container">
+                            <img src="{{ current_user.get_avatar_url() }}" 
+                                 alt="Photo de profil" class="avatar" id="avatarPreview">
+                            <div>
+                <h3 style="color: var(--text-light);">{{ current_user.prenom }} {{ current_user.nom }}</h3>
+                <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item active">
+                    <i class="fas fa-home"></i> Accueil
+                </a>
+
+                </a>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                    <i class="fas fa-edit"></i> Inscriptions Académique
+                </a>
+
+                <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                    <i class="fas fa-book-open"></i> Cours de l'ISTA
+                 </a>
+
+                <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Consulter ou Téléchrger Syllabus
+                 </a>
+
+                 <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i>  Bibliothèque Livres
+                 </a>
+
+                 <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Tuyaux d'Examens
+                </a>
+                 
+                 <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Clubs
+                </a>
+                    
+                
+                <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
+                    <i class="fas fa-envelope"></i> Messages
+                    <span class="badge"></span>
+                </a>
+                
+                <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i> Mon Profil
+                </a>
+
+                
+               
+                
+                <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Paramètres Système
+                </a>
+                
+                
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Welcome Banner -->
+            <section class="welcome-banner">
+                <h1>Bienvenue sur OpenISTA, {{ current_user.prenom }} {{ current_user.nom }} !</h1>
+                <p>Votre portail unique pour la vie académique à l'ISTA</p>
+                <div class="date-display">
+                    <i class="far fa-calendar-alt"></i> {{ current_date }}
+                </div>
+            </section>
+
+            <!-- Période d'inscription -->
+            <div class="registration-phase">
+                <div>
+                    <h3><i class="fas fa-calendar-check"></i> Période d'Inscription Académique</h3>
+                    <p>Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre.</p>
+                </div>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="btn btn-primary">
+                    Procéder à l'inscription <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="action-btn" onclick="location.href='{{ url_for('syllabusbp.syllabus')}}'">
+                    <i class="fas fa-book"></i>
+                    <span>Mes Syllabus</span>
+                    <small>Accéder aux ressources</small>
+                </div>
+                <div class="action-btn" onclick="location.href='{{ url_for('courses.courses') }}'">
+                    <i class="fas fa-book-open"></i>
+                    <span>Mes Cours</span>
+                    <small>Voir le programme</small>
+                </div>
+
+                <div class="action-btn" onclick="location.href='{{ url_for('books.library')}}'">
+                    <i class="fas fa-book"></i>
+                    <span>Bibliothèque</span>
+                    <small>Accéder aux Livres</small>
+                </div>
+
+                <div class="action-btn" onclick="location.href='{{ url_for('clubs.clubs_page') }}'">
+                    <i class="fas fa-users"></i>
+                    <span>Clubs</span>
+                    <small>Rejoindre une activité</small>
+                </div>
+
+                <div class="action-btn" onclick="location.href='{{ url_for('tuyaux.PageTuyaux') }}'">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Tuyaux d'Examens</span>
+                    <small>Réussitte pour tous</small>
+                </div>
+
+                <div class="action-btn" onclick="location.href='{{ url_for('profile.profile') }}'">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Mon Profil</span>
+                    <small></small>
+                </div>
+
+                <div class="action-btn" onclick="location.href='{{ url_for('messagerie.PageMessagerie') }}'">
+                    <i class="fas fa-envelope"></i>
+                    <span>Messages</span>
+                    <small>Discuter pour apprendre</small>
+                </div>
+                
+                
+                <div class="action-btn" onclick="location.href='{{ url_for('admin.PageAdmin') }}'">
+                    <i class="fas fa-cog"></i>
+                    <span>Paramètrage </span>
+                    <small>Système</small>
+                </div>
+            </div>
+
+           
+
+
+            <!-- Actualités ISTA -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <h3 class="card-title">Organisation Académique de l'ISTA</h3>
+                    <div class="card-icon icon-news">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                </div>
+                
+                <div class="news-tabs">
+                    <div class="tab active" data-tab="bac">Baccalauréat</div>
+                    <div class="tab" data-tab="master">Master</div>
+                </div>
+                
+                <!-- Baccalauréat Content -->
+                <div class="tab-content active" id="bac-content">
+                    <div class="department-options">
+                        <div class="department-btn active" data-dept="all">Tous départements</div>
+                        <div class="department-btn" data-dept="actuariat">Actuariat</div>
+                        <div class="department-btn" data-dept="genie">Génie Statistique</div>
+                        <div class="department-btn" data-dept="probastate">ProbaState</div>
+                    </div>
+                    
+                    <!-- Actuariat Options -->
+                    <div class="specialization-options" id="actuariat-options" style="display: none;">
+                        <div class="specialization-btn active" data-spec="all">Toutes spécialités</div>
+                        <div class="specialization-btn" data-spec="risques">Analyse des Risques</div>
+                        <div class="specialization-btn" data-spec="predictive">Analyse Prédictive</div>
+                    </div>
+                    
+                    <!-- Génie Statistique Options -->
+                    <div class="specialization-options" id="genie-options" style="display: none;">
+                        <div class="specialization-btn active" data-spec="all">Toutes spécialités</div>
+                        <div class="specialization-btn" data-spec="data">Sciences des Données</div>
+                        <div class="specialization-btn" data-spec="eco">Sciences Économiques</div>
+                    </div>
+                    
+                    <div class="year-options">
+                        <div class="year-btn active" data-year="all">Tous niveaux</div>
+                        <div class="year-btn" data-year="2">Bac 2</div>
+                        <div class="year-btn" data-year="3">Bac 3</div>
+                    </div>
+                    
+                    <div class="task-list">
+                        <div class="task-item">
+                            <span class="task-priority priority-medium"></span>
+                            Réunion d'information pour les Bac 2 Actuariat - 20 Mars
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-low"></span>
+                            Nouveaux horaires pour Génie Statistique
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Master Content -->
+                <div class="tab-content" id="master-content">
+                    <div class="department-options">
+                        <div class="department-btn active" data-dept="all">Tous masters</div>
+                        <div class="department-btn" data-dept="sai">Statistique Appliquée et Informatique Décisionnel</div>
+                        <div class="department-btn" data-dept="af">Actuariat et Finance</div>
+                        <div class="department-btn" data-dept="psm">Probabilité Statistique et Modélisation</div>
+                    </div>
+                    
+                    <div class="task-list">
+                        <div class="task-item">
+                            <span class="task-priority priority-high"></span>
+                            Inscriptions aux mémoires - Date limite 15 Avril
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-medium"></span>
+                            Conférence sur l'analyse décisionnelle
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="cards-grid">
+                <!-- Urgent Tasks Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Tâches Urgentes</h3>
+                        <div class="card-icon icon-urgent">
+                            <i class="fas fa-exclamation"></i>
+                        </div>
+                    </div>
+                    <div class="task-list">
+                        <div class="task-item">
+                            <span class="task-priority priority-high"></span>
+                            TP Réseaux à rendre demain
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-medium"></span>
+                            Questionnaire à compléter
+                        </div>
+                        {% if current_user.role == 'professor' %}
+                        <div class="task-item">
+                            <span class="task-priority priority-high"></span>
+                            Notes à saisir avant vendredi
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Current Courses Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Mes Cours</h3>
+                        <div class="card-icon icon-courses">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                    <div class="task-list">
+                        <div class="task-item" onclick="location.href='#'">
+                            <span class="task-priority priority-low"></span>
+                            Réseaux Informatiques (Aujourd'hui 10h)
+                        </div>
+                        <div class="task-item" onclick="location.href='#'">
+                            <span class="task-priority priority-low"></span>
+                            Base de Données (Demain 8h)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Nouvelles Ressources</h3>
+                        <div class="card-icon icon-resources">
+                            <i class="fas fa-file-download"></i>
+                        </div>
+                    </div>
+                    <div class="task-list">
+                        <div class="task-item">
+                            <span class="task-priority priority-low"></span>
+                            Slides Réseaux - Chapitre 3
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-low"></span>
+                            Annales Examens 2023
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Annuaire Étudiants -->
+            <div class="student-directory">
+                <div class="card-header">
+                    <h3 class="card-title">Annuaire des Étudiants ISTA</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                
+                <div class="directory-filters">
+                    <select class="filter-select" id="year-filter">
+                        <option value="">Toutes années</option>
+                        <option value="1">Bac 1</option>
+                        <option value="2">Bac 2</option>
+                        <option value="3">Bac 3</option>
+                        <option value="master">Master</option>
+                    </select>
+                    
+                    <select class="filter-select" id="department-filter">
+                        <option value="">Tous départements</option>
+                        <option value="actuariat">Actuariat</option>
+                        <option value="genie">Génie Statistique</option>
+                        <option value="probastate">ProbaState</option>
+                    </select>
+                    
+                    <select class="filter-select" id="specialization-filter" style="display:none;">
+                        <option value="">Toutes spécialités</option>
+                    </select>
+                </div>
+                
+                <div class="student-list">
+                    <!-- Exemple d'étudiant 1 -->
+                    <div class="student-card" onclick="location.href='{{ url_for('auth.profile') }}'">
+                        <img src="{{ url_for('static', filename='images/3.jpeg') }}" alt="Étudiant" class="student-avatar">
+                        <div class="student-info">
+                            <h4>NIYOKWIZERA Fleury</h4>
+                            <p>
+                                <span class="badge" style="background:var(--student); color:white; padding:0.2rem 0.5rem; border-radius:12px; font-size:0.8rem;">
+                                    Actuariat - Bac 2
+                                </span>
+                                <span style="margin-left:0.5rem;">Analyse des Risques</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Exemple d'étudiant 2 -->
+                    <div class="student-card" onclick="location.href='{{ url_for('auth.profile') }}'">
+                        <img src="{{ url_for('static', filename='images/students/student2.jpg') }}" alt="Étudiant" class="student-avatar">
+                        <div class="student-info">
+                            <h4>NIYONKURU Cherissa</h4>
+                            <p>
+                                <span class="badge" style="background:var(--professor); color:white; padding:0.2rem 0.5rem; border-radius:12px; font-size:0.8rem;">
+                                    Génie Statistique - Bac 3
+                                </span>
+                                <span style="margin-left:0.5rem;">Sciences des Données</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                   
+                </div>
+                
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="#" class="btn btn-secondary">
+                        <i class="fas fa-search"></i> Explorer tout l'annuaire
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Gestion des onglets Actualités ISTA
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion des onglets
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Désactiver tous les onglets
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Activer l'onglet cliqué
+                    this.classList.add('active');
+                    
+                    // Masquer tous les contenus
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Afficher le contenu correspondant
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-content`).classList.add('active');
+                });
+            });
+            
+            // Gestion des départements (Baccalauréat)
+            const deptButtons = document.querySelectorAll('.department-btn');
+            deptButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Désactiver tous les boutons
+                    deptButtons.forEach(b => b.classList.remove('active'));
+                    // Activer le bouton cliqué
+                    this.classList.add('active');
+                    
+                    // Gérer l'affichage des spécialisations
+                    const dept = this.getAttribute('data-dept');
+                    document.getElementById('actuariat-options').style.display = 'none';
+                    document.getElementById('genie-options').style.display = 'none';
+                    
+                    if (dept === 'actuariat') {
+                        document.getElementById('actuariat-options').style.display = 'flex';
+                    } else if (dept === 'genie') {
+                        document.getElementById('genie-options').style.display = 'flex';
+                    }
+                });
+            });
+            
+            // Gestion des années
+            const yearButtons = document.querySelectorAll('.year-btn');
+            yearButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    yearButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Gestion des spécialisations
+            const specButtons = document.querySelectorAll('.specialization-btn');
+            specButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    specButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Gestion des filtres de l'annuaire
+            const yearFilter = document.getElementById('year-filter');
+            const deptFilter = document.getElementById('department-filter');
+            const specFilter = document.getElementById('specialization-filter');
+            
+            // Gestion des spécialisations par département
+            deptFilter.addEventListener('change', function() {
+                const dept = this.value;
+                specFilter.style.display = 'none';
+                specFilter.innerHTML = '<option value="">Toutes spécialités</option>';
+                
+                if (dept === 'actuariat') {
+                    specFilter.style.display = 'block';
+                    specFilter.innerHTML += `
+                        <option value="risques">Analyse des Risques</option>
+                        <option value="predictive">Analyse Prédictive</option>
+                    `;
+                } else if (dept === 'genie') {
+                    specFilter.style.display = 'block';
+                    specFilter.innerHTML += `
+                        <option value="data">Sciences des Données</option>
+                        <option value="eco">Sciences Économiques</option>
+                    `;
+                }
+            });
+            
+            // Filtrage des étudiants
+            function filterStudents() {
+                const year = yearFilter.value;
+                const dept = deptFilter.value;
+                const spec = specFilter.value;
+                
+                // Ici, ajouter la logique de filtrage AJAX
+                console.log(`Filtrage : Année=${year}, Département=${dept}, Spécialité=${spec}`);
+            }
+            
+            yearFilter.addEventListener('change', filterStudents);
+            deptFilter.addEventListener('change', filterStudents);
+            specFilter.addEventListener('change', filterStudents);
+            
+            // Exemple de récupération de données
+            fetch('/api/dashboard-data')
+                .then(response => response.json())
+                .then(data => {
+                    // Traitement des données...
+                });
+        });
+    </script>
+</body>
+</html>

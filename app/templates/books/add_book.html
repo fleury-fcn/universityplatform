@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="fas fa-book-medical"></i> Ajouter un nouveau livre</h2>
+    <hr>
+    
+    <form method="POST" enctype="multipart/form-data" class="mt-4">
+        
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="title" class="form-label">Titre du livre*</label>
+                    <input type="text" class="form-control" id="title" name="title" 
+                           value="{{ form_data.title if form_data }}" required>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="author" class="form-label">Auteur*</label>
+                    <input type="text" class="form-control" id="author" name="author" 
+                           value="{{ form_data.author if form_data }}" required>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="5">
+                        {{- form_data.description if form_data -}}
+                    </textarea>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="category" class="form-label">Catégorie*</label>
+                    <select class="form-select" id="category" name="category" required>
+                        <option value="">Choisir une catégorie...</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat }}" 
+                                {% if form_data and form_data.category == cat %}selected{% endif %}>
+                                {{ cat|capitalize }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="language" class="form-label">Langue*</label>
+                            <select class="form-select" id="language" name="language" required>
+                                {% for lang in languages %}
+                                    <option value="{{ lang }}"
+                                        {% if form_data and form_data.language == lang %}selected{% endif %}>
+                                        {% if lang == 'fr' %}Français
+                                        {% elif lang == 'en' %}Anglais
+                                        {% else %}Arabe{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="level" class="form-label">Niveau*</label>
+                            <select class="form-select" id="level" name="level" required>
+                                {% for lvl in levels %}
+                                    <option value="{{ lvl }}"
+                                        {% if form_data and form_data.level == lvl %}selected{% endif %}>
+                                        {% if lvl == 'bac' %}Baccalauréat
+                                        {% elif lvl == 'master' %}Master
+                                        {% else %}Doctorat{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <label for="file" class="form-label">Fichier du livre*</label>
+                    <div class="input-group">
+                        <input type="file" class="form-control" id="file" name="file" required 
+                               accept=".pdf,.doc,.docx,.ppt,.pptx,.epub">
+                        <label class="input-group-text" for="file">
+                            <i class="fas fa-file-upload"></i>
+                        </label>
+                    </div>
+                    <div class="form-text">
+                        Formats acceptés: PDF, DOC, DOCX, PPT, PPTX, EPUB (Max 20MB)
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> Le fichier sera renommé automatiquement pour éviter les conflits
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('books.library') }}" class="btn btn-secondary me-md-2">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Enregistrer le livre
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Afficher le nom du fichier sélectionné
+    document.getElementById('file').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            var fileName = e.target.files[0].name;
+            var fileLabel = e.target.nextElementSibling;
+            if (fileLabel && fileLabel.classList.contains('input-group-text')) {
+                fileLabel.innerHTML = `<i class="fas fa-file"></i> ${fileName}`;
+            }
+        }
+    });
+
+    // Validation côté client
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const fileInput = document.getElementById('file');
+        const maxSize = 20 * 1024 * 1024; // 20MB
+        
+        if (fileInput.files.length > 0 && fileInput.files[0].size > maxSize) {
+            e.preventDefault();
+            alert('Le fichier est trop volumineux (max 20MB)');
+            fileInput.value = '';
+        }
+    });
+</script>
+{% endblock %}
