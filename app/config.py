@@ -100,10 +100,9 @@ class Config:
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads', 'messages')
 
 class ProductionConfig(Config):
-    # Transforme l'URL PlanetScale pour utiliser PyMySQL avec SSL
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', '').replace(
         'mysql://', 'mysql+pymysql://'
-    ) + '?charset=utf8mb4&ssl_ca=/etc/ssl/certs/ca-certificates.crt'
+    ) + '?charset=utf8mb4&ssl_verify_cert=true&ssl_ca=/etc/ssl/certs/ca-certificates.crt'
     
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
@@ -111,6 +110,7 @@ class ProductionConfig(Config):
         "connect_args": {
             "ssl": {
                 "ca": "/etc/ssl/certs/ca-certificates.crt",
+                "check_hostname": True,
                 "verify_cert": True
             }
         }
