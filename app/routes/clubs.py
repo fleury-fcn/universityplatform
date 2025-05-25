@@ -1,5 +1,5 @@
 from flask import Blueprint, current_app, request, jsonify, render_template, url_for
-from ..extensions import db
+from app.extensions import db
 from ..models.clubs import Club, Member
 from flask_login import current_user, login_required
 import logging

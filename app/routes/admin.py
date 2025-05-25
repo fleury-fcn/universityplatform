@@ -6,7 +6,7 @@ from ..models.Users import User
 from ..models.tuyaux import Tuyau
 from ..models.courses import Cours 
 from ..models.activity import ActivityLog
-from ..extensions import db
+from app.extensions import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, extract
 import io
@@ -576,7 +576,7 @@ from ..models.clubs import Club
 from ..models.books import Book
 from ..models.addsyllabus import Course
 from ..models.registration import InscriptionAcademique
-from ..extensions import db
+from app.extensions import db
 from datetime import datetime, timedelta
 from sqlalchemy import func, extract, and_
 import io

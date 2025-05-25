@@ -1,7 +1,7 @@
 
 
 from datetime import datetime
-from ..extensions import db
+from app.extensions import db
 
 class ActivityLog(db.Model):
     __tablename__ = 'activity_logs'  # Nom plus explicite pour la table

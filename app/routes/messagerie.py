@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, current_app, flash, redir
 from flask_login import login_required, current_user
 from ..models.messagerie import Message, message_recipients
 from ..models.Users import User
-from ..extensions import db
+from app.extensions import db
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os

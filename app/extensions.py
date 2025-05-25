@@ -1,11 +1,7 @@
-
-
-
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-#from flask_mail import Mail
+from flask_mail import Mail  # Cette ligne est cruciale
 
-# Initialisation des extensions
 db = SQLAlchemy()
 login_manager = LoginManager()
-#mail = Mail()  
+mail = Mail()  # Cette initialisation doit être présente

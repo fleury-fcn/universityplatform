@@ -1,5 +1,5 @@
 from datetime import datetime
-from ..extensions import db
+from app.extensions import db
 
 class DocumentInscription(db.Model):
     """Documents académiques"""

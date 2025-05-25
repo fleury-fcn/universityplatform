@@ -1,7 +1,7 @@
 
 from flask import Blueprint, render_template
 from ..models.addsyllabus import Course  # Assurez-vous que le chemin est correct
-from ..extensions import db  # Importez votre instance de base de données
+from app.extensions import db  # Importez votre instance de base de données
 
 syllabusbp = Blueprint('syllabusbp', __name__)
 

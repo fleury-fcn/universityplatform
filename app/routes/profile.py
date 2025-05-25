@@ -3,7 +3,7 @@ from flask_login import login_required, current_user, logout_user
 from werkzeug.utils import secure_filename
 import os
 from ..models.Users import User
-from ..extensions import db
+from app.extensions import db
 from datetime import datetime
 
 # Configuration

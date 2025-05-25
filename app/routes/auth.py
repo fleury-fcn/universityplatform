@@ -8,7 +8,7 @@ from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..models.Users import User
-from ..extensions import db, mail
+from app.extensions import db, mail
 
 authbp = Blueprint('auth', __name__)
 

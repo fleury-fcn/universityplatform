@@ -3,7 +3,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from ..models.addsyllabus import Course
-from ..extensions import db
+from app.extensions import db
 from werkzeug.utils import secure_filename
 import os
 import requests

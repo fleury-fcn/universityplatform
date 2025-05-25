@@ -6,7 +6,7 @@ import os
 import json
 from datetime import datetime
 from sqlalchemy import desc
-from ..extensions import db
+from app.extensions import db
 from ..models.registration import InscriptionAcademique
 from ..models.Documents import DocumentInscription
 #from ..models.rechercheinscription import RechercheInscription

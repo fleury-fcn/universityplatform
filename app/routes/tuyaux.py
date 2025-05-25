@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash, send_from_directory
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from ..extensions import db
+from app.extensions import db
 import os
 from datetime import datetime
 from ..models.tuyaux import Tuyau
