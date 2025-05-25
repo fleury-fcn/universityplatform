@@ -1,16 +1,5 @@
+
 '''import os
-
-class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'votre-cle-secure'
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://fleury:NouveauMotDePasse123!@127.0.0.1/OpenIsta?charset=utf8mb4'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,
-        'pool_recycle': 3600
-    }
-  '''
-
-import os
 from dotenv import load_dotenv
 
 # Charger les variables d'environnement depuis .env
@@ -76,6 +65,43 @@ config = {
     'testing': TestingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig
-}
+}'''
+
+# app/config.py
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class Config:
+    # Sécurité
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
+    
+    # MySQL avec PlanetScale (prod) ou local (dev)
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 
+        'mysql+pymysql://fleury:NouveauMotDePasse123!@127.0.0.1/OpenIsta?charset=utf8mb4'
+    )
+    
+    # Options SQLAlchemy (obligatoires pour PlanetScale)
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,
+        "pool_recycle": 3600,
+        "connect_args": {
+            "ssl": {"ca": "/etc/ssl/cert.pem"}  # SSL obligatoire
+        }
+    }
+
+    # Flask-Mail
+    MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+    MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+
+    # Uploads
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads', 'messages')
+
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')  # Force PlanetScale en prod
 
 
