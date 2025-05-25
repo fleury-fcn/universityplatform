@@ -77,18 +77,16 @@ class Config:
     # Sécurité
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
     
-    # MySQL avec PlanetScale (prod) ou local (dev)
+    # Configuration de base MySQL (développement local)
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 
         'mysql+pymysql://fleury:NouveauMotDePasse123!@127.0.0.1/OpenIsta?charset=utf8mb4'
     )
     
-    # Options SQLAlchemy (obligatoires pour PlanetScale)
+    # Options SQLAlchemy communes
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
         "pool_recycle": 3600,
-        "connect_args": {
-            "ssl": {"ca": "/etc/ssl/cert.pem"}  # SSL obligatoire
-        }
     }
 
     # Flask-Mail
@@ -102,6 +100,17 @@ class Config:
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads', 'messages')
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')  # Force PlanetScale en prod
-
-
+    # Configuration spécifique pour la production (PlanetScale)
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', '').replace(
+        'mysql://', 'mysql+pymysql://'
+    ) + '?charset=utf8mb4'
+    
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        **Config.SQLALCHEMY_ENGINE_OPTIONS,
+        "connect_args": {
+            "ssl": {
+                "ca": "/etc/ssl/certs/ca-certificates.crt",  # Chemin standard
+                "verify_cert": True
+            }
+        }
+    }
