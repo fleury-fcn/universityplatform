@@ -4,7 +4,7 @@ Flask-SQLAlchemy==3.0.5
 Flask-Login==0.6.3
 Flask-Migrate==4.0.4
 pymysql==1.1.0
-cryptography==41.0.3
+cryptography==42.0.4
 Flask-MySQLdb==1.0.1
 Werkzeug==2.3.7    
 python-dotenv==1.0.0
