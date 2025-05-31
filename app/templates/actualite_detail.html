@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenISTA - Détails de l'Actualité</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Réutilisez les styles de votre page principale ici */
+        :root {
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar (identique à votre page principale) */
+        .sidebar {
+            background: var(--primary);
+            color: var(--text-light);
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 10;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Main Content spécifique à la page d'actualité */
+        .main-content {
+            padding: 2rem;
+            background-color: rgba(245, 247, 250, 0.95);
+            overflow-x: hidden;
+        }
+
+        .news-detail-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .news-detail-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .news-detail-content {
+            padding: 2rem;
+        }
+
+        .news-detail-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--secondary);
+            color: var(--text-dark);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .news-detail-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .news-detail-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .news-detail-meta i {
+            margin-right: 0.3rem;
+        }
+
+        .news-detail-body {
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .news-detail-body p {
+            margin-bottom: 1rem;
+        }
+
+        .news-detail-footer {
+            border-top: 1px solid #eee;
+            padding-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-to-news {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-to-news:hover {
+            color: var(--accent);
+            transform: translateX(-5px);
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .share-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .facebook { background: #3b5998; }
+        .twitter { background: #1da1f2; }
+        .linkedin { background: #0077b5; }
+        .whatsapp { background: #25d366; }
+
+        /* Related News */
+        .related-news {
+            margin-top: 3rem;
+        }
+
+        .related-news-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        .related-news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .related-news-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .related-news-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .related-news-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .related-news-content {
+            padding: 1rem;
+        }
+
+        .related-news-category {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            background: var(--secondary);
+            color: var(--text-dark);
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .related-news-title-small {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .related-news-date {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .news-detail-image {
+                height: 300px;
+            }
+            
+            .news-detail-content {
+                padding: 1.5rem;
+            }
+            
+            .news-detail-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .news-detail-image {
+                height: 200px;
+            }
+            
+            .news-detail-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .news-detail-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar (identique à votre page principale) -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="avatar-container">
+                    <img src="{{ current_user.get_avatar_url() }}" 
+                         alt="Photo de profil" class="avatar" id="avatarPreview">
+                    <div>
+                        <h3 style="color: var(--text-light);">{{ current_user.prenom }} {{ current_user.nom }}</h3>
+                        <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item">
+                    <i class="fas fa-home"></i> Accueil
+                </a>
+                <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                    <i class="fas fa-edit"></i> Inscriptions Académique
+                </a>
+                <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                    <i class="fas fa-book-open"></i> Cours de l'ISTA
+                </a>
+                <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Consulter ou Télécharger Syllabus
+                </a>
+                <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Bibliothèque Livres
+                </a>
+                <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-chalkboard-teacher"></i> Tuyaux d'Examens
+                </a>
+                <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                    <i class="fas fa-users"></i> Clubs
+                </a>
+                <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
+                    <i class="fas fa-envelope"></i> Messages
+                    <span class="badge"></span>
+                </a>
+                <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i> Mon Profil
+                </a>
+                <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
+                    <i class="fas fa-cog"></i> Paramètres Système
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="news-detail-container">
+                <img src="https://source.unsplash.com/random/1200x600/?university,event" alt="Actualité" class="news-detail-image">
+                
+                <div class="news-detail-content">
+                    <span class="news-detail-category">Événement</span>
+                    <h1 class="news-detail-title">Journée Portes Ouvertes 2024</h1>
+                    
+                    <div class="news-detail-meta">
+                        <span><i class="far fa-calendar-alt"></i> 15 Novembre 2024</span>
+                        <span><i class="far fa-user"></i> Par Direction de la Communication</span>
+                        <span><i class="far fa-eye"></i> 1,245 vues</span>
+                    </div>
+                    
+                    <div class="news-detail-body">
+                        <p>L'Institut de Statistique Appliquée (ISTA) organise sa journée portes ouvertes annuelle le 15 novembre 2024 sur son campus principal. Cet événement phare de notre institution offre aux futurs étudiants et à leurs familles l'opportunité unique de découvrir nos formations, nos infrastructures et notre communauté éducative.</p>
+                        
+                        <h3>Programme de la journée</h3>
+                        <p>La journée débutera à 8h30 par une cérémonie d'ouverture présidée par le Directeur Général de l'ISTA, suivie de plusieurs activités :</p>
+                        <ul>
+                            <li>Visites guidées des laboratoires et salles de classe</li>
+                            <li>Présentations des différentes filières par les responsables pédagogiques</li>
+                            <li>Rencontres avec les enseignants et les étudiants actuels</li>
+                            <li>Ateliers pratiques dans nos laboratoires high-tech</li>
+                            <li>Séances d'information sur les procédures d'admission</li>
+                        </ul>
+                        
+                        <h3>Nouveautés 2024</h3>
+                        <p>Cette année, nous mettons particulièrement en avant nos nouvelles formations en Intelligence Artificielle et en Cybersécurité, ainsi que nos partenariats renforcés avec des universités internationales. Les visiteurs pourront assister à des démonstrations de projets étudiants primés et découvrir les opportunités de mobilité internationale.</p>
+                        
+                        <p>Pour les étudiants intéressés, des pré-inscriptions seront possibles sur place avec des avantages exclusifs. Nous invitons tous les futurs bacheliers et les professionnels en reconversion à venir découvrir ce qui fait de l'ISTA un leader dans la formation technologique au Burundi.</p>
+                    </div>
+                    
+                    <div class="news-detail-footer">
+                        <a href="{{ url_for('principale.Page_Principale') }}" class="back-to-news">
+                            <i class="fas fa-arrow-left"></i> Retour aux actualités
+                        </a>
+                        
+                        <div class="share-buttons">
+                            <a href="#" class="share-btn facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="share-btn twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="share-btn linkedin"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#" class="share-btn whatsapp"><i class="fab fa-whatsapp"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Related News -->
+            <div class="related-news">
+                <h2 class="related-news-title">Actualités similaires</h2>
+                
+                <div class="related-news-grid">
+                    <!-- Related News 1 -->
+                    <div class="related-news-card">
+                        <img src="https://source.unsplash.com/random/600x400/?graduation" alt="Actualité" class="related-news-image">
+                        <div class="related-news-content">
+                            <span class="related-news-category">Diplômes</span>
+                            <h3 class="related-news-title-small">Remise des Diplômes 2023</h3>
+                            <div class="related-news-date">
+                                <i class="far fa-calendar-alt"></i> 30 Octobre 2024
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Related News 2 -->
+                    <div class="related-news-card">
+                        <img src="https://source.unsplash.com/random/600x400/?conference" alt="Actualité" class="related-news-image">
+                        <div class="related-news-content">
+                            <span class="related-news-category">Conférence</span>
+                            <h3 class="related-news-title-small">Data Science et IA</h3>
+                            <div class="related-news-date">
+                                <i class="far fa-calendar-alt"></i> 10 Novembre 2024
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Related News 3 -->
+                    <div class="related-news-card">
+                        <img src="https://source.unsplash.com/random/600x400/?workshop" alt="Actualité" class="related-news-image">
+                        <div class="related-news-content">
+                            <span class="related-news-category">Formation</span>
+                            <h3 class="related-news-title-small">Ateliers Pratiques 2024</h3>
+                            <div class="related-news-date">
+                                <i class="far fa-calendar-alt"></i> 5 Décembre 2024
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Script pour le partage sur les réseaux sociaux
+        document.addEventListener('DOMContentLoaded', function() {
+            const shareButtons = document.querySelectorAll('.share-btn');
+            const currentUrl = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(document.title);
+            
+            shareButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    let shareUrl;
+                    
+                    if (this.classList.contains('facebook')) {
+                        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`;
+                    } else if (this.classList.contains('twitter')) {
+                        shareUrl = `https://twitter.com/intent/tweet?url=${currentUrl}&text=${title}`;
+                    } else if (this.classList.contains('linkedin')) {
+                        shareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${currentUrl}&title=${title}`;
+                    } else if (this.classList.contains('whatsapp')) {
+                        shareUrl = `https://wa.me/?text=${title} ${currentUrl}`;
+                    }
+                    
+                    window.open(shareUrl, '_blank', 'width=600,height=400');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

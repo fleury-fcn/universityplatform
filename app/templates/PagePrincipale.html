@@ -86,9 +86,9 @@
             font-weight: bold;
         }
 
-        .role-student { background: var(--student); }
-        .role-professor { background: var(--professor); }
-        .role-admin { background: var(--admin); }
+        .role-etudiant { background: var(--student); }
+        .role-professeur { background: var(--professor); }
+        .role-administrateur { background: var(--admin); }
 
         .nav-menu {
             margin-top: 2rem;
@@ -331,7 +331,7 @@
         }
 
         .action-btn {
-            background: white;
+            background: rgb(151, 235, 138);
             border-radius: 10px;
             padding: 1.5rem 1rem;
             text-align: center;
@@ -613,7 +613,8 @@
         }
 
         .news-card {
-            background: var(--news-bg);
+            /*background: var(--news-bg);*/
+            background: rgb(229, 226, 143);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -1026,7 +1027,7 @@
         }
 
         .university-card {
-            background: white;
+            background: rgb(243, 147, 147);
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -1082,7 +1083,7 @@
 
         /* Weather Widget */
         .weather-widget {
-            background: white;
+            background: rgb(118, 169, 239);
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
@@ -1140,7 +1141,7 @@
         .weather-day {
             padding: 0.5rem;
             border-radius: 5px;
-            background: #78b3ed;
+            background: #aded78;
         }
 
         .weather-day-name {
@@ -1349,6 +1350,8 @@
                 padding: 1rem;
             }
         }
+
+        
     </style>
 </head>
 <body>
@@ -1392,6 +1395,11 @@
                     <i class="fas fa-envelope"></i> Messages
                     <span class="badge"></span>
                 </a>
+
+                <a href="actualites.html" class="nav-item">
+                    <i class="fas fa-newspaper"></i> Actualités
+                </a>
+
                 <a href="{{ url_for('profile.profile') }}" class="nav-item">
                     <i class="fas fa-user-cog"></i> Mon Profil
                 </a>
@@ -1460,16 +1468,25 @@
                     <span>Tuyaux d'Examens</span>
                     <small>Réussite pour tous</small>
                 </div>
-                <div class="action-btn" onclick="location.href='{{ url_for('profile.profile') }}'">
-                    <i class="fas fa-user-cog"></i>
-                    <span>Mon Profil</span>
-                    <small></small>
-                </div>
+
                 <div class="action-btn" onclick="location.href='{{ url_for('messagerie.PageMessagerie') }}'">
                     <i class="fas fa-envelope"></i>
                     <span>Messages</span>
                     <small>Discuter pour apprendre</small>
                 </div>
+
+                <div class="action-btn" onclick="location.href='#'">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Actualités</span>
+                    <small>pour tous</small>
+                </div>
+                
+                <div class="action-btn" onclick="location.href='{{ url_for('profile.profile') }}'">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Mon Profil</span>
+                    <small></small>
+                </div>
+                
                 <div class="action-btn" onclick="location.href='{{ url_for('admin.PageAdmin') }}'">
                     <i class="fas fa-cog"></i>
                     <span>Paramètrage</span>
@@ -1533,7 +1550,7 @@
                             <p class="news-excerpt">
                                 L'ISTA organise sa journée portes ouvertes annuelle. Venez découvrir nos formations et rencontrer nos enseignants.
                             </p>
-                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                            <a href="{{ url_for('actualites.actualite_detail', id=1) }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
                         </div>
                     </div>
                     
