@@ -9,12 +9,18 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..models.Users import User
 from app.extensions import db, mail
+from .forms import ResetPasswordRequestForm, ResetPasswordForm
+from flask import current_app
+from itsdangerous import URLSafeTimedSerializer
+
+def get_serializer():
+    return URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
 
 authbp = Blueprint('auth', __name__)
 
-def get_serializer():
+'''def get_serializer():
     from .. import app
-    return URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return URLSafeTimedSerializer(app.config['SECRET_KEY'])'''
 
 @authbp.route('/connexion', methods=['GET', 'POST'])
 def login():
@@ -136,38 +142,46 @@ def profile():
     
     return render_template('PageProfil.html')
 
+
+
 @authbp.route('/reinitialisation-mot-de-passe', methods=['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
         return redirect(url_for('principale.Page_Principale'))
         
-    if request.method == 'POST':
-        email = request.form.get('email')
-        user = User.query.filter_by(email=email).first()
-        
-        if user:
-            serializer = get_serializer()
-            token = serializer.dumps(email, salt='password-reset')
-            reset_url = url_for('auth.reset_password_token', token=token, _external=True)
+    form = ResetPasswordRequestForm()
+    
+    if form.validate_on_submit():
+        try:
+            email = form.email.data
+            user = User.query.filter_by(email=email).first()
             
-            msg = Message(
-                "Réinitialisation de mot de passe OpenISTA",
-                sender="no-reply@openista.com",
-                recipients=[email]
-            )
-            msg.body = f"""Pour réinitialiser votre mot de passe, cliquez sur le lien suivant :
+            if user:
+                token = get_serializer().dumps(email, salt=current_app.config['SECURITY_PASSWORD_SALT'])
+                reset_url = url_for('auth.reset_password_token', token=token, _external=True)
+                
+                msg = Message(
+                    "Réinitialisation de mot de passe OpenISTA",
+                    sender=current_app.config.get('MAIL_USERNAME', 'no-reply@openista.com'),
+                    recipients=[email]
+                )
+                msg.body = f"""Pour réinitialiser votre mot de passe, cliquez sur le lien suivant :
 {reset_url}
 
 Ce lien expirera dans 1 heure.
 
 Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email.
 """
-            mail.send(msg)
+                mail.send(msg)
+            
+            flash('Si un compte existe avec cet email, vous recevrez un lien de réinitialisation', 'info')
+            return redirect(url_for('auth.login'))
         
-        flash('Si un compte existe avec cet email, vous recevrez un lien de réinitialisation', 'info')
-        return redirect(url_for('auth.login'))
+        except Exception as e:
+            current_app.logger.error(f"Erreur envoi email: {str(e)}")
+            flash("Une erreur est survenue lors de l'envoi du email", 'danger')
     
-    return render_template('auth/reset_password_request.html')
+    return render_template('auth/reset_password_request.html', form=form)
 
 @authbp.route('/reinitialisation-mot-de-passe/<token>', methods=['GET', 'POST'])
 def reset_password_token(token):
@@ -186,18 +200,12 @@ def reset_password_token(token):
         flash('Utilisateur introuvable', 'danger')
         return redirect(url_for('auth.reset_password_request'))
     
-    if request.method == 'POST':
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
-        
-        if password != confirm_password:
-            flash('Les mots de passe ne correspondent pas', 'danger')
-        elif len(password) < 8:
-            flash('Le mot de passe doit contenir au moins 8 caractères', 'danger')
-        else:
-            user.password = password
-            db.session.commit()
-            flash('Mot de passe mis à jour avec succès', 'success')
-            return redirect(url_for('auth.login'))
+    form = ResetPasswordForm()
     
-    return render_template('auth/reset_password.html', token=token)
+    if form.validate_on_submit():
+        user.password = generate_password_hash(form.password.data)
+        db.session.commit()
+        flash('Mot de passe mis à jour avec succès', 'success')
+        return redirect(url_for('auth.login'))
+    
+    return render_template('auth/reset_password.html', form=form, token=token)

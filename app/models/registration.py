@@ -21,6 +21,7 @@ class InscriptionAcademique(db.Model):
     departement = db.Column(db.String(50), nullable=False)
     specialisation = db.Column(db.String(50))
     filiere = db.Column(db.String(50))
+    parcours = db.Column(db.String(150), nullable=False)
     
     # Validation
     est_confirme = db.Column(db.Boolean, default=False)

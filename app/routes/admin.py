@@ -1,578 +1,12 @@
 
 
-'''from flask import Blueprint, render_template,flash ,current_app ,request, jsonify, redirect, url_for, send_file
+from flask import Blueprint, render_template,current_app,request, jsonify, redirect, url_for, flash, send_file
 from flask_login import login_required, current_user, login_user
 from ..models.Users import User
 from ..models.tuyaux import Tuyau
 from ..models.courses import Cours 
-from ..models.activity import ActivityLog
-from app.extensions import db
-from datetime import datetime, timedelta
-from sqlalchemy import func, extract
-import io
-import zipfile
-import json
-from werkzeug.security import generate_password_hash
-from sqlalchemy.exc import IntegrityError
-
-adminbp = Blueprint('admin', __name__)
-
-@adminbp.route('/admin')
-@login_required
-def PageAdmin():
-    if current_user.role != 'administrateur':
-        flash(f' Salut {current_user.prenom} {current_user.nom} Desolé, cette page est réservée aux admins')
-        
-        return redirect(url_for('principale.Page_Principale'))
-    
-    # Récupération des statistiques de base
-    stats = {
-        'total_users': User.query.count(),
-        'active_users': User.query.filter(User.last_login > (datetime.now() - timedelta(days=30))).count(),
-        'total_tuyaux': Tuyau.query.count(),
-        'tuyaux_last_month': Tuyau.query.filter(Tuyau.date_ajout > (datetime.now() - timedelta(days=30))).count(),
-        'total_courses': Cours.query.count(),
-        'today_logins': User.query.filter(User.last_login > datetime.now().replace(hour=0, minute=0, second=0)).count()
-    }
-    
-    # Derniers utilisateurs avec plus de données
-    users = User.query.order_by(User.last_login.desc()).all()
-    
-    # Journal d'activité
-    activity_logs = ActivityLog.query.order_by(ActivityLog.timestamp.desc()).limit(50).all()
-    
-    # Données pour les graphiques
-    
-    # 1. Activité des 30 derniers jours (connexions et tuyaux)
-    days = 30
-    date_labels = []
-    login_data = []
-    tuyaux_data = []
-    
-    for i in range(days, -1, -1):
-        date = datetime.now() - timedelta(days=i)
-        date_labels.append(date.strftime("%d/%m"))
-        
-        # Connexions
-        login_count = User.query.filter(
-            func.date(User.last_login) == date.date()
-        ).count()
-        login_data.append(login_count)
-        
-        # Tuyaux partagés
-        tuyaux_count = Tuyau.query.filter(
-            func.date(Tuyau.date_ajout) == date.date()
-        ).count()
-        tuyaux_data.append(tuyaux_count)
-    
-    # 2. Répartition des rôles
-    roles_distribution = db.session.query(
-        User.role,
-        func.count(User.id).label('count')
-    ).group_by(User.role).all()
-    
-    roles_labels = [role[0].capitalize() for role in roles_distribution]
-    roles_data = [role[1] for role in roles_distribution]
-    
-    # 3. Répartition du contenu
-    content_types = {
-        'Cours': Cours.query.count(),
-        'Tuyaux': Tuyau.query.count(),
-        'Messages': 230,  # Valeur exemple - à remplacer par votre modèle réel
-        'Commentaires': 150  # Valeur exemple - à remplacer par votre modèle réel
-    }
-    
-    # Paramètres système (exemple)
-    system_settings = {
-        'maintenance_mode': False,
-        'registration_enabled': True,
-        'session_timeout': 30,
-        'max_upload_size': 20,
-        'system_message': ''
-    }
-    
-    return render_template('PageAdmin.html',
-                         stats=stats,
-                         users=users,
-                         activity_logs=activity_logs,
-                         current_date=datetime.now().strftime("%d/%m/%Y"),
-                         # Données pour les graphiques
-                         date_labels=date_labels,
-                         login_data=login_data,
-                         tuyaux_data=tuyaux_data,
-                         roles_labels=roles_labels,
-                         roles_data=roles_data,
-                         content_labels=list(content_types.keys()),
-                         content_data=list(content_types.values()),
-                         system_settings=system_settings)
-
-# API pour la gestion des utilisateurs
-@adminbp.route('/api/users/<int:user_id>', methods=['GET', 'PUT', 'DELETE'])
-@login_required
-def user_api(user_id):
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    user = User.query.get_or_404(user_id)
-    
-    if request.method == 'GET':
-        return jsonify({
-            'id': user.id,
-            'firstName': user.prenom,
-            'lastName': user.nom,
-            'email': user.email,
-            'role': user.role,
-            'isActive': user.is_active,
-            'avatar': user.get_avatar_url
-        })
-    
-    elif request.method == 'PUT':
-        data = request.get_json()
-        user.prenom = data.get('firstName', user.prenom)
-        user.nom = data.get('lastName', user.nom)
-        user.email = data.get('email', user.email)
-        user.role = data.get('role', user.role)
-        user.is_active = data.get('status', user.is_active) == '1'
-        
-        if 'password' in data and data['password']:
-            user.password = generate_password_hash(data['password'])
-        
-        if 'avatar' in data:
-            user.avatar_url = data['avatar']
-        
-        db.session.commit()
-        
-        # Log l'activité
-        log = ActivityLog(
-            user_id=current_user.id,
-            action=f"Modification de l'utilisateur {user.email}"
-        )
-        db.session.add(log)
-        db.session.commit()
-        
-        return jsonify({'message': 'User updated successfully'})
-    
-    elif request.method == 'DELETE':
-        db.session.delete(user)
-        db.session.commit()
-        
-        # Log l'activité
-        log = ActivityLog(
-            user_id=current_user.id,
-            action=f"Suppression de l'utilisateur {user.email}"
-        )
-        db.session.add(log)
-        db.session.commit()
-        
-        return jsonify({'message': 'User deleted successfully'})
-
-
-# Impersonation (connexion en tant qu'un autre utilisateur)
-@adminbp.route('/admin/impersonate/<int:user_id>')
-@login_required
-def impersonate(user_id):
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    user = User.query.get_or_404(user_id)
-    login_user(user)
-    
-    # Log l'activité
-    log = ActivityLog(
-        user_id=current_user.id,
-        action=f"Connexion en tant que {user.email}"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return redirect(url_for('principale.Page_Principale'))
-
-# Réinitialisation du mot de passe
-@adminbp.route('/api/users/<int:user_id>/reset-password', methods=['POST'])
-@login_required
-def reset_password(user_id):
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    user = User.query.get_or_404(user_id)
-    new_password = generate_random_password()  # À implémenter
-    user.password = generate_password_hash(new_password)
-    db.session.commit()
-    
-    # Envoyer le nouveau mot de passe par email (à implémenter)
-    
-    # Log l'activité
-    log = ActivityLog(
-        user_id=current_user.id,
-        action=f"Réinitialisation du mot de passe pour {user.email}"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return jsonify({'message': 'Password reset successfully'})
-
-# Gestion des notifications
-@adminbp.route('/api/notifications', methods=['POST'])
-@login_required
-def send_notification():
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    data = request.get_json()
-    
-    # Validation des données
-    if not all(k in data for k in ['recipients', 'subject', 'message']):
-        return jsonify({'error': 'Missing required fields'}), 400
-    
-    # Envoyer les notifications (à implémenter selon votre système)
-    
-    # Log l'activité
-    log = ActivityLog(
-        user_id=current_user.id,
-        action=f"Notification envoyée: {data['subject']}"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return jsonify({'message': 'Notification sent successfully'})
-
-# Sauvegarde des données
-@adminbp.route('/admin/backup')
-@login_required
-def backup():
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    # Créer un fichier ZIP en mémoire
-    memory_file = io.BytesIO()
-    with zipfile.ZipFile(memory_file, 'w') as zf:
-        # Ajouter les données des utilisateurs
-        users = User.query.all()
-        users_data = [{
-            'id': u.id,
-            'prenom': u.prenom,
-            'nom': u.nom,
-            'email': u.email,
-            'role': u.role,
-            'is_active': u.is_active,
-            'last_login': u.last_login.isoformat() if u.last_login else None
-        } for u in users]
-        zf.writestr('users.json', json.dumps(users_data, indent=2))
-        
-        # Ajouter les tuyaux
-        tuyaux = Tuyau.query.all()
-        tuyaux_data = [{
-            'id': t.id,
-            'titre': t.titre,
-            'contenu': t.contenu,
-            'date_ajout': t.date_ajout.isoformat(),
-            'auteur_id': t.auteur_id
-        } for t in tuyaux]
-        zf.writestr('tuyaux.json', json.dumps(tuyaux_data, indent=2))
-        
-        # Ajouter les cours
-        courses = Cours.query.all()
-        courses_data = [{
-            'id': c.id,
-            'titre': c.titre,
-            'description': c.description,
-            'date_creation': c.date_creation.isoformat()
-        } for c in courses]
-        zf.writestr('courses.json', json.dumps(courses_data, indent=2))
-    
-    memory_file.seek(0)
-    
-    # Log l'activité
-    log = ActivityLog(
-        user_id=current_user.id,
-        action="Sauvegarde des données effectuée"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return send_file(
-        memory_file,
-        mimetype='application/zip',
-        as_attachment=True,
-        download_name=f'backup_{datetime.now().strftime("%Y-%m-%d")}.zip'
-    )
-
-# Export des données
-@adminbp.route('/admin/export/<data_type>')
-@login_required
-def export_data(data_type):
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    if data_type == 'users':
-        data = [{
-            'id': u.id,
-            'prenom': u.prenom,
-            'nom': u.nom,
-            'email': u.email,
-            'role': u.role,
-            'is_active': u.is_active,
-            'last_login': u.last_login.isoformat() if u.last_login else None
-        } for u in User.query.all()]
-    elif data_type == 'courses':
-        data = [{
-            'id': c.id,
-            'titre': c.titre,
-            'description': c.description,
-            'date_creation': c.date_creation.isoformat()
-        } for c in Cours.query.all()]
-    elif data_type == 'tuyaux':
-        data = [{
-            'id': t.id,
-            'titre': t.titre,
-            'contenu': t.contenu,
-            'date_ajout': t.date_ajout.isoformat(),
-            'auteur_id': t.auteur_id
-        } for t in Tuyau.query.all()]
-    else:
-        return jsonify({'error': 'Invalid data type'}), 400
-    
-    memory_file = io.BytesIO()
-    memory_file.write(json.dumps(data, indent=2).encode('utf-8'))
-    memory_file.seek(0)
-    
-    # Log l'activité
-    log = ActivityLog(
-        user_id=current_user.id,
-        action=f"Export des données {data_type}"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return send_file(
-        memory_file,
-        mimetype='application/json',
-        as_attachment=True,
-        download_name=f'export_{data_type}_{datetime.now().strftime("%Y-%m-%d")}.json'
-    )
-
-# Journal d'activité
-@adminbp.route('/api/activity-logs', methods=['DELETE'])
-@login_required
-def clear_activity_logs():
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    # Supprimer tous les logs
-    db.session.query(ActivityLog).delete()
-    db.session.commit()
-    
-    # Ajouter un log pour cette action (qui sera le seul log restant)
-    log = ActivityLog(
-        user_id=current_user.id,
-        action="Journal d'activité effacé"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return jsonify({'message': 'Activity logs cleared successfully'})
-
-# Paramètres système
-@adminbp.route('/api/system-settings', methods=['POST'])
-@login_required
-def update_system_settings():
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    data = request.get_json()
-    
-    # Ici, vous devriez sauvegarder ces paramètres dans votre base de données
-    # ou dans un fichier de configuration selon votre architecture
-    
-    # Log l'activité
-    log = ActivityLog(
-        user_id=current_user.id,
-        action="Mise à jour des paramètres système"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return jsonify({'message': 'System settings updated successfully'})
-
-# Vérification du système
-@adminbp.route('/api/system-check')
-@login_required
-def system_check():
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    # Ici, vous devriez implémenter des vérifications réelles de votre système
-    results = {
-        'database': {
-            'status': 'OK',
-            'message': 'Connexion à la base de données fonctionnelle'
-        },
-        'storage': {
-            'status': 'OK',
-            'message': '1.2GB/5GB utilisé'
-        },
-        'performance': {
-            'status': 'OK',
-            'message': 'Performances optimales'
-        },
-        'updates': {
-            'status': 'WARNING',
-            'message': 'Mise à jour disponible (v2.1.3)'
-        },
-        'security': {
-            'status': 'OK',
-            'message': 'Aucune menace détectée'
-        }
-    }
-    
-    # Log l'activité
-    log = ActivityLog(
-        user_id=current_user.id,
-        action="Vérification du système effectuée"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return jsonify(results)
-
-def generate_random_password():
-    # Implémentez une génération de mot de passe sécurisé
-    import secrets
-    import string
-    alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
-    return ''.join(secrets.choice(alphabet) for i in range(12))
-
-@adminbp.route('/api/users/<int:user_id>/deactivate', methods=['POST'])
-@login_required
-def deactivate_user(user_id):
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    user = User.query.get_or_404(user_id)
-    user.is_active = False
-    db.session.commit()
-    
-    log = ActivityLog(
-        user_id=current_user.id,
-        action=f"Désactivation de l'utilisateur {user.email}"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return jsonify({'message': 'User deactivated successfully'})
-
-@adminbp.route('/api/users/<int:user_id>/activate', methods=['POST'])
-@login_required
-def activate_user(user_id):
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    user = User.query.get_or_404(user_id)
-    user.is_active = True
-    db.session.commit()
-    
-    log = ActivityLog(
-        user_id=current_user.id,
-        action=f"Activation de l'utilisateur {user.email}"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return jsonify({'message': 'User activated successfully'})
-
-
-@adminbp.route('/api/utilisateus/<int:user_id>', methods=['GET'])
-@login_required
-def get_user(user_id):
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    user = User.query.get_or_404(user_id)
-    return jsonify({
-        'id': user.id,
-        'firstName': user.prenom,
-        'lastName': user.nom,
-        'email': user.email,
-        'role': user.role,
-        'isActive': user.is_active,
-        'avatar': user.avatar_url
-    })
-
-
-@adminbp.route('/admin/users', methods=['POST'])
-@login_required
-def add_user():
-    # Vérification des permissions
-    if not current_user.is_authenticated or current_user.role != 'administrateur':
-        return jsonify({'success': False, 'error': 'Accès non autorisé'}), 403
-    
-    # Gestion des données du formulaire
-    data = request.get_json() if request.is_json else request.form.to_dict()
-    
-    try:
-        # Validation des champs obligatoires
-        required_fields = ['username', 'email', 'password', 'role', 'prenom', 'nom']
-        if not all(field in data for field in required_fields):
-            return jsonify({
-                'success': False,
-                'error': 'Tous les champs obligatoires doivent être remplis'
-            }), 400
-
-        # Validation email institutionnel
-        if not data['email'].endswith('@ista.ma') or data['email'].endswith('@gmail.com'):
-            return jsonify({
-                'success': False,
-                'error': 'Seuls les emails @ista.ma ou @gmail.com sont acceptés'
-            }), 400
-
-        # Création de l'utilisateur
-        new_user = User(
-            username=data['username'],
-            email=data['email'],
-            password=data['password'],  # Utilise le setter password
-            role=data['role'],
-            prenom=data['prenom'],
-            nom=data['nom'],
-            is_active=True
-        )
-
-        db.session.add(new_user)
-        db.session.commit()
-
-        return jsonify({
-            'success': True,
-            'message': 'Utilisateur créé avec succès',
-            'user': new_user.to_dict()
-        }), 201
-
-    except IntegrityError as e:
-        db.session.rollback()
-        error_msg = 'Ce nom d\'utilisateur ou email est déjà utilisé'
-        if 'email' in str(e):
-            error_msg = 'Cet email est déjà utilisé'
-        elif 'username' in str(e):
-            error_msg = 'Ce nom d\'utilisateur est déjà pris'
-        return jsonify({'success': False, 'error': error_msg}), 400
-
-    except ValueError as e:
-        db.session.rollback()
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f'Erreur création utilisateur: {str(e)}')
-        return jsonify({
-            'success': False,
-            'error': 'Une erreur interne est survenue'
-        }), 500'''
-
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash, send_file
-from flask_login import login_required, current_user
-from ..models.Users import User
-from ..models.tuyaux import Tuyau
-from ..models.courses import Cours 
-from ..models.activity import ActivityLog
-from ..models.clubs import Club
+from ..models.activity import ActivityLog, Notification
+from ..models.clubs import Club, Member
 from ..models.books import Book
 from ..models.addsyllabus import Course
 from ..models.registration import InscriptionAcademique
@@ -588,6 +22,14 @@ import os
 from werkzeug.security import generate_password_hash
 from sqlalchemy.exc import IntegrityError
 import humanize
+from app.models.messagerie import Message, message_recipients
+
+
+
+MAINTENANCE_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'maintenance.flag')
+
+def is_maintenance_mode():
+    return os.path.exists(MAINTENANCE_FILE)
 
 adminbp = Blueprint('admin', __name__)
 
@@ -964,19 +406,21 @@ def create_backup():
 def system_maintenance():
     if current_user.role != 'administrateur':
         return jsonify({'error': 'Unauthorized'}), 403
-    
+
     action = request.json.get('action')
-    
     try:
-        if action == 'clear_cache':
-            # Implémenter la logique de nettoyage du cache
-            result = {'success': True, 'message': 'Cache cleared successfully'}
-        elif action == 'restart_app':
-            # Cela nécessiterait un système comme systemd ou supervisor
-            result = {'success': False, 'message': 'App restart not implemented'}
+        if action == 'enable_maintenance':
+            with open(MAINTENANCE_FILE, 'w') as f:
+                f.write('on')
+            result = {'success': True, 'message': 'Mode maintenance activé'}
+        elif action == 'disable_maintenance':
+            if os.path.exists(MAINTENANCE_FILE):
+                os.remove(MAINTENANCE_FILE)
+            result = {'success': True, 'message': 'Mode maintenance désactivé'}
         else:
-            result = {'success': False, 'message': 'Invalid action'}
-        
+            result = {'success': False, 'message': 'Action inconnue'}
+        #return jsonify(result)
+    
         # Log l'activité
         log = ActivityLog(
             user_id=current_user.id,
@@ -984,7 +428,7 @@ def system_maintenance():
         )
         db.session.add(log)
         db.session.commit()
-        
+
         return jsonify(result)
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -1175,29 +619,7 @@ def reset_password(user_id):
     
     return jsonify({'message': 'Password reset successfully'})
 
-@adminbp.route('/api/notifications', methods=['POST'])
-@login_required
-def send_notification():
-    if current_user.role != 'administrateur':
-        return jsonify({'error': 'Unauthorized'}), 403
-    
-    data = request.get_json()
-    
-    # Validation des données
-    if not all(k in data for k in ['recipients', 'subject', 'message']):
-        return jsonify({'error': 'Missing required fields'}), 400
-    
-    # Envoyer les notifications (à implémenter selon votre système)
-    
-    # Log l'activité
-    log = ActivityLog(
-        user_id=current_user.id,
-        action=f"Notification envoyée: {data['subject']}"
-    )
-    db.session.add(log)
-    db.session.commit()
-    
-    return jsonify({'message': 'Notification sent successfully'})
+
 
 @adminbp.route('/admin/backup')
 @login_required
@@ -1358,39 +780,104 @@ def update_system_settings():
 def system_check():
     if current_user.role != 'administrateur':
         return jsonify({'error': 'Unauthorized'}), 403
-    
-    # Ici, vous devriez implémenter des vérifications réelles de votre système
-    results = {
-        'database': {
-            'status': 'OK',
-            'message': 'Connexion à la base de données fonctionnelle'
-        },
-        'storage': {
-            'status': 'OK',
-            'message': '1.2GB/5GB utilisé'
-        },
-        'performance': {
-            'status': 'OK',
-            'message': 'Performances optimales'
-        },
-        'updates': {
-            'status': 'WARNING',
-            'message': 'Mise à jour disponible (v2.1.3)'
-        },
-        'security': {
-            'status': 'OK',
-            'message': 'Aucune menace détectée'
-        }
+
+    import socket
+    import subprocess
+
+    results = {}
+
+    # Vérification base de données
+    try:
+        db.session.execute('SELECT 1')
+        db_status = 'OK'
+    except Exception as e:
+        db_status = 'ERROR'
+        results['database_error'] = str(e)
+
+    # Espace disque
+    disk = psutil.disk_usage('/')
+    results['storage'] = {
+        'status': 'OK' if disk.percent < 90 else 'WARNING',
+        'used': humanize.naturalsize(disk.used),
+        'total': humanize.naturalsize(disk.total),
+        'percent': disk.percent
     }
-    
+
+    # RAM
+    mem = psutil.virtual_memory()
+    results['memory'] = {
+        'status': 'OK' if mem.percent < 90 else 'WARNING',
+        'used': humanize.naturalsize(mem.used),
+        'total': humanize.naturalsize(mem.total),
+        'percent': mem.percent
+    }
+
+    # CPU
+    cpu = psutil.cpu_percent(interval=1)
+    load1, load5, load15 = os.getloadavg()
+    results['performance'] = {
+        'status': 'OK' if cpu < 90 else 'WARNING',
+        'cpu_percent': cpu,
+        'load_avg': [load1, load5, load15]
+    }
+
+    # Processus critiques (exemple: vérifier que gunicorn tourne)
+    critical_processes = ['gunicorn', 'nginx']
+    running = [p.info['name'] for p in psutil.process_iter(['name'])]
+    missing = [proc for proc in critical_processes if proc not in running]
+    results['critical_processes'] = {
+        'missing': missing,
+        'status': 'OK' if not missing else 'ERROR'
+    }
+
+    # Connectivité réseau (ping google)
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=2)
+        net_status = 'OK'
+    except Exception:
+        net_status = 'ERROR'
+    results['network'] = {'status': net_status}
+
+    # Ports ouverts (exemple: 80, 443)
+    open_ports = []
+    for port in [80, 443]:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex(('localhost', port))
+        if result == 0:
+            open_ports.append(port)
+        sock.close()
+    results['open_ports'] = open_ports
+
+    # Logs d’erreur (10 dernières lignes)
+    try:
+        with open(current_app.config.get('ERROR_LOG', '/var/log/syslog'), 'r') as f:
+            lines = f.readlines()[-10:]
+        results['last_errors'] = lines
+    except Exception:
+        results['last_errors'] = ['Impossible de lire le log']
+
+    # Version de l’application (git)
+    try:
+        version = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode().strip()
+    except Exception:
+        version = 'N/A'
+    results['app_version'] = version
+
+    # Résumé base de données
+    results['database'] = {
+        'status': db_status,
+        'message': 'Connexion OK' if db_status == 'OK' else 'Erreur de connexion'
+    }
+
     # Log l'activité
     log = ActivityLog(
         user_id=current_user.id,
-        action="Vérification du système effectuée"
+        action="Vérification système avancée"
     )
     db.session.add(log)
     db.session.commit()
-    
+
     return jsonify(results)
 
 @adminbp.route('/api/users/<int:user_id>/deactivate', methods=['POST'])
@@ -1564,3 +1051,58 @@ def generate_random_password():
     alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
     return ''.join(secrets.choice(alphabet) for i in range(12))
 
+
+
+
+@adminbp.route('/api/notifications', methods=['POST'])
+@login_required
+def send_notification():
+    if current_user.role != 'administrateur':
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    recipients = data['recipients']
+    user_ids = []
+
+    if 'all' in recipients:
+        user_ids = [u.id for u in User.query.all()]
+    else:
+        if 'etudiant' in recipients:
+            user_ids += [u.id for u in User.query.filter_by(role='etudiant').all()]
+        if 'professeur' in recipients:
+            user_ids += [u.id for u in User.query.filter_by(role='professeur').all()]
+        if 'administrateur' in recipients:
+            user_ids += [u.id for u in User.query.filter_by(role='administrateur').all()]
+        # Ajoute les IDs numériques si besoin
+        user_ids += [int(r) for r in recipients if r.isdigit()]
+    user_ids = list(set(user_ids))  # Supprime les doublons
+
+    for user_id in user_ids:
+        recipient = User.query.get(user_id)
+        if recipient:
+            msg = Message(
+                sender_id=current_user.id,
+                subject=data['subject'],
+                content=data['message'],
+                attachments=[]
+            )
+            msg.recipients.append(recipient)
+            db.session.add(msg)
+    db.session.commit()
+
+    # Log l'activité
+    log = ActivityLog(
+        user_id=current_user.id,
+        action=f"Notification envoyée: {data['subject']}"
+    )
+    db.session.add(log)
+    db.session.commit()
+
+    return jsonify({'message': 'Notification sent successfully'})
+
+
+@adminbp.before_app_request
+def check_maintenance():
+    # Autorise les admins à accéder au site même en maintenance
+    if is_maintenance_mode() and not (current_user.is_authenticated and getattr(current_user, 'role', None) == 'administrateur'):
+        return render_template('maintenance.html'), 503

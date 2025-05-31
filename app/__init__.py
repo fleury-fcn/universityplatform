@@ -1,17 +1,20 @@
-'''from flask import Flask
+from flask import Flask
 from flask_migrate import Migrate
 from .extensions import db, login_manager, mail
 import os
-
-from dotenv import load_dotenv  # Nouvelle importation
+from .context_processors import register_context_processors
+from dotenv import load_dotenv  
 
 load_dotenv()  # Charge les variables d'environnement
 
 migrate = Migrate()
 
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object('app.config.Config')
+    register_context_processors(app)
+    app.secret_key = 'votre_cle_secrete'
 
     # Configuration MySQL avec variables d'environnement
     app.config['MYSQL_DATABASE_HOST'] = os.getenv('MYSQL_HOST', '127.0.0.1')
@@ -52,43 +55,8 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads', 'messages')
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-    return app'''
-
-# app/__init__.py
-from flask import Flask
-from flask_migrate import Migrate
-from .extensions import db, login_manager, mail
-from .config import Config  # Import de la nouvelle config
-import os
-
-migrate = Migrate()
-
-def create_app(config_class=Config):  # Utilise la config par défaut
-    app = Flask(__name__)
-    app.config.from_object(config_class)
-
-    # Initialisation des extensions
-    db.init_app(app)
-    login_manager.init_app(app)
-    migrate.init_app(app, db)
-    mail.init_app(app)
-
-    # Configuration Flask-Login
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = "Veuillez vous connecter pour accéder à cette page"
-
-    # Blueprints
-    from app.routes import all_blueprints
-    for bp in all_blueprints:
-        app.register_blueprint(bp)
-
-    # User Loader
-    from app.models.Users import User
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
     
-    # Création du dossier d'uploads
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 
     return app
+

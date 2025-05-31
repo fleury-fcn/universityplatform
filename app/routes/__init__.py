@@ -12,6 +12,8 @@ from .books import books_bp
 from .tuyaux import tuyauxbp
 from .admin import adminbp
 from .messagerie import messagerie_bp
+from .maintenance import maintenancebp
+
 
 all_blueprints = [
     mainbp,
@@ -26,5 +28,6 @@ all_blueprints = [
     books_bp,
     tuyauxbp,
     adminbp,
-    messagerie_bp
+    messagerie_bp,
+    maintenancebp
 ]

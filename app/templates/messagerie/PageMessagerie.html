@@ -287,6 +287,36 @@
             color: #ddd;
         }
 
+                .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-30px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+        }
+
+        .notification.error {
+            background-color: #F44336;
+        }
+
+        .notification.warning {
+            background-color: #FF9800;
+        }
+
+        .notification.info {
+            background-color: #2196F3;
+        }
+
         /* Responsive */
         @media (max-width: 992px) {
             .dashboard-container {
@@ -472,6 +502,22 @@
                     </div>
                 </div>
             </div>
+            {% if notifications %}
+    <div class="flash-messages">
+        {% for category, message in notifications %}
+            <div class="alert alert-{{ category }}">
+                {% if category == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                {% elif category == 'danger' or category == 'error' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                {% else %}
+                    <i class="fas fa-info-circle"></i>
+                {% endif %}
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
         </main>
     </div>
 
@@ -503,6 +549,13 @@
                 }
             });
         });
+
+        // Après une requête AJAX réussie
+if (response.notification) {
+    showNotification(response.notification.message, response.notification.category);
+}
+
+        
     </script>
 </body>
 </html>

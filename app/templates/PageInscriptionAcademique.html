@@ -439,6 +439,20 @@
             border: 1px solid #f5c6cb;
         }
 
+        
+        .btn-danger {
+            background-color: #d7263d;
+            color: #fff;
+            border-color: #d7263d;
+        }
+        .btn-danger:hover {
+            background-color: #fff;
+            color: #d7263d;
+            border-color: #d7263d;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(215, 38, 61, 0.2);
+        }
+
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -699,8 +713,12 @@
                                         <label for="annee_academique">Année Académique *</label>
                                         <select id="annee_academique" name="annee_academique" class="form-control" required>
                                             <option value="">Sélectionnez...</option>
-                                            <option value="2023-2024" {% if inscription and inscription.annee_academique == '2023-2024' %}selected{% endif %}>2023-2024</option>
+                                            <option value="2019-2020" {% if inscription and inscription.annee_academique == '2019-2020' %}selected{% endif %}>2019-2020</option>
+                                            <option value="2020-2021" {% if inscription and inscription.annee_academique == '2020-2021' %}selected{% endif %}>2020-2021</option>
+                                            <option value="2021-2022" {% if inscription and inscription.annee_academique == '2021-2022' %}selected{% endif %}>2021-2022</option>
                                             <option value="2022-2023" {% if inscription and inscription.annee_academique == '2022-2023' %}selected{% endif %}>2022-2023</option>
+                                            <option value="2023-2024" {% if inscription and inscription.annee_academique == '2023-2024' %}selected{% endif %}>2023-2024</option>
+                                            <option value="2024-2025" {% if inscription and inscription.annee_academique == '2024-2025' %}selected{% endif %}>2024-2025</option>
                                         </select>
                                     </div>
                                     
@@ -722,7 +740,17 @@
                                             <option value="">Sélectionnez...</option>
                                             <option value="actuariat" {% if inscription and inscription.departement == 'actuariat' %}selected{% endif %}>Actuariat</option>
                                             <option value="genie" {% if inscription and inscription.departement == 'genie' %}selected{% endif %}>Génie Statistique</option>
-                                            <option value="probastate" {% if inscription and inscription.departement == 'probastate' %}selected{% endif %}>ProbaState</option>
+                                            <option value="probastate" {% if inscription and inscription.departement == 'probastate' %}selected{% endif %}>Probabilité et Statistique</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="departement">Parcours Master *</label>
+                                        <select id="parcours" name="parcours" class="form-control" required>
+                                            <option value="">Sélectionnez...</option>
+                                            <option value="said" {% if inscription and inscription.departement == 'said' %}selected{% endif %}>Statistique Appliquée et Informatique Decisionnelle</option>
+                                            <option value="psm" {% if inscription and inscription.departement == 'psm' %}selected{% endif %}>Probabilité Statistique et Modelisation</option>
+                                            <option value="actuariat" {% if inscription and inscription.departement == 'actuariat' %}selected{% endif %}>Actuariat et Finance</option>
                                         </select>
                                     </div>
                                     
@@ -901,24 +929,12 @@
         <button class="btn btn-primary" onclick="searchStudents()">
             <i class="fas fa-search"></i> Rechercher
         </button>
-        
-        <div class="download-options">
-            <h3>Télécharger les listes d'étudiants :</h3>
-            <a href="#" class="download-btn" onclick="downloadStudentList('bac1')">
-                <i class="fas fa-download"></i> Liste Bac 1
-            </a>
-            <a href="#" class="download-btn" onclick="downloadStudentList('bac2')">
-                <i class="fas fa-download"></i> Liste Bac 2
-            </a>
-            <a href="#" class="download-btn" onclick="downloadStudentList('bac3')">
-                <i class="fas fa-download"></i> Liste Bac 3
-            </a>
-            <a href="#" class="download-btn" onclick="downloadStudentList('master')">
-                <i class="fas fa-download"></i> Liste Master
-            </a>
-        </div>
-    </div>
-    
+
+        <div class="download-options" style="margin-top: 1.5rem;">
+    <button class="btn btn-danger" id="download-search-results" type="button">
+        <i class="fas fa-download"></i> Télécharger la liste filtrée
+    </button>
+</div>
     <div class="search-results" id="search-results">
         <!-- Les résultats seront ajoutés dynamiquement -->
     </div>
@@ -926,6 +942,92 @@
 
 <!-- #################### Javascript code #################-->
     <script>
+
+        // ...existing code...
+
+// Gestion dynamique des champs selon le niveau
+document.getElementById('niveau').addEventListener('change', function() {
+    const niveau = this.value;
+    const parcoursGroup = document.querySelector('select#parcours').parentElement;
+    const departementGroup = document.querySelector('select#departement').parentElement;
+    const specialisationGroup = document.getElementById('specialisation-group');
+
+    if (niveau === 'master1' || niveau === 'master2') {
+        // Afficher parcours, masquer departement et specialisation
+        parcoursGroup.style.display = 'block';
+        document.getElementById('parcours').required = true;
+
+        departementGroup.style.display = 'none';
+        document.getElementById('departement').required = false;
+        document.getElementById('departement').value = '';
+
+        specialisationGroup.style.display = 'none';
+        document.getElementById('specialisation').required = false;
+        document.getElementById('specialisation').value = '';
+    } else if (niveau === 'bac1' || niveau === 'bac2' || niveau === 'bac3') {
+        // Afficher departement, masquer parcours
+        departementGroup.style.display = 'block';
+        document.getElementById('departement').required = true;
+
+        parcoursGroup.style.display = 'none';
+        document.getElementById('parcours').required = false;
+        document.getElementById('parcours').value = '';
+
+        // Afficher ou masquer specialisation selon departement
+        if (document.getElementById('departement').value === 'actuariat' || document.getElementById('departement').value === 'genie') {
+            specialisationGroup.style.display = 'block';
+        } else {
+            specialisationGroup.style.display = 'none';
+            document.getElementById('specialisation').value = '';
+        }
+    } else {
+        // Rien sélectionné
+        parcoursGroup.style.display = 'block';
+        departementGroup.style.display = 'block';
+        specialisationGroup.style.display = 'none';
+    }
+});
+
+// ...existing code...
+
+// Remplir les champs masqués avec "N/A" avant soumission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const niveau = document.getElementById('niveau').value;
+
+    if (niveau === 'master1' || niveau === 'master2') {
+        document.getElementById('departement').value = 'N/A';
+        document.getElementById('specialisation').value = 'N/A';
+    } else if (niveau === 'bac1' || niveau === 'bac2' || niveau === 'bac3') {
+        document.getElementById('parcours').value = 'N/A';
+        // Si le champ specialisation est masqué, on met aussi N/A
+        const specialisationGroup = document.getElementById('specialisation-group');
+        if (specialisationGroup.style.display === 'none') {
+            document.getElementById('specialisation').value = 'N/A';
+        }
+    }
+});
+
+
+
+// Pour gérer le cas où on change de département en Bac
+document.getElementById('departement').addEventListener('change', function() {
+    const niveau = document.getElementById('niveau').value;
+    const specialisationGroup = document.getElementById('specialisation-group');
+    if ((niveau === 'bac1' || niveau === 'bac2' || niveau === 'bac3') &&
+        (this.value === 'actuariat' || this.value === 'genie')) {
+        specialisationGroup.style.display = 'block';
+    } else {
+        specialisationGroup.style.display = 'none';
+        document.getElementById('specialisation').value = '';
+    }
+});
+
+// Initialisation à l'ouverture de la page
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('niveau').dispatchEvent(new Event('change'));
+    document.getElementById('departement').dispatchEvent(new Event('change'));
+});
+
         // Fonction pour valider le format de la date
         function isValidDate(dateString) {
             const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d\d$/; // dd/mm/yyyy
@@ -1113,6 +1215,7 @@ function searchStudents() {
                                 <p>Département: ${student.departement || 'N/A'}</p>
                                 <p>Spécialisation: ${student.specialisation || 'N/A'}</p>
                                 <p>Filière: ${student.filiere || 'N/A'}</p>
+                                <p>Parcours: ${student.parcours || 'N/A'}</p>
                                 <p>Actif: ${student.est_actif ? 'Oui' : 'Non'}</p>
                                 <p>Confirmé: ${student.est_confirme ? 'Oui' : 'Non'}</p>
                                 <button onclick="loadHistory(${student.id})">Voir Historique</button>
@@ -1131,6 +1234,25 @@ function searchStudents() {
         alert('Veuillez entrer au moins un critère de recherche.');
     }
 }
+
+// ...existing code...
+
+// Téléchargement de la liste filtrée des étudiants
+document.getElementById('download-search-results').addEventListener('click', function() {
+    const matricule = document.getElementById('search-matricule').value.trim();
+    const nom = document.getElementById('search-nom').value.trim();
+    const prenom = document.getElementById('search-prenom').value.trim();
+    const niveau = document.getElementById('search-niveau').value;
+
+    const params = new URLSearchParams();
+    if (matricule) params.append('matricule', matricule);
+    if (nom) params.append('nom', nom);
+    if (prenom) params.append('prenom', prenom);
+    if (niveau) params.append('niveau', niveau);
+
+    // Redirige vers la route d'export Flask avec les bons paramètres
+    window.open(`/api/recherche/inscriptions/export?${params.toString()}`, '_blank');
+});
 
 // Téléchargement de la liste des étudiants par niveau
 function downloadStudentList(niveau) {

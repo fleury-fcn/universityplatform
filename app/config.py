@@ -1,5 +1,5 @@
 
-'''import os
+import os
 from dotenv import load_dotenv
 
 # Charger les variables d'environnement depuis .env
@@ -65,53 +65,5 @@ config = {
     'testing': TestingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig
-}'''
+}
 
-# app/config.py
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-class Config:
-    # Sécurité
-    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
-    
-    # Configuration de base MySQL (développement local)
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 
-        'mysql+pymysql://fleury:NouveauMotDePasse123!@127.0.0.1/OpenIsta?charset=utf8mb4'
-    )
-    
-    # Options SQLAlchemy communes
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_pre_ping": True,
-        "pool_recycle": 3600,
-    }
-
-    # Flask-Mail
-    MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
-    MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-
-    # Uploads
-    UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads', 'messages')
-
-class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', '').replace(
-        'mysql://', 'mysql+pymysql://'
-    ) + '?charset=utf8mb4&ssl_verify_cert=true&ssl_ca=/etc/ssl/certs/ca-certificates.crt'
-    
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_pre_ping": True,
-        "pool_recycle": 3600,
-        "connect_args": {
-            "ssl": {
-                "ca": "/etc/ssl/certs/ca-certificates.crt",
-                "check_hostname": True,
-                "verify_cert": True
-            }
-        }
-    }

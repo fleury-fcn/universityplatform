@@ -6,11 +6,13 @@ import os
 import json
 from datetime import datetime
 from sqlalchemy import desc
-from app.extensions import db
+from ..extensions import db
 from ..models.registration import InscriptionAcademique
 from ..models.Documents import DocumentInscription
-#from ..models.rechercheinscription import RechercheInscription
 from flask_login import current_user, login_required
+import csv
+from io import StringIO
+from flask import Response
 
 registrationbp = Blueprint('registrationbp', __name__)
 
@@ -41,11 +43,12 @@ def inscription():
         email_institutionnel = request.form.get('email_institutionnel')
         annee_academique = request.form.get('annee_academique')
         niveau = request.form.get('niveau')
-        departement = request.form.get('departement')
-        specialisation = request.form.get('specialisation')
+        departement = request.form.get('departement') or 'N/A'
+        specialisation = request.form.get('specialisation') or 'N/A'
+        parcours = request.form.get('parcours') or 'N/A'
 
         # Vérification des champs obligatoires
-        required_fields = [nom, prenom, matricule, genre, date_naissance, email_institutionnel, annee_academique, niveau, departement]
+        required_fields = [nom, prenom, matricule, genre, date_naissance, email_institutionnel, annee_academique, niveau, parcours, departement]
         if not all(required_fields):
             flash("Tous les champs obligatoires doivent être remplis", 'error')
             return redirect(url_for('registrationbp.inscription'))
@@ -95,9 +98,10 @@ def create_new_inscription(date_naissance):
         email_institutionnel=request.form['email_institutionnel'],
         annee_academique=request.form['annee_academique'],
         niveau=request.form['niveau'],
-        departement=request.form['departement'],
-        specialisation=request.form.get('specialisation'),
-        filiere=request.form.get('filiere')
+        filiere=request.form.get('filiere'),
+        departement = request.form.get('departement') or 'N/A',
+        specialisation = request.form.get('specialisation') or 'N/A',
+        parcours = request.form.get('parcours') or 'N/A'
     )
 
 def get_anciennes_valeurs(inscription):
@@ -111,7 +115,8 @@ def get_anciennes_valeurs(inscription):
         'annee_academique': inscription.annee_academique,
         'niveau': inscription.niveau,
         'departement': inscription.departement,
-        'specialisation': inscription.specialisation
+        'specialisation': inscription.specialisation,
+        'parcours':inscription.parcours
     }
 
 def update_inscription(inscription, date_naissance):
@@ -126,6 +131,7 @@ def update_inscription(inscription, date_naissance):
     inscription.niveau = request.form['niveau']
     inscription.departement = request.form['departement']
     inscription.specialisation = request.form.get('specialisation')
+    inscription.parcours = request.form.get('parcours')
 
 def handle_documents(inscription):
     """Gère l'upload des documents."""
@@ -223,7 +229,9 @@ def rechercher_inscriptions():
         query = query.filter(InscriptionAcademique.nom.ilike(f'%{nom}%'))
     if prenom:
         query = query.filter(InscriptionAcademique.prenom.ilike(f'%{prenom}%'))
-    if niveau:
+    if niveau == 'master':
+        query = query.filter(InscriptionAcademique.niveau.in_(['master1', 'master2']))
+    elif niveau:
         query = query.filter(InscriptionAcademique.niveau == niveau)
 
     results = query.all()  # Récupère tous les résultats
@@ -242,8 +250,63 @@ def rechercher_inscriptions():
         'departement': inscription.departement,
         'specialisation': inscription.specialisation,
         'filiere': inscription.filiere,
+        'parcours': inscription.parcours,
         'est_actif': inscription.est_actif,
         'est_confirme': inscription.est_confirme
     } for inscription in results]
 
     return jsonify({'data': data, 'total': len(data)})
+
+
+
+@registrationbp.route('/api/recherche/inscriptions/export', methods=['GET'])
+@login_required
+def exporter_inscriptions():
+    if current_user.role not in ['administrateur', 'etudiant']:
+        abort(403, description="Accès réservé aux étudiants et administrateurs")
+
+    matricule = request.args.get('matricule')
+    nom = request.args.get('nom')
+    prenom = request.args.get('prenom')
+    niveau = request.args.get('niveau')
+
+    query = InscriptionAcademique.query
+    if matricule:
+        query = query.filter(InscriptionAcademique.matricule.ilike(f'%{matricule}%'))
+    if nom:
+        query = query.filter(InscriptionAcademique.nom.ilike(f'%{nom}%'))
+    if prenom:
+        query = query.filter(InscriptionAcademique.prenom.ilike(f'%{prenom}%'))
+    if niveau == 'master':
+        query = query.filter(InscriptionAcademique.niveau.in_(['master1', 'master2']))
+    elif niveau:
+        query = query.filter(InscriptionAcademique.niveau == niveau)
+
+    results = query.all()
+
+    # Création du CSV
+    si = StringIO()
+    writer = csv.writer(si)
+    writer.writerow(['Matricule', 'Nom', 'Prénom', 'Genre', 'Date de naissance', 'Email', 'Année académique', 'Niveau', 'Département', 'Spécialisation', 'Filière', 'Parcours'])
+    for inscription in results:
+        writer.writerow([
+            inscription.matricule,
+            inscription.nom,
+            inscription.prenom,
+            inscription.genre,
+            inscription.date_naissance,
+            inscription.email_institutionnel,
+            inscription.annee_academique,
+            inscription.niveau,
+            inscription.departement,
+            inscription.specialisation,
+            inscription.filiere,
+            inscription.parcours
+        ])
+    output = si.getvalue()
+    si.close()
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=inscriptions.csv"}
+    )

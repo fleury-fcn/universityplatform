@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenISTA - Tableau de Bord</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <style>
         :root {
             --primary: #0a2463;
@@ -19,6 +20,8 @@
             --text-dark: #333333;
             --warning-bg: #fff3cd;
             --warning-border: #ffeeba;
+            --news-bg: rgba(255, 255, 255, 0.9);
+            --exchange-bg: rgba(10, 36, 99, 0.9);
         }
 
         * {
@@ -31,6 +34,11 @@
         body {
             background-color: #f5f7fa;
             color: var(--dark);
+            background-image: url('https://source.unsplash.com/random/1920x1080/?university,campus');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
         }
 
         .dashboard-container {
@@ -45,6 +53,8 @@
             color: var(--text-light);
             padding: 2rem 1rem;
             position: relative;
+            z-index: 10;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
         }
 
         .user-profile {
@@ -59,6 +69,11 @@
             border: 3px solid var(--secondary);
             object-fit: cover;
             margin-bottom: 1rem;
+            transition: transform 0.3s;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
         }
 
         .user-role {
@@ -88,10 +103,27 @@
             align-items: center;
             color: var(--text-light);
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: -100%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            z-index: -1;
+        }
+
+        .nav-item:hover::before, .nav-item.active::before {
+            left: 0;
         }
 
         .nav-item:hover, .nav-item.active {
-            background: rgba(255, 255, 255, 0.2);
             transform: translateX(5px);
         }
 
@@ -105,6 +137,9 @@
         /* Main Content */
         .main-content {
             padding: 2rem;
+            background-color: rgba(245, 247, 250, 0.95);
+            backdrop-filter: blur(5px);
+            overflow-x: hidden;
         }
 
         .welcome-banner {
@@ -115,27 +150,33 @@
             margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background-image: url('https://source.unsplash.com/random/1200x400/?university'), 
+                            linear-gradient(135deg, var(--primary), #3a7bd5);
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-position: center;
+            animation: gradientBG 15s ease infinite;
         }
 
-        .welcome-banner::after {
-            content: "";
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .welcome-banner h1 {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
             margin-bottom: 0.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         .date-display {
             opacity: 0.9;
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         /* Registration Phase */
@@ -150,6 +191,13 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
         }
 
         .registration-phase h3 {
@@ -182,7 +230,24 @@
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             padding: 1.5rem;
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--secondary);
+            transition: width 0.3s;
+        }
+
+        .card:hover::before {
+            width: 10px;
         }
 
         .card:hover {
@@ -212,6 +277,11 @@
             align-items: center;
             justify-content: center;
             color: white;
+            transition: transform 0.3s;
+        }
+
+        .card:hover .card-icon {
+            transform: rotate(15deg);
         }
 
         .icon-urgent { background: var(--accent); }
@@ -219,6 +289,8 @@
         .icon-events { background: var(--professor); }
         .icon-resources { background: #27ae60; }
         .icon-news { background: #9b59b6; }
+        .icon-exchange { background: #f39c12; }
+        .icon-calendar { background: #16a085; }
 
         .task-item {
             padding: 0.8rem 0;
@@ -226,6 +298,12 @@
             display: flex;
             align-items: center;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .task-item:hover {
+            background-color: rgba(10, 36, 99, 0.05);
+            padding-left: 10px;
         }
 
         .task-item:last-child {
@@ -262,6 +340,23 @@
             cursor: pointer;
             color: var(--primary);
             border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
         }
 
         .action-btn:hover {
@@ -269,6 +364,7 @@
             color: white;
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(10, 36, 99, 0.2);
+            border-color: var(--secondary);
         }
 
         .action-btn i {
@@ -276,10 +372,12 @@
             margin-bottom: 0.5rem;
             display: block;
             color: var(--primary);
+            transition: all 0.3s;
         }
 
         .action-btn:hover i {
             color: white;
+            transform: scale(1.2);
         }
 
         /* News Tabs */
@@ -287,6 +385,7 @@
             display: flex;
             margin-bottom: 1rem;
             border-bottom: 2px solid #eee;
+            flex-wrap: wrap;
         }
 
         .tab {
@@ -296,15 +395,40 @@
             transition: all 0.3s;
             font-weight: 600;
             color: var(--text-dark);
+            position: relative;
+        }
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .tab:hover::after {
+            width: 100%;
         }
 
         .tab.active {
-            border-bottom-color: var(--primary);
             color: var(--primary);
+        }
+
+        .tab.active::after {
+            width: 100%;
         }
 
         .tab-content {
             display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .tab-content.active {
@@ -325,17 +449,24 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.9rem;
+            border: 1px solid transparent;
+        }
+
+        .department-btn:hover {
+            background: #d0d0d0;
         }
 
         .department-btn.active {
             background: var(--primary);
             color: white;
+            border-color: var(--primary);
         }
 
         .year-options {
             display: flex;
             gap: 0.5rem;
             margin: 1rem 0;
+            flex-wrap: wrap;
         }
 
         .year-btn {
@@ -345,11 +476,17 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: 0.85rem;
+            border: 1px solid transparent;
+        }
+
+        .year-btn:hover {
+            background: #e0e0e0;
         }
 
         .year-btn.active {
             background: var(--secondary);
             color: var(--text-dark);
+            border-color: var(--secondary);
         }
 
         .specialization-options {
@@ -367,6 +504,10 @@
             transition: all 0.3s;
             font-size: 0.9rem;
             border: 1px solid #d0e3f7;
+        }
+
+        .specialization-btn:hover {
+            background: #d8eaf8;
         }
 
         .specialization-btn.active {
@@ -442,6 +583,11 @@
             margin-right: 1.2rem;
             object-fit: cover;
             border: 2px solid var(--light);
+            transition: transform 0.3s;
+        }
+
+        .student-card:hover .student-avatar {
+            transform: scale(1.1);
         }
 
         .student-info h4 {
@@ -452,6 +598,598 @@
         .student-info p {
             color: #666;
             font-size: 0.9rem;
+        }
+
+        /* News Section */
+        .news-section {
+            margin-top: 2rem;
+        }
+
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .news-card {
+            background: var(--news-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-category {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--secondary);
+            color: var(--text-dark);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 0.8rem;
+            font-weight: bold;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .news-date {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .news-excerpt {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Exchange Rates */
+        .exchange-rates {
+            background: var(--exchange-bg);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .exchange-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .exchange-title {
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .exchange-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--secondary);
+            color: var(--text-dark);
+        }
+
+        .rates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .rate-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .rate-item:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .currency {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+
+        .rate {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .change {
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+        .positive {
+            color: #2ecc71;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        /* Currency Converter */
+        .converter-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .converter-title {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            text-align: center;
+        }
+
+        .converter-form {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .converter-input {
+            padding: 0.8rem;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .converter-select {
+            padding: 0.8rem;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .converter-equals {
+            font-size: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .converter-result {
+            padding: 0.8rem;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            text-align: center;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .converter-btn {
+            grid-column: 1 / -1;
+            padding: 0.8rem;
+            border-radius: 5px;
+            border: none;
+            background: var(--secondary);
+            color: var(--text-dark);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .converter-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        /* Calendar */
+        .calendar-container {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .calendar-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        #calendar {
+            margin-top: 1rem;
+        }
+
+        /* Simple Calendar */
+        .simple-calendar {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .calendar-month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-month-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .calendar-nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .calendar-nav-btn:hover {
+            background: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: #f0f0f0;
+        }
+
+        .calendar-day.today {
+            background: var(--secondary);
+            color: var(--text-dark);
+            font-weight: bold;
+        }
+
+        .calendar-day.event::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+
+        .calendar-events {
+            margin-top: 1rem;
+        }
+
+        .calendar-event {
+            padding: 0.8rem;
+            border-left: 3px solid var(--primary);
+            background: #f8f9fa;
+            margin-bottom: 0.5rem;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .calendar-event-date {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .calendar-event-title {
+            margin-top: 0.3rem;
+        }
+
+        /* Scroll Animation */
+        .scroll-section {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: linear-gradient(to right, var(--primary), #3a7bd5);
+            color: white;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .scroll-item {
+            min-width: 300px;
+            scroll-snap-align: start;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .scroll-item:hover {
+            transform: scale(1.03);
+        }
+
+        .scroll-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .scroll-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* International Universities */
+        .universities-section {
+            margin-top: 2rem;
+        }
+
+        .universities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .university-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .university-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .university-logo {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            padding: 1rem;
+            background: #f8f9fa;
+        }
+
+        .university-content {
+            padding: 1.5rem;
+        }
+
+        .university-name {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .university-country {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .university-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .university-link:hover {
+            background: var(--secondary);
+            color: var(--text-dark);
+        }
+
+        /* Weather Widget */
+        .weather-widget {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .weather-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .weather-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .weather-current {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .weather-temp {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .weather-desc {
+            color: #666;
+        }
+
+        .weather-forecast {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .weather-day {
+            padding: 0.5rem;
+            border-radius: 5px;
+            background: #78b3ed;
+        }
+
+        .weather-day-name {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.8rem;
+        }
+
+        .weather-day-temp {
+            font-size: 0.9rem;
+        }
+
+                .calendars-row {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .calendar-container,
+        .simple-calendar {
+            flex: 1 1 0;
+            min-width: 320px;
+            max-width: 420px;
+            padding: 1rem;
+            background: rgb(229, 226, 143);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .calendar-container {
+            margin-bottom: 0;
+        }
+
+        .simple-calendar {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 900px) {
+            .calendars-row {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            .calendar-container,
+            .simple-calendar {
+                max-width: 100%;
+                min-width: 0;
+            }
         }
 
         /* Buttons */
@@ -494,10 +1232,53 @@
             transform: translateY(-3px);
         }
 
+        .btn-yellow {
+            background-color: var(--secondary);
+            color: var(--text-dark);
+            border: 2px solid var(--secondary);
+        }
+
+        .btn-yellow:hover {
+            background-color: transparent;
+            color: var(--text-dark);
+            transform: translateY(-3px);
+        }
+
+        /* Marquee */
+        .marquee {
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 0;
+            margin: 2rem 0;
+            border-radius: 5px;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .marquee-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .quick-actions {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .converter-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .converter-equals {
+                display: none;
             }
         }
 
@@ -505,10 +1286,16 @@
             .dashboard-container {
                 grid-template-columns: 1fr;
             }
+            
             .sidebar {
                 display: none;
             }
+            
             .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .news-container {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
@@ -526,6 +1313,14 @@
             .filter-select {
                 width: 100%;
             }
+            
+            .news-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
         }
 
         @media (max-width: 576px) {
@@ -537,10 +1332,6 @@
                 font-size: 1.5rem;
             }
             
-            .main-content {
-                padding: 1.5rem;
-            }
-            
             .news-tabs {
                 flex-wrap: wrap;
             }
@@ -548,6 +1339,14 @@
             .tab {
                 padding: 0.5rem 1rem;
                 font-size: 0.9rem;
+            }
+            
+            .welcome-banner {
+                padding: 1.5rem 1rem;
+            }
+            
+            .card {
+                padding: 1rem;
             }
         }
     </style>
@@ -558,61 +1357,47 @@
         <aside class="sidebar">
             <div class="user-profile">
                 <div class="avatar-container">
-                            <img src="{{ current_user.get_avatar_url() }}" 
-                                 alt="Photo de profil" class="avatar" id="avatarPreview">
-                            <div>
-                <h3 style="color: var(--text-light);">{{ current_user.prenom }} {{ current_user.nom }}</h3>
-                <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+                    <img src="{{ current_user.get_avatar_url() }}" 
+                         alt="Photo de profil" class="avatar" id="avatarPreview">
+                    <div>
+                        <h3 style="color: var(--text-light);">{{ current_user.prenom }} {{ current_user.nom }}</h3>
+                        <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+                    </div>
+                </div>
             </div>
 
             <nav class="nav-menu">
                 <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item active">
                     <i class="fas fa-home"></i> Accueil
                 </a>
-
-                </a>
                 <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
                     <i class="fas fa-edit"></i> Inscriptions Académique
                 </a>
-
                 <a href="{{ url_for('courses.courses') }}" class="nav-item">
                     <i class="fas fa-book-open"></i> Cours de l'ISTA
-                 </a>
-
+                </a>
                 <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
-                    <i class="fas fa-book"></i> Consulter ou Téléchrger Syllabus
-                 </a>
-
-                 <a href="{{ url_for('books.library') }}" class="nav-item">
-                    <i class="fas fa-book"></i>  Bibliothèque Livres
-                 </a>
-
-                 <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Consulter ou Télécharger Syllabus
+                </a>
+                <a href="{{ url_for('books.library') }}" class="nav-item">
+                    <i class="fas fa-book"></i> Bibliothèque Livres
+                </a>
+                <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
                     <i class="fas fa-chalkboard-teacher"></i> Tuyaux d'Examens
                 </a>
-                 
-                 <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
                     <i class="fas fa-users"></i> Clubs
                 </a>
-                    
-                
                 <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
                     <i class="fas fa-envelope"></i> Messages
                     <span class="badge"></span>
                 </a>
-                
                 <a href="{{ url_for('profile.profile') }}" class="nav-item">
                     <i class="fas fa-user-cog"></i> Mon Profil
                 </a>
-
-                
-               
-                
                 <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
                     <i class="fas fa-cog"></i> Paramètres Système
                 </a>
-                
-                
             </nav>
         </aside>
 
@@ -623,9 +1408,19 @@
                 <h1>Bienvenue sur OpenISTA, {{ current_user.prenom }} {{ current_user.nom }} !</h1>
                 <p>Votre portail unique pour la vie académique à l'ISTA</p>
                 <div class="date-display">
-                    <i class="far fa-calendar-alt"></i> {{ current_date }}
+                    <i class="far fa-calendar-alt"></i> <span id="current-date">{{ current_date }}</span>
                 </div>
             </section>
+
+            <!-- Marquee for Important Announcements -->
+            <div class="marquee">
+                <div class="marquee-content">
+                    <span style="margin-right: 50px;">📢 Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre 2024</span>
+                    <span style="margin-right: 50px;">🎓 Conférence sur la Data Science le 15 novembre avec le Dr. Niyonkuru</span>
+                    <span style="margin-right: 50px;">🏆 Concours d'admission au Baccalauréat ISTA  - Inscriptions ouvertes jusqu'au 20 octobre</span>
+                    <span style="margin-right: 50px;">🏆 Concours d'admission au Master ISTA - Inscriptions ouvertes jusqu'au 10 novembre</span>
+                </div>
+            </div>
 
             <!-- Période d'inscription -->
             <div class="registration-phase">
@@ -633,7 +1428,7 @@
                     <h3><i class="fas fa-calendar-check"></i> Période d'Inscription Académique</h3>
                     <p>Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre.</p>
                 </div>
-                <a href="{{ url_for('registrationbp.inscription') }}" class="btn btn-primary">
+                <a href="{{ url_for('registrationbp.inscription') }}" class="btn btn-yellow">
                     Procéder à l'inscription <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -650,124 +1445,365 @@
                     <span>Mes Cours</span>
                     <small>Voir le programme</small>
                 </div>
-
                 <div class="action-btn" onclick="location.href='{{ url_for('books.library')}}'">
                     <i class="fas fa-book"></i>
                     <span>Bibliothèque</span>
                     <small>Accéder aux Livres</small>
                 </div>
-
                 <div class="action-btn" onclick="location.href='{{ url_for('clubs.clubs_page') }}'">
                     <i class="fas fa-users"></i>
                     <span>Clubs</span>
                     <small>Rejoindre une activité</small>
                 </div>
-
                 <div class="action-btn" onclick="location.href='{{ url_for('tuyaux.PageTuyaux') }}'">
                     <i class="fas fa-file-alt"></i>
                     <span>Tuyaux d'Examens</span>
-                    <small>Réussitte pour tous</small>
+                    <small>Réussite pour tous</small>
                 </div>
-
                 <div class="action-btn" onclick="location.href='{{ url_for('profile.profile') }}'">
                     <i class="fas fa-user-cog"></i>
                     <span>Mon Profil</span>
                     <small></small>
                 </div>
-
                 <div class="action-btn" onclick="location.href='{{ url_for('messagerie.PageMessagerie') }}'">
                     <i class="fas fa-envelope"></i>
                     <span>Messages</span>
                     <small>Discuter pour apprendre</small>
                 </div>
-                
-                
                 <div class="action-btn" onclick="location.href='{{ url_for('admin.PageAdmin') }}'">
                     <i class="fas fa-cog"></i>
-                    <span>Paramètrage </span>
+                    <span>Paramètrage</span>
                     <small>Système</small>
                 </div>
             </div>
 
-           
+            <!-- Taux de Change avec Convertisseur -->
+            <div class="exchange-rates">
+                <div class="exchange-header">
+                    <h3 class="exchange-title">Taux de Change (BIF)</h3>
+                    <div class="exchange-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                </div>
+                <div class="rates-grid" id="exchange-rates-container">
+                    <!-- Les taux seront chargés dynamiquement via JavaScript -->
+                </div>
+                
+                <!-- Convertisseur de Devises -->
+                <div class="converter-container">
+                    <h4 class="converter-title">Convertisseur de Devises</h4>
+                    <form class="converter-form" id="currency-converter">
+                        <input type="number" class="converter-input" id="amount" placeholder="Montant" min="0" step="0.01" required>
+                        <select class="converter-select" id="from-currency">
+                            <option value="BIF">BIF</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                        <div class="converter-equals">=</div>
+                        <input type="text" class="converter-result" id="result" placeholder="Résultat" readonly>
+                        <select class="converter-select" id="to-currency">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="BIF">BIF</option>
+                        </select>
+                        <button type="button" class="converter-btn" id="convert-btn">Convertir</button>
+                    </form>
+                </div>
+            </div>
 
 
             <!-- Actualités ISTA -->
-            <div class="card" style="grid-column: 1 / -1;">
-                <div class="card-header">
-                    <h3 class="card-title">Organisation Académique de l'ISTA</h3>
-                    <div class="card-icon icon-news">
-                        <i class="fas fa-newspaper"></i>
-                    </div>
-                </div>
+            <div class="news-section">
+                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-newspaper"></i> Actualités ISTA
+                </h2>
                 
-                <div class="news-tabs">
-                    <div class="tab active" data-tab="bac">Baccalauréat</div>
-                    <div class="tab" data-tab="master">Master</div>
-                </div>
-                
-                <!-- Baccalauréat Content -->
-                <div class="tab-content active" id="bac-content">
-                    <div class="department-options">
-                        <div class="department-btn active" data-dept="all">Tous départements</div>
-                        <div class="department-btn" data-dept="actuariat">Actuariat</div>
-                        <div class="department-btn" data-dept="genie">Génie Statistique</div>
-                        <div class="department-btn" data-dept="probastate">ProbaState</div>
-                    </div>
-                    
-                    <!-- Actuariat Options -->
-                    <div class="specialization-options" id="actuariat-options" style="display: none;">
-                        <div class="specialization-btn active" data-spec="all">Toutes spécialités</div>
-                        <div class="specialization-btn" data-spec="risques">Analyse des Risques</div>
-                        <div class="specialization-btn" data-spec="predictive">Analyse Prédictive</div>
-                    </div>
-                    
-                    <!-- Génie Statistique Options -->
-                    <div class="specialization-options" id="genie-options" style="display: none;">
-                        <div class="specialization-btn active" data-spec="all">Toutes spécialités</div>
-                        <div class="specialization-btn" data-spec="data">Sciences des Données</div>
-                        <div class="specialization-btn" data-spec="eco">Sciences Économiques</div>
-                    </div>
-                    
-                    <div class="year-options">
-                        <div class="year-btn active" data-year="all">Tous niveaux</div>
-                        <div class="year-btn" data-year="2">Bac 2</div>
-                        <div class="year-btn" data-year="3">Bac 3</div>
-                    </div>
-                    
-                    <div class="task-list">
-                        <div class="task-item">
-                            <span class="task-priority priority-medium"></span>
-                            Réunion d'information pour les Bac 2 Actuariat - 20 Mars
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-low"></span>
-                            Nouveaux horaires pour Génie Statistique
+                <div class="news-container">
+                    <!-- News Item 1 -->
+                    <div class="news-card">
+                        <img src="https://source.unsplash.com/random/600x400/?university,event" alt="Actualité" class="news-image">
+                        <div class="news-content">
+                            <span class="news-category">Événement</span>
+                            <h3 class="news-title">Journée Portes Ouvertes 2024</h3>
+                            <div class="news-date">
+                                <i class="far fa-calendar-alt"></i> 15 Novembre 2024
+                            </div>
+                            <p class="news-excerpt">
+                                L'ISTA organise sa journée portes ouvertes annuelle. Venez découvrir nos formations et rencontrer nos enseignants.
+                            </p>
+                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Master Content -->
-                <div class="tab-content" id="master-content">
-                    <div class="department-options">
-                        <div class="department-btn active" data-dept="all">Tous masters</div>
-                        <div class="department-btn" data-dept="sai">Statistique Appliquée et Informatique Décisionnel</div>
-                        <div class="department-btn" data-dept="af">Actuariat et Finance</div>
-                        <div class="department-btn" data-dept="psm">Probabilité Statistique et Modélisation</div>
+                    
+                    <!-- News Item 2 -->
+                    <div class="news-card">
+                        <img src="https://source.unsplash.com/random/600x400/?graduation" alt="Actualité" class="news-image">
+                        <div class="news-content">
+                            <span class="news-category">Diplômes</span>
+                            <h3 class="news-title">Remise des Diplômes 2023</h3>
+                            <div class="news-date">
+                                <i class="far fa-calendar-alt"></i> 30 Octobre 2024
+                            </div>
+                            <p class="news-excerpt">
+                                Cérémonie de remise des diplômes pour la promotion 2023. Félicitations à tous nos nouveaux diplômés !
+                            </p>
+                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                        </div>
                     </div>
                     
-                    <div class="task-list">
-                        <div class="task-item">
-                            <span class="task-priority priority-high"></span>
-                            Inscriptions aux mémoires - Date limite 15 Avril
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-medium"></span>
-                            Conférence sur l'analyse décisionnelle
+                    <!-- News Item 3 -->
+                    <div class="news-card">
+                        <img src="https://source.unsplash.com/random/600x400/?conference,speaker" alt="Actualité" class="news-image">
+                        <div class="news-content">
+                            <span class="news-category">Conférence</span>
+                            <h3 class="news-title">Data Science et IA</h3>
+                            <div class="news-date">
+                                <i class="far fa-calendar-alt"></i> 10 Novembre 2024
+                            </div>
+                            <p class="news-excerpt">
+                                Conférence exceptionnelle sur les dernières avancées en Data Science et Intelligence Artificielle.
+                            </p>
+                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Actualités Nationales et Internationales -->
+            <div class="news-section">
+                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-globe"></i> Actualités Nationales & Internationales
+                </h2>
+                
+                <div class="news-tabs">
+                    <div class="tab active" data-tab="national">Nationales</div>
+                    <div class="tab" data-tab="international">Internationales</div>
+                </div>
+                
+                <!-- Actualités Nationales -->
+                <div class="tab-content active" id="national-content">
+                    <div class="news-container">
+                        <!-- News Item 1 -->
+                        <div class="news-card">
+                            <img src="https://source.unsplash.com/random/600x400/?burundi" alt="Actualité" class="news-image">
+                            <div class="news-content">
+                                <span class="news-category">Éducation</span>
+                                <h3 class="news-title">Réforme de l'Enseignement Supérieur</h3>
+                                <div class="news-date">
+                                    <i class="far fa-calendar-alt"></i> 5 Novembre 2024
+                                </div>
+                                <p class="news-excerpt">
+                                    Le gouvernement annonce une nouvelle réforme visant à améliorer la qualité de l'enseignement supérieur au Burundi.
+                                </p>
+                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                            </div>
+                        </div>
+                        
+                        <!-- News Item 2 -->
+                        <div class="news-card">
+                            <img src="https://source.unsplash.com/random/600x400/?technology,africa" alt="Actualité" class="news-image">
+                            <div class="news-content">
+                                <span class="news-category">Technologie</span>
+                                <h3 class="news-title">Croissance du Secteur Tech</h3>
+                                <div class="news-date">
+                                    <i class="far fa-calendar-alt"></i> 1 Novembre 2024
+                                </div>
+                                <p class="news-excerpt">
+                                    Le Burundi enregistre une croissance de 15% dans le secteur des technologies de l'information cette année.
+                                </p>
+                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actualités Internationales -->
+                <div class="tab-content" id="international-content">
+                    <div class="news-container">
+                        <!-- News Item 1 -->
+                        <div class="news-card">
+                            <img src="https://source.unsplash.com/random/600x400/?technology,world" alt="Actualité" class="news-image">
+                            <div class="news-content">
+                                <span class="news-category">Technologie</span>
+                                <h3 class="news-title">Nouvelle Percée en IA</h3>
+                                <div class="news-date">
+                                    <i class="far fa-calendar-alt"></i> 3 Novembre 2024
+                                </div>
+                                <p class="news-excerpt">
+                                    Des chercheurs ont développé une nouvelle architecture de réseau neuronal qui révolutionne l'apprentissage automatique.
+                                </p>
+                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                            </div>
+                        </div>
+                        
+                        <!-- News Item 2 -->
+                        <div class="news-card">
+                            <img src="https://source.unsplash.com/random/600x400/?education,world" alt="Actualité" class="news-image">
+                            <div class="news-content">
+                                <span class="news-category">Éducation</span>
+                                <h3 class="news-title">Classement des Universités 2024</h3>
+                                <div class="news-date">
+                                    <i class="far fa-calendar-alt"></i> 28 Octobre 2024
+                                </div>
+                                <p class="news-excerpt">
+                                    Le nouveau classement mondial des universités montre une progression des établissements africains.
+                                </p>
+                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Universités Internationales -->
+            <div class="universities-section">
+                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-graduation-cap"></i> Universités Internationales Partenaires
+                </h2>
+                
+                <div class="universities-grid">
+                    <!-- University 1 -->
+                    <div class="university-card">
+                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/44/University_of_Cape_Town_logo.svg/1200px-University_of_Cape_Town_logo.svg.png" alt="UCT" class="university-logo">
+                        <div class="university-content">
+                            <h3 class="university-name">Université du Cap</h3>
+                            <div class="university-country">
+                                <i class="fas fa-map-marker-alt"></i> Afrique du Sud
+                            </div>
+                            <a href="https://www.uct.ac.za/" target="_blank" class="university-link">Visiter le site</a>
+                        </div>
+                    </div>
+                    
+                    <!-- University 2 -->
+                    <div class="university-card">
+                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/79/University_of_Nairobi_logo.svg/1200px-University_of_Nairobi_logo.svg.png" alt="UoN" class="university-logo">
+                        <div class="university-content">
+                            <h3 class="university-name">Université de Nairobi</h3>
+                            <div class="university-country">
+                                <i class="fas fa-map-marker-alt"></i> Kenya
+                            </div>
+                            <a href="https://www.uonbi.ac.ke/" target="_blank" class="university-link">Visiter le site</a>
+                        </div>
+                    </div>
+                    
+                    <!-- University 3 -->
+                    <div class="university-card">
+                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/ETH_Zurich_logo.svg/1200px-ETH_Zurich_logo.svg.png" alt="ETH" class="university-logo">
+                        <div class="university-content">
+                            <h3 class="university-name">ETH Zurich</h3>
+                            <div class="university-country">
+                                <i class="fas fa-map-marker-alt"></i> Suisse
+                            </div>
+                            <a href="https://ethz.ch/" target="_blank" class="university-link">Visiter le site</a>
+                        </div>
+                    </div>
+                    
+                    <!-- University 4 -->
+                    <div class="university-card">
+                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/70/University_of_Toronto_crest.svg/1200px-University_of_Toronto_crest.svg.png" alt="UofT" class="university-logo">
+                        <div class="university-content">
+                            <h3 class="university-name">Université de Toronto</h3>
+                            <div class="university-country">
+                                <i class="fas fa-map-marker-alt"></i> Canada
+                            </div>
+                            <a href="https://www.utoronto.ca/" target="_blank" class="university-link">Visiter le site</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+
+    <!-- Widget Météo -->
+            <div class="weather-widget">
+                <div class="weather-header">
+                    <h3 class="weather-title">Météo à Bujumbura</h3>
+                    <div class="weather-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                </div>
+                
+                <div class="weather-current">
+                    <div id="weather-icon" style="font-size: 2rem;">☀️</div>
+                    <div class="weather-temp" id="current-temp">28°C</div>
+                    <div class="weather-desc" id="weather-desc">Ensoleillé</div>
+                </div>
+                
+                <div class="weather-forecast">
+                    <div class="weather-day">
+                        <div class="weather-day-name">Lun</div>
+                        <div class="weather-day-temp">28° / 22°</div>
+                    </div>
+                    <div class="weather-day">
+                        <div class="weather-day-name">Mar</div>
+                        <div class="weather-day-temp">27° / 22°</div>
+                    </div>
+                    <div class="weather-day">
+                        <div class="weather-day-name">Mer</div>
+                        <div class="weather-day-temp">26° / 21°</div>
+                    </div>
+                    <div class="weather-day">
+                        <div class="weather-day-name">Jeu</div>
+                        <div class="weather-day-temp">28° / 22°</div>
+                    </div>
+                    <div class="weather-day">
+                        <div class="weather-day-name">Ven</div>
+                        <div class="weather-day-temp">29° / 23°</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Calendar -->
+          <div class="calendars-row">   
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <h3 class="calendar-title">Calendrier Académique</h3>
+                    <div class="calendar-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+                <div id="calendar"></div>
+            </div>
+
+            <!-- Simple Calendar -->
+            <div class="simple-calendar">
+                <div class="calendar-month-header">
+                    <button class="calendar-nav-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                    <h3 class="calendar-month-title" id="calendar-month-title">Novembre 2024</h3>
+                    <button class="calendar-nav-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                
+                <div class="calendar-weekdays">
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mer</div>
+                    <div>Jeu</div>
+                    <div>Ven</div>
+                    <div>Sam</div>
+                    <div>Dim</div>
+                </div>
+                
+                <div class="calendar-days" id="calendar-days">
+                    <!-- Days will be populated by JavaScript -->
+                </div>
+                
+                <div class="calendar-events">
+                    <h4 style="margin: 1rem 0 0.5rem; color: var(--primary);">Événements ce mois-ci</h4>
+                    <div class="calendar-event">
+                        <div class="calendar-event-date">15 Novembre</div>
+                        <div class="calendar-event-title">Journée Portes Ouvertes</div>
+                    </div>
+                    <div class="calendar-event">
+                        <div class="calendar-event-date">20-25 Novembre</div>
+                        <div class="calendar-event-title">Semaine des Sciences</div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
 
             <!-- Cards Grid -->
             <div class="cards-grid">
@@ -788,7 +1824,7 @@
                             <span class="task-priority priority-medium"></span>
                             Questionnaire à compléter
                         </div>
-                        {% if current_user.role == 'professor' %}
+                        {% if current_user.role == 'professeur' %}
                         <div class="task-item">
                             <span class="task-priority priority-high"></span>
                             Notes à saisir avant vendredi
@@ -838,95 +1874,131 @@
                 </div>
             </div>
 
-            <!-- Annuaire Étudiants -->
-            <div class="student-directory">
+            
+            
+
+            
+            <!-- Organisation Académique de l'ISTA -->
+            <div class="card" style="grid-column: 1 / -1; margin-top: 2rem;">
                 <div class="card-header">
-                    <h3 class="card-title">Annuaire des Étudiants ISTA</h3>
-                    <div class="card-icon">
-                        <i class="fas fa-users"></i>
+                    <h3 class="card-title">Organisation Académique de l'ISTA</h3>
+                    <div class="card-icon icon-news">
+                        <i class="fas fa-university"></i>
                     </div>
                 </div>
                 
-                <div class="directory-filters">
-                    <select class="filter-select" id="year-filter">
-                        <option value="">Toutes années</option>
-                        <option value="1">Bac 1</option>
-                        <option value="2">Bac 2</option>
-                        <option value="3">Bac 3</option>
-                        <option value="master">Master</option>
-                    </select>
-                    
-                    <select class="filter-select" id="department-filter">
-                        <option value="">Tous départements</option>
-                        <option value="actuariat">Actuariat</option>
-                        <option value="genie">Génie Statistique</option>
-                        <option value="probastate">ProbaState</option>
-                    </select>
-                    
-                    <select class="filter-select" id="specialization-filter" style="display:none;">
-                        <option value="">Toutes spécialités</option>
-                    </select>
+                <div class="news-tabs">
+                    <div class="tab active" data-tab="bac">Baccalauréat</div>
+                    <div class="tab" data-tab="master">Master</div>
                 </div>
                 
-                <div class="student-list">
-                    <!-- Exemple d'étudiant 1 -->
-                    <div class="student-card" onclick="location.href='{{ url_for('auth.profile') }}'">
-                        <img src="{{ url_for('static', filename='images/3.jpeg') }}" alt="Étudiant" class="student-avatar">
-                        <div class="student-info">
-                            <h4>NIYOKWIZERA Fleury</h4>
-                            <p>
-                                <span class="badge" style="background:var(--student); color:white; padding:0.2rem 0.5rem; border-radius:12px; font-size:0.8rem;">
-                                    Actuariat - Bac 2
-                                </span>
-                                <span style="margin-left:0.5rem;">Analyse des Risques</span>
-                            </p>
+                <!-- Baccalauréat Content -->
+                <div class="tab-content active" id="bac-content">
+                    <div class="department-options">
+                        <div class="department-btn active" data-dept="all">Tous départements</div>
+                        <div class="department-btn" data-dept="actuariat">Actuariat</div>
+                        <div class="department-btn" data-dept="genie">Génie Statistique</div>
+                        <div class="department-btn" data-dept="probastate">ProbaState</div>
+                    </div>
+                    
+                    <!-- Actuariat Options -->
+                    <div class="specialization-options" id="actuariat-options" style="display: none;">
+                        <div class="specialization-btn active" data-spec="all">Toutes spécialités</div>
+                        <div class="specialization-btn" data-spec="risques">Analyse des Risques</div>
+                        <div class="specialization-btn" data-spec="predictive">Analyse Prédictive</div>
+                    </div>
+                    
+                    <!-- Génie Statistique Options -->
+                    <div class="specialization-options" id="genie-options" style="display: none;">
+                        <div class="specialization-btn active" data-spec="all">Toutes spécialités</div>
+                        <div class="specialization-btn" data-spec="data">Sciences des Données</div>
+                        <div class="specialization-btn" data-spec="eco">Sciences Économiques</div>
+                    </div>
+                    
+                    <div class="year-options">
+                        <div class="year-btn active" data-year="all">Tous niveaux</div>
+                        <div class="year-btn" data-year="2">Bac 2</div>
+                        <div class="year-btn" data-year="3">Bac 3</div>
+                    </div>
+                    
+                    <div class="task-list">
+                        <div class="task-item">
+                            <span class="task-priority priority-medium"></span>
+                            Réunion d'information pour les Bac 2 Actuariat - 20 Mars
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-low"></span>
+                            Nouveaux horaires pour Génie Statistique
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-high"></span>
+                            Date limite pour le choix des options - 15 Novembre
                         </div>
                     </div>
-                    
-                    <!-- Exemple d'étudiant 2 -->
-                    <div class="student-card" onclick="location.href='{{ url_for('auth.profile') }}'">
-                        <img src="{{ url_for('static', filename='images/students/student2.jpg') }}" alt="Étudiant" class="student-avatar">
-                        <div class="student-info">
-                            <h4>NIYONKURU Cherissa</h4>
-                            <p>
-                                <span class="badge" style="background:var(--professor); color:white; padding:0.2rem 0.5rem; border-radius:12px; font-size:0.8rem;">
-                                    Génie Statistique - Bac 3
-                                </span>
-                                <span style="margin-left:0.5rem;">Sciences des Données</span>
-                            </p>
-                        </div>
-                    </div>
-                    
-                   
                 </div>
                 
-                <div style="text-align: center; margin-top: 1.5rem;">
-                    <a href="#" class="btn btn-secondary">
-                        <i class="fas fa-search"></i> Explorer tout l'annuaire
-                    </a>
+                <!-- Master Content -->
+                <div class="tab-content" id="master-content">
+                    <div class="department-options">
+                        <div class="department-btn active" data-dept="all">Tous masters</div>
+                        <div class="department-btn" data-dept="sai">Statistique Appliquée et Informatique Décisionnel</div>
+                        <div class="department-btn" data-dept="af">Actuariat et Finance</div>
+                        <div class="department-btn" data-dept="psm">Probabilité Statistique et Modélisation</div>
+                    </div>
+                    
+                    <div class="task-list">
+                        <div class="task-item">
+                            <span class="task-priority priority-high"></span>
+                            Inscriptions aux mémoires - Date limite 15 Avril
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-medium"></span>
+                            Conférence sur l'analyse décisionnelle - 25 Novembre
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-low"></span>
+                            Séminaire de recherche hebdomadaire - Tous les mercredis
+                        </div>
+                    </div>
                 </div>
             </div>
-        </main>
+            </main>
     </div>
 
+            
+
+            
+
+            
+
+            
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Gestion des onglets Actualités ISTA
         document.addEventListener('DOMContentLoaded', function() {
+            // Mise à jour de la date actuelle
+            function updateCurrentDate() {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('current-date').textContent = now.toLocaleDateString('fr-FR', options);
+            }
+            
+            updateCurrentDate();
+            
             // Gestion des onglets
             const tabs = document.querySelectorAll('.tab');
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
-                    // Désactiver tous les onglets
                     tabs.forEach(t => t.classList.remove('active'));
-                    // Activer l'onglet cliqué
                     this.classList.add('active');
                     
-                    // Masquer tous les contenus
                     document.querySelectorAll('.tab-content').forEach(content => {
                         content.classList.remove('active');
                     });
                     
-                    // Afficher le contenu correspondant
                     const tabId = this.getAttribute('data-tab');
                     document.getElementById(`${tabId}-content`).classList.add('active');
                 });
@@ -936,12 +2008,9 @@
             const deptButtons = document.querySelectorAll('.department-btn');
             deptButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // Désactiver tous les boutons
                     deptButtons.forEach(b => b.classList.remove('active'));
-                    // Activer le bouton cliqué
                     this.classList.add('active');
                     
-                    // Gérer l'affichage des spécialisations
                     const dept = this.getAttribute('data-dept');
                     document.getElementById('actuariat-options').style.display = 'none';
                     document.getElementById('genie-options').style.display = 'none';
@@ -972,52 +2041,200 @@
                 });
             });
             
-            // Gestion des filtres de l'annuaire
-            const yearFilter = document.getElementById('year-filter');
-            const deptFilter = document.getElementById('department-filter');
-            const specFilter = document.getElementById('specialization-filter');
+            // Calendrier simple
+            let currentDate = new Date();
             
-            // Gestion des spécialisations par département
-            deptFilter.addEventListener('change', function() {
-                const dept = this.value;
-                specFilter.style.display = 'none';
-                specFilter.innerHTML = '<option value="">Toutes spécialités</option>';
+            function renderSimpleCalendar(date) {
+                const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", 
+                                   "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
                 
-                if (dept === 'actuariat') {
-                    specFilter.style.display = 'block';
-                    specFilter.innerHTML += `
-                        <option value="risques">Analyse des Risques</option>
-                        <option value="predictive">Analyse Prédictive</option>
-                    `;
-                } else if (dept === 'genie') {
-                    specFilter.style.display = 'block';
-                    specFilter.innerHTML += `
-                        <option value="data">Sciences des Données</option>
-                        <option value="eco">Sciences Économiques</option>
-                    `;
+                document.getElementById('calendar-month-title').textContent = 
+                    `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+                
+                const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+                const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+                
+                const prevLastDay = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+                const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+                const lastDayIndex = lastDay.getDay() === 0 ? 6 : lastDay.getDay() - 1;
+                
+                let days = '';
+                
+                // Jours du mois précédent
+                for (let i = firstDayIndex; i > 0; i--) {
+                    days += `<div class="calendar-day other-month">${prevLastDay - i + 1}</div>`;
                 }
-            });
-            
-            // Filtrage des étudiants
-            function filterStudents() {
-                const year = yearFilter.value;
-                const dept = deptFilter.value;
-                const spec = specFilter.value;
                 
-                // Ici, ajouter la logique de filtrage AJAX
-                console.log(`Filtrage : Année=${year}, Département=${dept}, Spécialité=${spec}`);
+                // Jours du mois courant
+                const today = new Date();
+                for (let i = 1; i <= lastDay.getDate(); i++) {
+                    const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
+                    const isToday = dayDate.getDate() === today.getDate() && 
+                                   dayDate.getMonth() === today.getMonth() && 
+                                   dayDate.getFullYear() === today.getFullYear();
+                    
+                    const hasEvent = (i === 15 || (i >= 20 && i <= 25));
+                    
+                    days += `<div class="calendar-day ${isToday ? 'today' : ''} ${hasEvent ? 'event' : ''}">${i}</div>`;
+                }
+                
+                // Jours du mois suivant
+                for (let i = 1; i <= (42 - lastDay.getDate() - firstDayIndex); i++) {
+                    days += `<div class="calendar-day other-month">${i}</div>`;
+                }
+                
+                document.getElementById('calendar-days').innerHTML = days;
             }
             
-            yearFilter.addEventListener('change', filterStudents);
-            deptFilter.addEventListener('change', filterStudents);
-            specFilter.addEventListener('change', filterStudents);
+            document.getElementById('prev-month').addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderSimpleCalendar(currentDate);
+            });
             
-            // Exemple de récupération de données
-            fetch('/api/dashboard-data')
-                .then(response => response.json())
-                .then(data => {
-                    // Traitement des données...
+            document.getElementById('next-month').addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderSimpleCalendar(currentDate);
+            });
+            
+            renderSimpleCalendar(currentDate);
+            
+            // FullCalendar
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: [
+                    {
+                        title: 'Rentrée Académique',
+                        start: '2024-10-01',
+                        color: '#0a2463'
+                    },
+                    {
+                        title: 'Début des Cours',
+                        start: '2024-10-15',
+                        color: '#3a7bd5'
+                    },
+                    {
+                        title: 'Examens Partiels',
+                        start: '2024-12-10',
+                        end: '2024-12-20',
+                        color: '#d7263d'
+                    },
+                    {
+                        title: 'Vacances de Noël',
+                        start: '2024-12-21',
+                        end: '2025-01-05',
+                        color: '#27ae60'
+                    },
+                    {
+                        title: 'Examens Finaux',
+                        start: '2025-03-15',
+                        end: '2025-03-30',
+                        color: '#d7263d'
+                    }
+                ],
+                locale: 'fr',
+                buttonText: {
+                    today: 'Aujourd\'hui',
+                    month: 'Mois',
+                    week: 'Semaine',
+                    day: 'Jour'
+                }
+            });
+            calendar.render();
+            
+            // Taux de change et convertisseur
+            const exchangeRates = {
+                USD: 2850,
+                EUR: 3150,
+                GBP: 3600,
+                RWF: 2.5
+            };
+            
+            function renderExchangeRates() {
+                const container = document.getElementById('exchange-rates-container');
+                container.innerHTML = '';
+                
+                Object.keys(exchangeRates).forEach(currency => {
+                    const change = Math.random() > 0.5 ? 'positive' : 'negative';
+                    const changeValue = change === 'positive' ? 
+                        `+${(Math.random() * 0.5).toFixed(1)}%` : 
+                        `-${(Math.random() * 0.5).toFixed(1)}%`;
+                    
+                    const rateItem = document.createElement('div');
+                    rateItem.className = 'rate-item';
+                    rateItem.innerHTML = `
+                        <div class="currency">${currency}</div>
+                        <div class="rate">${exchangeRates[currency].toLocaleString('fr-FR')} BIF</div>
+                        <div class="change ${change}">${changeValue}</div>
+                    `;
+                    
+                    container.appendChild(rateItem);
                 });
+            }
+            
+            // Convertisseur de devises
+            document.getElementById('convert-btn').addEventListener('click', function() {
+                const amount = parseFloat(document.getElementById('amount').value);
+                if (isNaN(amount)) {
+                    alert('Veuillez entrer un montant valide');
+                    return;
+                }
+                
+                const fromCurrency = document.getElementById('from-currency').value;
+                const toCurrency = document.getElementById('to-currency').value;
+                
+                // Conversion en BIF d'abord si nécessaire
+                let amountInBif;
+                if (fromCurrency === 'BIF') {
+                    amountInBif = amount;
+                } else {
+                    amountInBif = amount * exchangeRates[fromCurrency];
+                }
+                
+                // Conversion vers la devise cible
+                let result;
+                if (toCurrency === 'BIF') {
+                    result = amountInBif;
+                } else {
+                    result = amountInBif / exchangeRates[toCurrency];
+                }
+                
+                document.getElementById('result').value = result.toFixed(2);
+            });
+            
+            // Initialisation
+            renderExchangeRates();
+            
+            // Animation de défilement pour la section d'inscription
+            const registrationPhase = document.querySelector('.registration-phase');
+            registrationPhase.addEventListener('mouseover', function() {
+                this.style.animation = 'pulse 1s infinite';
+            });
+            
+            registrationPhase.addEventListener('mouseout', function() {
+                this.style.animation = 'pulse 2s infinite';
+            });
+            
+            // Simulation de données météo
+            function updateWeather() {
+                const weatherConditions = ['☀️', '⛅', '🌧️', '⛈️', '🌤️'];
+                const weatherDescs = ['Ensoleillé', 'Partiellement nuageux', 'Pluvieux', 'Orageux', 'Nuageux'];
+                const randomIndex = Math.floor(Math.random() * weatherConditions.length);
+                
+                document.getElementById('weather-icon').textContent = weatherConditions[randomIndex];
+                document.getElementById('weather-desc').textContent = weatherDescs[randomIndex];
+                
+                // Température aléatoire entre 25 et 30
+                const temp = Math.floor(Math.random() * 6) + 25;
+                document.getElementById('current-temp').textContent = `${temp}°C`;
+            }
+            
+            updateWeather();
         });
     </script>
 </body>

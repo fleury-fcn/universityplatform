@@ -1406,9 +1406,9 @@
                     <label for="notificationRecipients">Destinataires</label>
                     <select id="notificationRecipients" name="recipients" class="form-control form-select" multiple>
                         <option value="all" selected>Tous les utilisateurs</option>
-                        <option value="students">Étudiants</option>
-                        <option value="professors">Professeurs</option>
-                        <option value="admins">Administrateurs</option>
+                        <option value="etudiant">Étudiants</option>
+                        <option value="professeur">Professeurs</option>
+                        <option value="administrateur">Administrateurs</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -2396,6 +2396,54 @@
         // Mettre à jour les stats système toutes les 30 secondes
         setInterval(updateSystemStats, 30000);
         updateSystemStats(); // Exécuter immédiatement au chargement
+
+        // Ajoute ceci dans ton <script> après le DOMContentLoaded
+
+document.getElementById('systemCheckBtn').addEventListener('click', function() {
+    const resultsDiv = document.getElementById('systemCheckResults');
+    resultsDiv.innerHTML = `
+        <div class="system-check-item">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Vérification en cours...</span>
+        </div>
+    `;
+    fetch('/api/system-check')
+        .then(response => response.json())
+        .then(data => {
+            let html = '';
+            for (const [key, value] of Object.entries(data)) {
+                html += `
+                    <div class="system-check-item">
+                        <strong>${key.charAt(0).toUpperCase() + key.slice(1)} :</strong>
+                        <span style="color:${value.status === 'OK' ? 'green' : value.status === 'WARNING' ? 'orange' : 'red'}">
+                            ${value.status || ''} 
+                        </span>
+                        <span>${value.message || ''}</span>
+                    </div>
+                `;
+            }
+            resultsDiv.innerHTML = html;
+        })
+        .catch(error => {
+            resultsDiv.innerHTML = `<div class="system-check-item" style="color:red;">Erreur lors de la vérification du système</div>`;
+        });
+
+        document.getElementById('systemSettingsForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const maintenanceMode = this.maintenanceMode.value;
+    fetch('/api/system/maintenance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: maintenanceMode === '1' ? 'enable_maintenance' : 'disable_maintenance' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        showToast(data.message || 'Changement effectué');
+        setTimeout(() => window.location.reload(), 1000);
+    })
+    .catch(error => showToast('Erreur maintenance', 'error'));
+});
+});
     </script>
 </body>
 </html>
