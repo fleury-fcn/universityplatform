@@ -1396,7 +1396,7 @@
                     <span class="badge"></span>
                 </a>
 
-                <a href="actualites.html" class="nav-item">
+                <a href="{{ url_for('actualites.liste_actualites') }}" class="nav-item">
                     <i class="fas fa-newspaper"></i> Actualités
                 </a>
 
@@ -1475,7 +1475,7 @@
                     <small>Discuter pour apprendre</small>
                 </div>
 
-                <div class="action-btn" onclick="location.href='#'">
+                <div class="action-btn" onclick="location.href='{{ url_for('actualites.liste_actualites') }}'">
                     <i class="fas fa-newspaper"></i>
                     <span>Actualités</span>
                     <small>pour tous</small>
@@ -1532,148 +1532,43 @@
 
 
             <!-- Actualités ISTA -->
-            <div class="news-section">
-                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-newspaper"></i> Actualités ISTA
-                </h2>
-                
-                <div class="news-container">
-                    <!-- News Item 1 -->
-                    <div class="news-card">
-                        <img src="https://source.unsplash.com/random/600x400/?university,event" alt="Actualité" class="news-image">
-                        <div class="news-content">
-                            <span class="news-category">Événement</span>
-                            <h3 class="news-title">Journée Portes Ouvertes 2024</h3>
-                            <div class="news-date">
-                                <i class="far fa-calendar-alt"></i> 15 Novembre 2024
+                            
+                <div class="news-section">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-newspaper"></i> Actualités ISTA
+                    </h2>
+                    
+                    <div class="news-container">
+                        {% for actualite in actualites_recentes %}
+                        <div class="news-card">
+                            {% if actualite.image_url %}
+                            <img src="{{ actualite.image_url }}" alt="{{ actualite.image_alt }}" class="news-image">
+                            {% else %}
+                            <img src="{{ url_for('static', filename='images/default-news.jpg') }}" alt="Actualité ISTA" class="news-image">
+                            {% endif %}
+                            <div class="news-content">
+                                <span class="news-category">{{ actualite.categorie }}</span>
+                                <h3 class="news-title">{{ actualite.titre }}</h3>
+                                <div class="news-date">
+                                    <i class="far fa-calendar-alt"></i> 
+                                    {{ actualite.date_publication.strftime('%d %B %Y') }}
+                                </div>
+                                <p class="news-excerpt">{{ actualite.resume }}</p>
+                                <a href="{{ url_for('actualites.detail_actualite', actualite_id=actualite.id) }}" 
+                                class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                Lire plus
+                                </a>
                             </div>
-                            <p class="news-excerpt">
-                                L'ISTA organise sa journée portes ouvertes annuelle. Venez découvrir nos formations et rencontrer nos enseignants.
-                            </p>
-                            <a href="{{ url_for('actualites.actualite_detail', id=1) }}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
                         </div>
+                        {% endfor %}
                     </div>
                     
-                    <!-- News Item 2 -->
-                    <div class="news-card">
-                        <img src="https://source.unsplash.com/random/600x400/?graduation" alt="Actualité" class="news-image">
-                        <div class="news-content">
-                            <span class="news-category">Diplômes</span>
-                            <h3 class="news-title">Remise des Diplômes 2023</h3>
-                            <div class="news-date">
-                                <i class="far fa-calendar-alt"></i> 30 Octobre 2024
-                            </div>
-                            <p class="news-excerpt">
-                                Cérémonie de remise des diplômes pour la promotion 2023. Félicitations à tous nos nouveaux diplômés !
-                            </p>
-                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                        </div>
-                    </div>
-                    
-                    <!-- News Item 3 -->
-                    <div class="news-card">
-                        <img src="https://source.unsplash.com/random/600x400/?conference,speaker" alt="Actualité" class="news-image">
-                        <div class="news-content">
-                            <span class="news-category">Conférence</span>
-                            <h3 class="news-title">Data Science et IA</h3>
-                            <div class="news-date">
-                                <i class="far fa-calendar-alt"></i> 10 Novembre 2024
-                            </div>
-                            <p class="news-excerpt">
-                                Conférence exceptionnelle sur les dernières avancées en Data Science et Intelligence Artificielle.
-                            </p>
-                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                        </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a href="{{ url_for('actualites.liste_actualites') }}" class="btn btn-primary">
+                            Voir toutes les actualités <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
-            </div>
-
-            <!-- Actualités Nationales et Internationales -->
-            <div class="news-section">
-                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-globe"></i> Actualités Nationales & Internationales
-                </h2>
-                
-                <div class="news-tabs">
-                    <div class="tab active" data-tab="national">Nationales</div>
-                    <div class="tab" data-tab="international">Internationales</div>
-                </div>
-                
-                <!-- Actualités Nationales -->
-                <div class="tab-content active" id="national-content">
-                    <div class="news-container">
-                        <!-- News Item 1 -->
-                        <div class="news-card">
-                            <img src="https://source.unsplash.com/random/600x400/?burundi" alt="Actualité" class="news-image">
-                            <div class="news-content">
-                                <span class="news-category">Éducation</span>
-                                <h3 class="news-title">Réforme de l'Enseignement Supérieur</h3>
-                                <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 5 Novembre 2024
-                                </div>
-                                <p class="news-excerpt">
-                                    Le gouvernement annonce une nouvelle réforme visant à améliorer la qualité de l'enseignement supérieur au Burundi.
-                                </p>
-                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                            </div>
-                        </div>
-                        
-                        <!-- News Item 2 -->
-                        <div class="news-card">
-                            <img src="https://source.unsplash.com/random/600x400/?technology,africa" alt="Actualité" class="news-image">
-                            <div class="news-content">
-                                <span class="news-category">Technologie</span>
-                                <h3 class="news-title">Croissance du Secteur Tech</h3>
-                                <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 1 Novembre 2024
-                                </div>
-                                <p class="news-excerpt">
-                                    Le Burundi enregistre une croissance de 15% dans le secteur des technologies de l'information cette année.
-                                </p>
-                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Actualités Internationales -->
-                <div class="tab-content" id="international-content">
-                    <div class="news-container">
-                        <!-- News Item 1 -->
-                        <div class="news-card">
-                            <img src="https://source.unsplash.com/random/600x400/?technology,world" alt="Actualité" class="news-image">
-                            <div class="news-content">
-                                <span class="news-category">Technologie</span>
-                                <h3 class="news-title">Nouvelle Percée en IA</h3>
-                                <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 3 Novembre 2024
-                                </div>
-                                <p class="news-excerpt">
-                                    Des chercheurs ont développé une nouvelle architecture de réseau neuronal qui révolutionne l'apprentissage automatique.
-                                </p>
-                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                            </div>
-                        </div>
-                        
-                        <!-- News Item 2 -->
-                        <div class="news-card">
-                            <img src="https://source.unsplash.com/random/600x400/?education,world" alt="Actualité" class="news-image">
-                            <div class="news-content">
-                                <span class="news-category">Éducation</span>
-                                <h3 class="news-title">Classement des Universités 2024</h3>
-                                <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 28 Octobre 2024
-                                </div>
-                                <p class="news-excerpt">
-                                    Le nouveau classement mondial des universités montre une progression des établissements africains.
-                                </p>
-                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Universités Internationales -->
             <div class="universities-section">
                 <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">

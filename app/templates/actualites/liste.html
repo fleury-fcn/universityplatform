@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Styles spécifiques à la liste des actualités */
+    .news-list-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .news-list-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--secondary);
+    }
+
+    .news-list-header h1 {
+        color: var(--primary);
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .news-filters {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1.2rem;
+        background: #e0e0e0;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.9rem;
+        border: 1px solid transparent;
+        text-decoration: none;
+        color: var(--text-dark);
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .news-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+
+    .news-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+    }
+
+    .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .news-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: var(--secondary);
+        transition: width 0.3s;
+    }
+
+    .news-card:hover::before {
+        width: 10px;
+    }
+
+    .news-image-container {
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .news-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+    .news-card:hover .news-image {
+        transform: scale(1.05);
+    }
+
+    .news-content {
+        padding: 1.5rem;
+    }
+
+    .news-category {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: var(--secondary);
+        color: var(--text-dark);
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-weight: bold;
+    }
+
+    .news-title {
+        font-size: 1.2rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+    }
+
+    .news-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: #666;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+    }
+
+    .news-meta i {
+        color: var(--primary);
+    }
+
+    .news-excerpt {
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+    }
+
+    .news-link {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background: var(--primary);
+        color: white;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .news-link:hover {
+        background: var(--secondary);
+        color: var(--text-dark);
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 3rem;
+    }
+
+    .page-link {
+        padding: 0.5rem 1rem;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-decoration: none;
+        color: var(--primary);
+        transition: all 0.3s;
+    }
+
+    .page-link:hover, .page-link.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .fab-admin-actualites {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 1000;
+    background: var(--primary, #0a2463);
+    color: #fff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    }
+    .fab-admin-actualites:hover {
+        background: var(--secondary, #3e92cc);
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    @media (max-width: 768px) {
+        .news-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .news-filters {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <!-- Votre sidebar existante -->
+    </aside>
+
+    <main class="main-content">
+        <div class="news-list-container">
+            <div class="news-list-header">
+                <h1><i class="fas fa-newspaper"></i> Actualités de l'ISTA</h1>
+                <p>Toutes les dernières nouvelles et événements de notre institut</p>
+            </div>
+
+            <!-- Filtres -->
+            <div class="news-filters">
+                <a href="{{ url_for('actualites.liste_actualites') }}" 
+                   class="filter-btn {% if not current_categorie %}active{% endif %}">
+                   Toutes catégories
+                </a>
+                {% for categorie in categories %}
+                <a href="{{ url_for('actualites.liste_actualites', categorie=categorie[0]) }}" 
+                   class="filter-btn {% if current_categorie == categorie[0] %}active{% endif %}">
+                   {{ categorie[0] }}
+                </a>
+                {% endfor %}
+            </div>
+
+            <!-- Liste des actualités -->
+            <div class="news-grid">
+                {% for actualite in actualites.items %}
+                <div class="news-card">
+                    <div class="news-image-container">
+                        {% if actualite.image_url %}
+                        <img src="{{ actualite.image_url }}" alt="{{ actualite.image_alt }}" class="news-image">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='images/default-news.jpg') }}" alt="Actualité ISTA" class="news-image">
+                        {% endif %}
+                    </div>
+                    <div class="news-content">
+                        <span class="news-category">{{ actualite.categorie }}</span>
+                        <h3 class="news-title">{{ actualite.titre }}</h3>
+                        <div class="news-meta">
+                            <span><i class="far fa-calendar-alt"></i> {{ actualite.date_publication.strftime('%d %B %Y') }}</span>
+                            {% if actualite.date_evenement %}
+                            <span><i class="fas fa-calendar-day"></i> {{ actualite.date_evenement.strftime('%d %B %Y') }}</span>
+                            {% endif %}
+                        </div>
+                        <p class="news-excerpt">{{ actualite.resume }}</p>
+                        <a href="{{ url_for('actualites.detail_actualite', actualite_id=actualite.id) }}" class="news-link">
+                            Lire plus <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                {% if actualites.has_prev %}
+                <a href="{{ url_for('actualites.liste_actualites', page=actualites.prev_num, categorie=current_categorie) }}" 
+                   class="page-link">
+                   &laquo; Précédent
+                </a>
+                {% endif %}
+                
+                {% for page_num in actualites.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+                    {% if page_num %}
+                        {% if actualites.page == page_num %}
+                        <a href="{{ url_for('actualites.liste_actualites', page=page_num, categorie=current_categorie) }}" 
+                           class="page-link active">
+                           {{ page_num }}
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('actualites.liste_actualites', page=page_num, categorie=current_categorie) }}" 
+                           class="page-link">
+                           {{ page_num }}
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        <span class="page-link disabled">...</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if actualites.has_next %}
+                <a href="{{ url_for('actualites.liste_actualites', page=actualites.next_num, categorie=current_categorie) }}" 
+                   class="page-link">
+                   Suivant &raquo;
+                </a>
+                {% endif %}
+            </div>
+            <!-- Bouton flottant d'accès à l'administration des actualités -->
+        <a href="{{ url_for('actualites.admin_actualites') }}" class="fab-admin-actualites" title="Administration des actualités">
+            <i class="fas fa-cogs"></i>
+        </a>
+        </div>
+    </main>
+</div>
+{% endblock %}

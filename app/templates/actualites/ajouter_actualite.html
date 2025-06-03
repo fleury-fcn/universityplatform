@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-title {
+        color: var(--primary);
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--secondary);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+        outline: none;
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 5px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .image-preview {
+        max-width: 300px;
+        max-height: 200px;
+        margin: 1rem 0;
+        border-radius: 5px;
+        display: block;
+    }
+
+    .file-list {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .file-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem;
+        background: #b3e437;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .file-icon {
+        font-size: 1.5rem;
+    }
+
+    .file-actions {
+        margin-left: auto;
+    }
+
+    .delete-file {
+        color: var(--accent);
+        cursor: pointer;
+    }
+
+    .editor-toolbar {
+        background: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 5px 5px 0 0;
+        border: 1px solid #ddd;
+        border-bottom: none;
+    }
+
+    .editor-content {
+        border: 1px solid #ddd;
+        border-radius: 0 0 5px 5px;
+    }
+
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+    .form-actions button.btn-primary { display: inline-block !important; }
+</style>
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <!-- Votre sidebar existante -->
+    </aside>
+
+    <main class="main-content">
+        <div class="form-container">
+            <h1 class="form-title">
+                <i class="fas fa-{{ 'edit' if actualite else 'plus' }}"></i> 
+                {{ 'Modifier' if actualite else 'Ajouter' }} une Actualité
+            </h1>
+            
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    {{ form.titre.label(class="form-label") }}
+                    {{ form.titre(class="form-control", placeholder="Titre de l'actualité") }}
+                    {% for error in form.titre.errors %}
+                    <small style="color: var(--accent);">{{ error }}</small>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.slug.label(class="form-label") }}
+                    {{ form.slug(class="form-control", placeholder="slug-de-l-actualite") }}
+                    <small class="text-muted">URL conviviale (lettres minuscules, tirets)</small>
+                    {% for error in form.slug.errors %}
+                    <small style="color: var(--accent);">{{ error }}</small>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.categorie.label(class="form-label") }}
+                    {{ form.categorie(class="form-control") }}
+                    {% for error in form.categorie.errors %}
+                    <small style="color: var(--accent);">{{ error }}</small>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.sous_categorie.label(class="form-label") }}
+                    {{ form.sous_categorie(class="form-control", placeholder="Optionnel") }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.resume.label(class="form-label") }}
+                    {{ form.resume(class="form-control", placeholder="Résumé court (max 300 caractères)", maxlength="300") }}
+                    {% for error in form.resume.errors %}
+                    <small style="color: var(--accent);">{{ error }}</small>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.contenu.label(class="form-label") }}
+                    <div class="editor-toolbar">
+                        <!-- Boutons de formatage pour l'éditeur -->
+                        <button type="button" class="format-btn" data-command="bold"><i class="fas fa-bold"></i></button>
+                        <button type="button" class="format-btn" data-command="italic"><i class="fas fa-italic"></i></button>
+                        <!-- Ajouter d'autres boutons selon vos besoins -->
+                    </div>
+                    {{ form.contenu(class="form-control editor-content") }}
+                    {% for error in form.contenu.errors %}
+                    <small style="color: var(--accent);">{{ error }}</small>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.image.label(class="form-label") }}
+                    {% if actualite and actualite.image_url %}
+                    <img src="{{ actualite.image_url }}" alt="Image actuelle" class="image-preview">
+                    {% endif %}
+                    {{ form.image(class="form-control") }}
+                    {{ form.image_alt(class="form-control mt-2", placeholder="Description de l'image (pour l'accessibilité)") }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.date_evenement.label(class="form-label") }}
+                    {{ form.date_evenement(class="form-control") }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.lieu.label(class="form-label") }}
+                    {{ form.lieu(class="form-control", placeholder="Lieu de l'événement") }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.pieces_jointes.label(class="form-label") }}
+                    {{ form.pieces_jointes(class="form-control") }}
+                    {% if actualite and actualite.pieces_jointes.count() > 0 %}
+                    <ul class="file-list">
+                        {% for piece in actualite.pieces_jointes %}
+                        <li class="file-item">
+                            <i class="fas fa-file-{{ 'pdf' if piece.type_fichier == 'pdf' else 'word' if piece.type_fichier in ['doc', 'docx'] else 'image' }} file-icon"></i>
+                            <span>{{ piece.nom }} ({{ (piece.taille / 1024)|round(2) }} KB)</span>
+                            <div class="file-actions">
+                                <a href="{{ piece.url }}" target="_blank"><i class="fas fa-download"></i></a>
+                                <a href="{{ url_for('actualites.supprimer_piece_jointe', piece_id=piece.id) }}" 
+                                   class="delete-file" 
+                                   onclick="return confirm('Supprimer ce fichier ?');">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <div style="display: flex; gap: 2rem;">
+                        <div>
+                            {{ form.statut.label(class="form-label") }}
+                            {{ form.statut(class="form-control") }}
+                        </div>
+                        <div>
+                            {{ form.est_important.label(class="form-label") }}
+                            {{ form.est_important() }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    {{ form.mots_cles.label(class="form-label") }}
+                    {{ form.mots_cles(class="form-control", placeholder="Mots-clés séparés par des virgules") }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form.meta_description.label(class="form-label") }}
+                    {{ form.meta_description(class="form-control", placeholder="Description pour le référencement (max 160 caractères)", maxlength="160") }}
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{{ url_for('actualites.admin_actualites') }}" class="btn btn-secondary">
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {{ 'Mettre à jour' if actualite else 'Publier' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<script>
+    // Script pour l'éditeur de texte simplifié
+    document.querySelectorAll('.format-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const command = this.getAttribute('data-command');
+            document.execCommand(command, false, null);
+        });
+    });
+    
+    // Génération automatique du slug à partir du titre
+    document.getElementById('titre').addEventListener('input', function() {
+        const slug = this.value.toLowerCase()
+            .replace(/[^\w\s]/gi, '')
+            .replace(/\s+/g, '-');
+        document.getElementById('slug').value = slug;
+    });
+</script>
+{% endblock %}

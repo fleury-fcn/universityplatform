@@ -9,7 +9,7 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..models.Users import User
 from app.extensions import db, mail
-from .forms import ResetPasswordRequestForm, ResetPasswordForm
+from .forms1 import ResetPasswordRequestForm, ResetPasswordForm
 from flask import current_app
 from itsdangerous import URLSafeTimedSerializer
 

@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Styles spécifiques à l'administration */
+    .admin-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--secondary);
+    }
+
+    .admin-title {
+        color: var(--primary);
+        font-size: 2rem;
+    }
+
+    .admin-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .admin-btn {
+        padding: 0.7rem 1.5rem;
+        border-radius: 5px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--accent);
+        transform: translateY(-2px);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary);
+        margin: 0.5rem 0;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 1rem;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        overflow-x: auto;
+    }
+
+    .actualites-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .actualites-table th, 
+    .actualites-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+
+    .actualites-table th {
+        background-color: var(--primary);
+        color: white;
+        font-weight: 600;
+    }
+
+    .actualites-table tr:hover {
+        background-color: rgba(10, 36, 99, 0.05);
+    }
+
+    .status-published {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+
+    .status-draft {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+
+    .action-btn {
+        padding: 0.5rem;
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        transition: all 0.3s;
+    }
+
+    .edit-btn {
+        background-color: var(--primary);
+    }
+
+    .edit-btn:hover {
+        background-color: #0b5ed7;
+    }
+
+    .delete-btn {
+        background-color: var(--accent);
+    }
+
+    .delete-btn:hover {
+        background-color: #bb2d3b;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    .page-link {
+        padding: 0.5rem 1rem;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-decoration: none;
+        color: var(--primary);
+        transition: all 0.3s;
+    }
+
+    .page-link:hover, .page-link.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .search-filter {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        flex: 1;
+        min-width: 300px;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .filter-select {
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        min-width: 200px;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+    }
+
+    @media (max-width: 768px) {
+        .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .search-filter {
+            flex-direction: column;
+        }
+        
+        .search-input, .filter-select {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <!-- Votre sidebar existante -->
+    </aside>
+
+    <main class="main-content">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1 class="admin-title">
+                    <i class="fas fa-newspaper"></i> Administration des Actualités
+                </h1>
+                <div class="admin-actions">
+                    <a href="{{ url_for('actualites.ajouter_actualite') }}" class="admin-btn btn-primary">
+                        <i class="fas fa-plus"></i> Nouvelle Actualité
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Actualités</div>
+                    <div class="stat-value">{{ stats.total }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Publiées</div>
+                    <div class="stat-value">{{ stats.publie }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Brouillons</div>
+                    <div class="stat-value">{{ stats.brouillon }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Commentaires</div>
+                    <div class="stat-value">{{ stats.commentaires }}</div>
+                </div>
+            </div>
+
+            <!-- Recherche et Filtres -->
+            <form method="GET" action="{{ url_for('actualites.admin_actualites') }}" class="search-filter">
+                <input type="text" name="q" placeholder="Rechercher..." class="search-input" value="{{ request.args.get('q', '') }}">
+                <select name="statut" class="filter-select">
+                    <option value="">Tous statuts</option>
+                    <option value="publie" {% if request.args.get('statut') == 'publie' %}selected{% endif %}>Publié</option>
+                    <option value="brouillon" {% if request.args.get('statut') == 'brouillon' %}selected{% endif %}>Brouillon</option>
+                </select>
+                <select name="categorie" class="filter-select">
+                    <option value="">Toutes catégories</option>
+                    {% for categorie in categories %}
+                    <option value="{{ categorie }}" {% if request.args.get('categorie') == categorie %}selected{% endif %}>{{ categorie }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="admin-btn btn-primary">
+                    <i class="fas fa-filter"></i> Filtrer
+                </button>
+            </form>
+
+            <!-- Tableau des actualités -->
+            <div class="table-container">
+                <table class="actualites-table">
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Auteur</th>
+                            <th>Catégorie</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th>Vues</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for actualite in actualites.items %}
+                        <tr>
+                            <td>
+                                <strong>{{ actualite.titre }}</strong>
+                                {% if actualite.est_important %}
+                                <span style="color: var(--accent); margin-left: 0.5rem;"><i class="fas fa-star"></i></span>
+                                {% endif %}
+                            </td>
+                            <td>{{ actualite.auteur.prenom }} {{ actualite.auteur.nom }}</td>
+                            <td>{{ actualite.categorie }}</td>
+                            <td>{{ actualite.date_publication.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                {% if actualite.statut == 'publie' %}
+                                <span class="status-published">Publié</span>
+                                {% else %}
+                                <span class="status-draft">Brouillon</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ actualite.nombre_vues }}</td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <a href="{{ url_for('actualites.detail_actualite', actualite_id=actualite.id) }}" 
+                                       class="action-btn edit-btn" 
+                                       title="Voir">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('actualites.modifier_actualite', actualite_id=actualite.id) }}" 
+                                       class="action-btn edit-btn" 
+                                       title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="POST" 
+                                          action="{{ url_for('actualites.supprimer_actualite', actualite_id=actualite.id) }}" 
+                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette actualité ?');">
+                                        <button type="submit" class="action-btn delete-btn" title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="no-results">
+                                Aucune actualité trouvée. <a href="{{ url_for('actualites.ajouter_actualite') }}">Créer une nouvelle actualité</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if actualites.pages > 1 %}
+            <div class="pagination">
+                {% if actualites.has_prev %}
+                <a href="{{ url_for('actualites.admin_actualites', page=actualites.prev_num, q=request.args.get('q'), statut=request.args.get('statut'), categorie=request.args.get('categorie')) }}" 
+                   class="page-link">
+                   &laquo; Précédent
+                </a>
+                {% endif %}
+                
+                {% for page_num in actualites.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+                    {% if page_num %}
+                        {% if actualites.page == page_num %}
+                        <a href="{{ url_for('actualites.admin_actualites', page=page_num, q=request.args.get('q'), statut=request.args.get('statut'), categorie=request.args.get('categorie')) }}" 
+                           class="page-link active">
+                           {{ page_num }}
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('actualites.admin_actualites', page=page_num, q=request.args.get('q'), statut=request.args.get('statut'), categorie=request.args.get('categorie')) }}" 
+                           class="page-link">
+                           {{ page_num }}
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        <span class="page-link">...</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if actualites.has_next %}
+                <a href="{{ url_for('actualites.admin_actualites', page=actualites.next_num, q=request.args.get('q'), statut=request.args.get('statut'), categorie=request.args.get('categorie')) }}" 
+                   class="page-link">
+                   Suivant &raquo;
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}
