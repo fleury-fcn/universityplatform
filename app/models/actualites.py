@@ -31,11 +31,14 @@ class Actualite(db.Model):
     est_important = db.Column(db.Boolean, default=False)  # Pour mise en avant
     mots_cles = db.Column(db.String(255))  # Pour le référencement
     meta_description = db.Column(db.String(160))  # Pour le SEO
+    type_actualite = db.Column(db.String(150))
     
     # Relations
     auteur = db.relationship('User', backref='actualites')
     commentaires = db.relationship('Commentaire', backref='actualite', lazy='dynamic', cascade='all, delete-orphan')
     pieces_jointes = db.relationship('PieceJointe', backref='actualite', lazy='dynamic', cascade='all, delete-orphan')
+
+    
     
     def __repr__(self):
         return f'<Actualite {self.titre}>'
@@ -51,6 +54,7 @@ class Actualite(db.Model):
         if self.date_evenement:
             return self.date_evenement.strftime('%d %B %Y à %H:%M')
         return None
+
 
 class Commentaire(db.Model):
     """
@@ -70,6 +74,7 @@ class Commentaire(db.Model):
     
     def __repr__(self):
         return f'<Commentaire {self.id} sur Actualite {self.actualite_id}>'
+
 
 class PieceJointe(db.Model):
     """
@@ -102,3 +107,12 @@ class CategorieActualite(db.Model):
     def __repr__(self):
         return f'<CategorieActualite {self.nom}>'
 
+class Pays(db.Model):
+    __tablename__ = 'pays'
+    code = db.Column(db.String(2), primary_key=True)
+    nom = db.Column(db.String(100), nullable=False)
+
+class Departement(db.Model):
+    __tablename__ = 'departements'
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(100), nullable=False)

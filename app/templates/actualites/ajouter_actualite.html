@@ -2,143 +2,582 @@
 
 {% block content %}
 <style>
-    .form-container {
-        max-width: 800px;
-        margin: 2rem auto;
+    :root {
+    --background-main: #f8f9fa;
+    --text-main: #212529;
+    --primary: #0a2463;
+    --secondary: #ffd700;
+    --accent: #d7263d;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --professor: #8e44ad;
+    --student: #3498db;
+    --admin: #e74c3c;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --warning-bg: #fff3cd;
+    --warning-border: #ffeeba;
+    --news-bg: rgba(255, 255, 255, 0.9);
+    --exchange-bg: rgba(10, 36, 99, 0.9);
+        }
+
+        body.light-mode {
+            --background-main: #f8f9fa;
+            --text-main: #212529;
+        }
+
+        body.dark-mode {
+            --background-main: #181a1b;
+            --text-main: #f8f9fa;
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+        }
+
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        background: var(--primary);
+        color: var(--text-light);
+        padding: 2rem 1rem;
+        position: relative;
+        z-index: 10;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid var(--secondary);
+        object-fit: cover;
+        margin-bottom: 1rem;
+        transition: transform 0.3s;
+    }
+
+    .avatar:hover {
+        transform: scale(1.1);
+    }
+
+    .user-role {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        color: var(--text-light);
+        font-weight: bold;
+    }
+
+    .role-etudiant { background: var(--student); }
+    .role-professeur { background: var(--professor); }
+    .role-administrateur { background: var(--admin); }
+
+    .nav-menu {
+        margin-top: 2rem;
+    }
+
+    .nav-item {
+        padding: 0.8rem 1rem;
+        margin: 0.5rem 0;
+        border-radius: 8px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        color: var(--text-light);
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .nav-item::before {
+        content: '';
+        position: absolute;
+        left: -100%;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s;
+        z-index: -1;
+    }
+
+    .nav-item:hover::before, .nav-item.active::before {
+        left: 0;
+    }
+
+    .nav-item:hover, .nav-item.active {
+        transform: translateX(5px);
+    }
+
+    .nav-item i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+        color: var(--secondary);
+    }
+
+    /* Utilise les variables partout où tu veux des couleurs adaptatives */
+        .main-content {
+            background-color: var(--background-main);
+            color: var(--text-main);
+            /* ...autres styles... */
+        }
+        .form-container {
+            background: var(--background-main);
+            color: var(--text-main);
+            /* ...autres styles... */
+        }
+    .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, var(--primary), #0b5ed7);
+        color: var(--text-light);
         padding: 2rem;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+        animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
     }
 
     .form-title {
-        color: var(--primary);
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--secondary);
+        font-size: 2.2rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .form-title i {
+        color: var(--secondary);
+        font-size: 2rem;
+    }
+
+    .form-content {
+        padding: 2.5rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
     }
 
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
     }
 
     .form-label {
         display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
+        margin-bottom: 0.8rem;
+        font-weight: 700;
         color: var(--primary);
+        font-size: 1rem;
+        position: relative;
+    }
+
+    .form-label::before {
+        content: '';
+        position: absolute;
+        left: -15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 100%;
+        background: var(--secondary);
+        border-radius: 2px;
     }
 
     .form-control {
         width: 100%;
-        padding: 0.8rem;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
         font-size: 1rem;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
+        background: #fafafa;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
     }
 
     .form-control:focus {
         border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(10, 36, 99, 0.1), inset 0 2px 5px rgba(0, 0, 0, 0.05);
         outline: none;
+        transform: translateY(-2px);
     }
 
     textarea.form-control {
         min-height: 150px;
         resize: vertical;
+        font-family: inherit;
     }
 
-    .form-actions {
+    .editor-toolbar {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 0.8rem;
+        border-radius: 10px 10px 0 0;
+        border: 2px solid #e0e0e0;
+        border-bottom: none;
         display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        margin-top: 2rem;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
 
-    .btn {
-        padding: 0.8rem 1.5rem;
-        border-radius: 5px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s;
+    .format-btn {
+        padding: 0.5rem 0.8rem;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
         cursor: pointer;
-        border: none;
+        transition: all 0.3s;
+        color: var(--primary);
+        font-weight: bold;
     }
 
-    .btn-primary {
-        background-color: var(--primary);
+    .format-btn:hover {
+        background: var(--primary);
         color: white;
+        transform: translateY(-1px);
     }
 
-    .btn-primary:hover {
-        background-color: #0b5ed7;
-        transform: translateY(-2px);
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-        transform: translateY(-2px);
+    .editor-content {
+        border: 2px solid #e0e0e0;
+        border-radius: 0 0 10px 10px;
+        border-top: none;
     }
 
     .image-preview {
         max-width: 300px;
         max-height: 200px;
         margin: 1rem 0;
-        border-radius: 5px;
+        border-radius: 10px;
         display: block;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+    .image-preview:hover {
+        transform: scale(1.05);
     }
 
     .file-list {
         list-style: none;
         padding: 0;
         margin: 1rem 0;
+        display: grid;
+        gap: 0.8rem;
     }
 
     .file-item {
         display: flex;
         align-items: center;
         gap: 1rem;
-        padding: 0.8rem;
-        background: #b3e437;
-        border-radius: 5px;
-        margin-bottom: 0.5rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .file-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
     .file-icon {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
+        color: var(--primary);
     }
 
     .file-actions {
         margin-left: auto;
+        display: flex;
+        gap: 0.8rem;
+    }
+
+    .file-actions a {
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: all 0.3s;
+        color: var(--primary);
+    }
+
+    .file-actions a:hover {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.1);
     }
 
     .delete-file {
-        color: var(--accent);
+        color: var(--accent) !important;
+    }
+
+    .delete-file:hover {
+        background: var(--accent) !important;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s;
+    }
+
+    .checkbox-group:hover {
+        border-color: var(--primary);
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--primary);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn {
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s ease;
         cursor: pointer;
+        border: none;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
     }
 
-    .editor-toolbar {
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transition: all 0.6s;
+        transform: translate(-50%, -50%);
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, var(--primary), #0b5ed7);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, var(--accent), #e74c3c);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(215, 38, 61, 0.3);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(45deg, #6c757d, #5a6268);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(45deg, #5a6268, #495057);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+    }
+
+    .text-muted {
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-style: italic;
+        margin-top: 0.5rem;
+    }
+
+    .form-error {
+        color: var(--accent);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .form-error::before {
+        content: '⚠';
+        font-size: 1rem;
+    }
+
+    
+    /* Ajouts pour les types d'actualités */
+    .news-type-selector {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .type-option {
+        flex: 1;
+        text-align: center;
+        padding: 1.5rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid #e0e0e0;
         background: #f8f9fa;
-        padding: 0.5rem;
-        border-radius: 5px 5px 0 0;
-        border: 1px solid #ddd;
-        border-bottom: none;
+        position: relative;
+        overflow: hidden;
     }
 
-    .editor-content {
-        border: 1px solid #ddd;
-        border-radius: 0 0 5px 5px;
+    .type-option::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: transparent;
+        transition: all 0.3s;
     }
 
+    .type-option:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    .type-option.active {
+        border-color: var(--primary);
+        background: white;
+    }
+
+    .type-option.active::before {
+        background: var(--primary);
+    }
+
+    .type-ista.active::before {
+        background: var(--primary);
+    }
+
+    .type-nationale.active::before {
+        background: var(--accent);
+    }
+
+    .type-internationale.active::before {
+        background: var(--professor);
+    }
+
+    .type-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+    }
+
+    .type-ista .type-icon {
+        color: var(--primary);
+    }
+
+    .type-nationale .type-icon {
+        color: var(--accent);
+    }
+
+    .type-internationale .type-icon {
+        color: var(--professor);
+    }
+
+    .type-option.active .type-icon {
+        animation: bounce 0.5s;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    /* Styles spécifiques pour les champs conditionnels */
+    .conditional-field {
+        display: none;
+        animation: fadeIn 0.5s;
+    }
+
+    /* Responsive */
     @media (max-width: 768px) {
-        .form-container {
-            padding: 1rem;
+        .news-type-selector {
+            flex-direction: column;
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .sidebar {
+            display: none;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
         }
         
         .form-actions {
@@ -147,171 +586,541 @@
         
         .btn {
             width: 100%;
+            justify-content: center;
+        }
+
+        .form-content {
+            padding: 1.5rem;
+        }
+
+        .form-title {
+            font-size: 1.8rem;
         }
     }
-    .form-actions button.btn-primary { display: inline-block !important; }
+
+    @media (max-width: 480px) {
+        .main-content {
+            padding: 1rem;
+        }
+
+        .form-header {
+            padding: 1.5rem;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Animation d'entrée */
+    .form-container {
+        animation: slideUp 0.6s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-group {
+        animation: fadeIn 0.8s ease;
+        animation-fill-mode: both;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Affichage standard et compressé des images dans les cartes d'actualités */
+        .news-card .news-image,
+        .news-image {
+            width: 100%;
+            height: 180px;           /* Hauteur fixe pour toutes les images */
+            object-fit: cover;       /* Remplit la carte sans déformation */
+            border-radius: 10px 10px 0 0;
+            display: block;
+            background: #f0f0f0;
+        }
+
+        
+
+        body.light-mode {
+            --background-main: #f8f9fa;
+            --text-main: #212529;
+        }
+
+        body.dark-mode {
+            --background-main: #181a1b;
+            --text-main: #f8f9fa;
+            --primary: #0a2463;
+            --secondary: #ffd700;
+            --accent: #d7263d;
+        }
+
+        body {
+    background: var(--background-main);
+    color: var(--text-main);
+    transition: background 0.3s, color 0.3s;
+        }
+
+        .editor-toolbar {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid #e0e0e0;
+            border-bottom: none;
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: -8px;
+        }
+        .editor-toolbar button {
+            padding: 0.3rem 0.7rem;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .editor-toolbar button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+
 </style>
 
 <div class="dashboard-container">
+    <div style="position: absolute; top: 20px; right: 30px; z-index: 100;">
+    <select id="theme-switcher" class="form-control" style="width:auto;display:inline-block;">
+        <option value="system">Système</option>
+        <option value="light">Clair</option>
+        <option value="dark">Sombre</option>
+    </select>
+</div>
     <aside class="sidebar">
-        <!-- Votre sidebar existante -->
+        <div class="user-profile">
+            <div class="avatar-container">
+                <img src="{{ current_user.get_avatar_url() }}" 
+                     alt="Photo de profil" class="avatar">
+                <div>
+                    <h3 style="color: var(--text-light);">{{ current_user.prenom }} {{ current_user.nom }}</h3>
+                    <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="{{ url_for('principale.Page_Principale') }}" class="nav-item">
+                <i class="fas fa-home"></i> Accueil
+            </a>
+            <a href="{{ url_for('actualites.liste_actualites') }}" class="nav-item active">
+                <i class="fas fa-newspaper"></i> Actualités
+            </a>
+            <a href="{{ url_for('registrationbp.inscription') }}" class="nav-item">
+                <i class="fas fa-edit"></i> Inscriptions
+            </a>
+            <a href="{{ url_for('courses.courses') }}" class="nav-item">
+                <i class="fas fa-book-open"></i> Cours
+            </a>
+            <a href="{{ url_for('syllabusbp.syllabus') }}" class="nav-item">
+                <i class="fas fa-book"></i> Syllabus
+            </a>
+            <a href="{{ url_for('books.library') }}" class="nav-item">
+                <i class="fas fa-book"></i> Bibliothèque
+            </a>
+            <a href="{{ url_for('tuyaux.PageTuyaux') }}" class="nav-item">
+                <i class="fas fa-chalkboard-teacher"></i> Tuyaux
+            </a>
+            <a href="{{ url_for('clubs.clubs_page') }}" class="nav-item">
+                <i class="fas fa-users"></i> Clubs
+            </a>
+            <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
+                <i class="fas fa-envelope"></i> Messages
+            </a>
+            <a href="{{ url_for('profile.profile') }}" class="nav-item">
+                <i class="fas fa-user-cog"></i> Profil
+            </a>
+            <a href="{{ url_for('admin.PageAdmin') }}" class="nav-item">
+                <i class="fas fa-cog"></i> Admin
+            </a>
+        </nav>
     </aside>
 
     <main class="main-content">
         <div class="form-container">
-            <h1 class="form-title">
-                <i class="fas fa-{{ 'edit' if actualite else 'plus' }}"></i> 
-                {{ 'Modifier' if actualite else 'Ajouter' }} une Actualité
-            </h1>
+            <div class="form-header">
+                <h1 class="form-title">
+                    <i class="fas fa-{{ 'edit' if actualite else 'plus' }}"></i> 
+                    {{ 'Modifier' if actualite else 'Ajouter' }} une Actualité
+                </h1>
+            </div>
             
-            <form method="POST" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                
-                <div class="form-group">
-                    {{ form.titre.label(class="form-label") }}
-                    {{ form.titre(class="form-control", placeholder="Titre de l'actualité") }}
-                    {% for error in form.titre.errors %}
-                    <small style="color: var(--accent);">{{ error }}</small>
-                    {% endfor %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.slug.label(class="form-label") }}
-                    {{ form.slug(class="form-control", placeholder="slug-de-l-actualite") }}
-                    <small class="text-muted">URL conviviale (lettres minuscules, tirets)</small>
-                    {% for error in form.slug.errors %}
-                    <small style="color: var(--accent);">{{ error }}</small>
-                    {% endfor %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.categorie.label(class="form-label") }}
-                    {{ form.categorie(class="form-control") }}
-                    {% for error in form.categorie.errors %}
-                    <small style="color: var(--accent);">{{ error }}</small>
-                    {% endfor %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.sous_categorie.label(class="form-label") }}
-                    {{ form.sous_categorie(class="form-control", placeholder="Optionnel") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.resume.label(class="form-label") }}
-                    {{ form.resume(class="form-control", placeholder="Résumé court (max 300 caractères)", maxlength="300") }}
-                    {% for error in form.resume.errors %}
-                    <small style="color: var(--accent);">{{ error }}</small>
-                    {% endfor %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.contenu.label(class="form-label") }}
-                    <div class="editor-toolbar">
-                        <!-- Boutons de formatage pour l'éditeur -->
-                        <button type="button" class="format-btn" data-command="bold"><i class="fas fa-bold"></i></button>
-                        <button type="button" class="format-btn" data-command="italic"><i class="fas fa-italic"></i></button>
-                        <!-- Ajouter d'autres boutons selon vos besoins -->
-                    </div>
-                    {{ form.contenu(class="form-control editor-content") }}
-                    {% for error in form.contenu.errors %}
-                    <small style="color: var(--accent);">{{ error }}</small>
-                    {% endfor %}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.image.label(class="form-label") }}
-                    {% if actualite and actualite.image_url %}
-                    <img src="{{ actualite.image_url }}" alt="Image actuelle" class="image-preview">
-                    {% endif %}
-                    {{ form.image(class="form-control") }}
-                    {{ form.image_alt(class="form-control mt-2", placeholder="Description de l'image (pour l'accessibilité)") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.date_evenement.label(class="form-label") }}
-                    {{ form.date_evenement(class="form-control") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.lieu.label(class="form-label") }}
-                    {{ form.lieu(class="form-control", placeholder="Lieu de l'événement") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.pieces_jointes.label(class="form-label") }}
-                    {{ form.pieces_jointes(class="form-control") }}
-                    {% if actualite and actualite.pieces_jointes.count() > 0 %}
-                    <ul class="file-list">
-                        {% for piece in actualite.pieces_jointes %}
-                        <li class="file-item">
-                            <i class="fas fa-file-{{ 'pdf' if piece.type_fichier == 'pdf' else 'word' if piece.type_fichier in ['doc', 'docx'] else 'image' }} file-icon"></i>
-                            <span>{{ piece.nom }} ({{ (piece.taille / 1024)|round(2) }} KB)</span>
-                            <div class="file-actions">
-                                <a href="{{ piece.url }}" target="_blank"><i class="fas fa-download"></i></a>
-                                <a href="{{ url_for('actualites.supprimer_piece_jointe', piece_id=piece.id) }}" 
-                                   class="delete-file" 
-                                   onclick="return confirm('Supprimer ce fichier ?');">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </div>
-                        </li>
+            <div class="form-content">
+
+                 <!-- Bloc pour afficher les messages flash -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} mt-2">
+                            {{ message }}
+                        </div>
                         {% endfor %}
-                    </ul>
                     {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <div style="display: flex; gap: 2rem;">
-                        <div>
+                    {% endwith %}
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Sélecteur de type d'actualité -->
+                    <!-- Utilisation du champ WTForms (recommandé si tu utilises Flask-WTF) -->
+                    <div class="form-group full-width">
+                        {{ form.type_actualite.label(class="form-label") }}
+                        {{ form.type_actualite(class="form-control") }}
+                        {% for error in form.type_actualite.errors %}
+                        <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-grid">
+                        <!-- Champs communs à tous les types -->
+                        <div class="form-group">
+                            {{ form.titre.label(class="form-label") }}
+                            {{ form.titre(class="form-control", placeholder="Titre de l'actualité") }}
+                            {% for error in form.titre.errors %}
+                            <div class="form-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Champs spécifiques aux actualités nationales/internationales -->
+                        <div class="form-group conditional-field" id="pays-field">
+                            {{ form.pays.label(class="form-label") }}
+                            {{ form.pays(class="form-control") }}
+                            {% for error in form.pays.errors %}
+                            <div class="form-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group conditional-field" id="ville-field">
+                            {{ form.ville.label(class="form-label") }}
+                            {{ form.ville(class="form-control", placeholder="Ville concernée") }}
+                            {% for error in form.ville.errors %}
+                            <div class="form-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Champs spécifiques aux actualités ISTA -->
+                        <div class="form-group conditional-field" id="departement-field">
+                            {{ form.departement.label(class="form-label") }}
+                            {{ form.departement(class="form-control") }}
+                            {% for error in form.departement.errors %}
+                            <div class="form-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.slug.label(class="form-label") }}
+                            {{ form.slug(class="form-control", placeholder="slug-de-l-actualite") }}
+                            <div class="text-muted">URL conviviale (lettres minuscules, tirets)</div>
+                            {% for error in form.slug.errors %}
+                            <div class="form-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.categorie.label(class="form-label") }}
+                            {{ form.categorie(class="form-control") }}
+                            {% for error in form.categorie.errors %}
+                            <div class="form-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.sous_categorie.label(class="form-label") }}
+                            {{ form.sous_categorie(class="form-control", placeholder="Optionnel") }}
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            {{ form.resume.label(class="form-label") }}
+                            <div class="editor-toolbar" data-target="resume">
+                                <button type="button" onclick="insertAtCursor('**', '**', 'resume')"><b>Gras</b></button>
+                                <button type="button" onclick="insertAtCursor('*', '*', 'resume')"><i>Italique</i></button>
+                                <button type="button" onclick="insertAtCursor('__', '__', 'resume')"><u>Souligné</u></button>
+                                <button type="button" onclick="insertAtCursor('- ', '', 'resume')">Liste</button>
+                                <button type="button" onclick="insertLink('resume')">Lien</button>
+                            </div>
+                            {{ form.resume(class="form-control custom-textarea", placeholder="Résumé court (max 300 caractères)", maxlength="300") }}
+                            {% for error in form.resume.errors %}
+                            <div class="form-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            {{ form.contenu.label(class="form-label") }}
+                            <div class="editor-toolbar" data-target="contenu">
+                                <button type="button" onclick="insertAtCursor('**', '**', 'contenu')"><b>Gras</b></button>
+                                <button type="button" onclick="insertAtCursor('*', '*', 'contenu')"><i>Italique</i></button>
+                                <button type="button" onclick="insertAtCursor('__', '__', 'contenu')"><u>Souligné</u></button>
+                                <button type="button" onclick="insertAtCursor('- ', '', 'contenu')">Liste</button>
+                                <button type="button" onclick="insertLink('contenu')">Lien</button>
+                            </div>
+                            {{ form.contenu(class="form-control custom-textarea") }}
+                            {% for error in form.contenu.errors %}
+                            <div class="form-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.image.label(class="form-label") }}
+                            {% if actualite and actualite.image_url %}
+                            <img src="{{ actualite.image_url }}" alt="Image actuelle" class="image-preview">
+                            {% endif %}
+                            {{ form.image(class="form-control") }}
+                            {{ form.image_alt(class="form-control mt-2", placeholder="Description de l'image (pour l'accessibilité)", style="margin-top: 0.5rem;") }}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.date_evenement.label(class="form-label") }}
+                            {{ form.date_evenement(class="form-control", type="datetime-local") }}
+                           
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            {{ form.lieu.label(class="form-label") }}
+                            {{ form.lieu(class="form-control", placeholder="Lieu de l'événement") }}
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            {{ form.pieces_jointes.label(class="form-label") }}
+                            {{ form.pieces_jointes(class="form-control") }}
+                            {% if actualite and actualite.pieces_jointes.count() > 0 %}
+                            <ul class="file-list">
+                                {% for piece in actualite.pieces_jointes %}
+                                <li class="file-item">
+                                    <i class="fas fa-file-{{ 'pdf' if piece.type_fichier == 'pdf' else 'word' if piece.type_fichier in ['doc', 'docx'] else 'image' }} file-icon"></i>
+                                    <span>{{ piece.nom }} ({{ (piece.taille / 1024)|round(2) }} KB)</span>
+                                    <div class="file-actions">
+                                        <a href="{{ piece.url }}" target="_blank"><i class="fas fa-download"></i></a>
+                                        <a href="{{ url_for('actualites.supprimer_piece_jointe', piece_id=piece.id) }}" 
+                                           class="delete-file" 
+                                           onclick="return confirm('Supprimer ce fichier ?');">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
                             {{ form.statut.label(class="form-label") }}
                             {{ form.statut(class="form-control") }}
                         </div>
-                        <div>
-                            {{ form.est_important.label(class="form-label") }}
-                            {{ form.est_important() }}
+                        
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                {{ form.est_important() }}
+                                {{ form.est_important.label(class="form-label", style="margin: 0;") }}
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            {{ form.mots_cles.label(class="form-label") }}
+                            {{ form.mots_cles(class="form-control", placeholder="Mots-clés séparés par des virgules") }}
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            {{ form.meta_description.label(class="form-label") }}
+                            {{ form.meta_description(class="form-control", placeholder="Description pour le référencement (max 160 caractères)", maxlength="160") }}
                         </div>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    {{ form.mots_cles.label(class="form-label") }}
-                    {{ form.mots_cles(class="form-control", placeholder="Mots-clés séparés par des virgules") }}
-                </div>
-                
-                <div class="form-group">
-                    {{ form.meta_description.label(class="form-label") }}
-                    {{ form.meta_description(class="form-control", placeholder="Description pour le référencement (max 160 caractères)", maxlength="160") }}
-                </div>
-                
-                <div class="form-actions">
-                    <a href="{{ url_for('actualites.admin_actualites') }}" class="btn btn-secondary">
-                        Annuler
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> {{ 'Mettre à jour' if actualite else 'Publier' }}
-                    </button>
-                </div>
-            </form>
+                    
+                    <div class="form-actions">
+                        <a href="{{ url_for('actualites.admin_actualites') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ 'Mettre à jour' if actualite else 'Publier' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </main>
 </div>
 
+
 <script>
-    // Script pour l'éditeur de texte simplifié
-    document.querySelectorAll('.format-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const command = this.getAttribute('data-command');
-            document.execCommand(command, false, null);
+function insertAtCursor(before, after, fieldName) {
+    var textarea = document.querySelector('textarea[name="' + fieldName + '"]');
+    if (!textarea) return;
+    var start = textarea.selectionStart;
+    var end = textarea.selectionEnd;
+    var text = textarea.value;
+    textarea.value = text.substring(0, start) + before + text.substring(start, end) + after + text.substring(end);
+    textarea.focus();
+    textarea.selectionEnd = end + before.length + after.length;
+}
+
+function insertLink(fieldName) {
+    var textarea = document.querySelector('textarea[name="' + fieldName + '"]');
+    if (!textarea) return;
+    var url = prompt("Entrez l'URL du lien :");
+    if (url) {
+        var start = textarea.selectionStart;
+        var end = textarea.selectionEnd;
+        var selected = textarea.value.substring(start, end) || "texte du lien";
+        var link = '[' + selected + '](' + url + ')';
+        textarea.setRangeText(link, start, end, 'end');
+        textarea.focus();
+    }
+}
+</script>
+
+<script>
+
+    // Gestion du sélecteur de type d'actualité
+    document.querySelectorAll('.type-option').forEach(option => {
+        option.addEventListener('click', function() {
+            // Retirer la classe active de toutes les options
+            document.querySelectorAll('.type-option').forEach(opt => {
+                opt.classList.remove('active');
+                opt.querySelector('input[type="radio"]').checked = false;
+            });
+            
+            // Ajouter la classe active à l'option sélectionnée
+            this.classList.add('active');
+            this.querySelector('input[type="radio"]').checked = true;
+            
+            // Gérer l'affichage des champs conditionnels
+            const type = this.getAttribute('data-type');
+            updateConditionalFields(type);
         });
     });
     
-    // Génération automatique du slug à partir du titre
-    document.getElementById('titre').addEventListener('input', function() {
-        const slug = this.value.toLowerCase()
-            .replace(/[^\w\s]/gi, '')
-            .replace(/\s+/g, '-');
-        document.getElementById('slug').value = slug;
+    // Fonction pour mettre à jour les champs conditionnels
+    function updateConditionalFields(type) {
+        // Masquer tous les champs conditionnels
+        document.querySelectorAll('.conditional-field').forEach(field => {
+            field.style.display = 'none';
+        });
+        
+        // Afficher les champs pertinents selon le type
+        if (type === 'ista') {
+            document.getElementById('departement-field').style.display = 'block';
+        } else if (type === 'nationale' || type === 'internationale') {
+            document.getElementById('pays-field').style.display = 'block';
+            document.getElementById('ville-field').style.display = 'block';
+            
+            // Pré-remplir le pays avec la valeur par défaut pour les actualités nationales
+            if (type === 'nationale') {
+                document.querySelector('select[name="pays"]').value = 'MA';
+            }
+        }
+    }
+    
+    // Initialiser les champs au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        const initialType = '{{ actualite.type_actualite if actualite else "ista" }}';
+        updateConditionalFields(initialType);
+        
+        
+        // Génération automatique du slug à partir du titre
+        const titreInput = document.querySelector('input[name="titre"]');
+        const slugInput = document.querySelector('input[name="slug"]');
+        
+        if (titreInput && slugInput) {
+            titreInput.addEventListener('input', function() {
+                const slug = this.value.toLowerCase()
+                    .replace(/[^\w\s]/gi, '')
+                    .replace(/\s+/g, '-');
+                slugInput.value = slug;
+            });
+        }
+
+        // Animation au scroll pour les groupes de formulaire
+        const formGroups = document.querySelectorAll('.form-group');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateX(0)';
+                }
+            });
+        });
+
+        formGroups.forEach((group, index) => {
+            group.style.opacity = '0';
+            group.style.transform = 'translateX(-20px)';
+            group.style.transition = `all 0.6s ease ${index * 0.1}s`;
+            observer.observe(group);
+        });
+
+        // Validation en temps réel
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() !== '') {
+                    this.style.borderColor = '#28a745';
+                    this.style.boxShadow = '0 0 0 4px rgba(40, 167, 69, 0.1)';
+                }
+            });
+        });
     });
 </script>
+
+<script>
+function setTheme(mode) {
+    if (mode === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.body.classList.remove('light-mode');
+    } else if (mode === 'light') {
+        document.body.classList.add('light-mode');
+        document.body.classList.remove('dark-mode');
+    } else {
+        // Système
+        document.body.classList.remove('dark-mode', 'light-mode');
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-mode');
+        }
+    }
+    localStorage.setItem('theme', mode);
+}
+
+// Initialisation au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('theme-switcher');
+    const saved = localStorage.getItem('theme') || 'system';
+    select.value = saved;
+    setTheme(saved);
+
+    select.addEventListener('change', function() {
+        setTheme(this.value);
+    });
+
+    // Réagir au changement système
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (localStorage.getItem('theme') === 'system') setTheme('system');
+    });
+});
+</script>
+
 {% endblock %}

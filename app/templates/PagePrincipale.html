@@ -601,72 +601,80 @@
         }
 
         /* News Section */
-        .news-section {
-            margin-top: 2rem;
-        }
 
         .news-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.2rem;
             margin-top: 1rem;
-        }
+                    }
 
-        .news-card {
-            /*background: var(--news-bg);*/
-            background: rgb(229, 226, 143);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
+            .news-card {
+                background: #94eeeb;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+                transition: transform 0.2s;
+                min-width: 0;
+                max-width: 320px;
+                margin: auto;
+            }
 
-        .news-card:hover {
-            transform: translateY(-5px);
-        }
+            .news-card:hover {
+                transform: translateY(-4px) scale(1.02);
+            }
 
-        .news-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
+            .news-image {
+                width: 100%;
+                height: 120px;
+                object-fit: cover;
+                border-radius: 10px 10px 0 0;
+                display: block;
+                background: #f0f0f0;
+            }
 
-        .news-content {
-            padding: 1.5rem;
-        }
+            .news-content {
+                padding: 0.8rem 1rem;
+            }
 
-        .news-category {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            background: var(--secondary);
-            color: var(--text-dark);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-bottom: 0.8rem;
-            font-weight: bold;
-        }
+            .news-category {
+                font-size: 0.75rem;
+                padding: 0.15rem 0.5rem;
+                margin-bottom: 0.4rem;
+                color: #856404;
+                background: #fff3cd;
+                border-radius: 5px;
+                display: inline-block;
+            }
 
-        .news-title {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
+            .news-title {
+                font-size: 1rem;
+                font-weight: 600;
+                margin-bottom: 0.2rem;
+                color: #222;
+            }
 
-        .news-date {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
+            .news-date {
+                font-size: 0.75rem;
+                color: #888;
+                margin-bottom: 0.5rem;
+            }
 
-        .news-excerpt {
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
+            .news-excerpt {
+                font-size: 0.85rem;
+                color: #444;
+                margin-bottom: 0.7rem;
+                line-height: 1.4;
+                max-height: 3.2em;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .btn.btn-secondary {
+                padding: 0.35rem 0.9rem;
+                font-size: 0.85rem;
+                border-radius: 20px;
+            }
 
         /* Exchange Rates */
         .exchange-rates {
@@ -1027,7 +1035,7 @@
         }
 
         .university-card {
-            background: rgb(243, 147, 147);
+            background: #94eeeb;
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -1352,6 +1360,8 @@
         }
 
         
+
+        
     </style>
 </head>
 <body>
@@ -1533,42 +1543,49 @@
 
             <!-- Actualités ISTA -->
                             
-                <div class="news-section">
-                    <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-newspaper"></i> Actualités ISTA
-                    </h2>
-                    
+            <div class="news-section">
+                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-newspaper"></i> Espace d'Actualités 
+                </h2>
+                
+                <div class="news-tabs" id="news-tabs">
+                    <div class="tab active" data-type="all">Toutes</div>
+                    <div class="tab active" data-type="ista">ISTA</div>
+                    <div class="tab" data-type="nationale">Nationale</div>
+                    <div class="tab" data-type="internationale">Internationale</div>
+                </div>
+                <div id="news-tab-content">
                     <div class="news-container">
-                        {% for actualite in actualites_recentes %}
-                        <div class="news-card">
-                            {% if actualite.image_url %}
-                            <img src="{{ actualite.image_url }}" alt="{{ actualite.image_alt }}" class="news-image">
-                            {% else %}
-                            <img src="{{ url_for('static', filename='images/default-news.jpg') }}" alt="Actualité ISTA" class="news-image">
-                            {% endif %}
+                    {% for actualite in actualites_recentes [:5]%}
+                        <div class="news-card{% if actualite.type_actualite %} news-type-{{ actualite.type_actualite }}{% endif %}">
+                            <img src="{{ actualite.image_url or url_for('static', filename='images/default-news.jpg') }}"
+                                alt="{{ actualite.image_alt or 'Actualité ISTA' }}"
+                                class="news-image">
                             <div class="news-content">
                                 <span class="news-category">{{ actualite.categorie }}</span>
                                 <h3 class="news-title">{{ actualite.titre }}</h3>
                                 <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 
+                                    <i class="far fa-calendar-alt"></i>
                                     {{ actualite.date_publication.strftime('%d %B %Y') }}
                                 </div>
                                 <p class="news-excerpt">{{ actualite.resume }}</p>
-                                <a href="{{ url_for('actualites.detail_actualite', actualite_id=actualite.id) }}" 
-                                class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                <a href="{{ url_for('actualites.detail_actualite', actualite_id=actualite.id) }}"
+                                class="btn btn-secondary">
                                 Lire plus
                                 </a>
                             </div>
                         </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 2rem;">
-                        <a href="{{ url_for('actualites.liste_actualites') }}" class="btn btn-primary">
-                            Voir toutes les actualités <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
+                    {% endfor %}
                 </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="{{ url_for('actualites.liste_actualites') }}" class="btn btn-primary">
+                        Voir toutes les actualités <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
             <!-- Universités Internationales -->
             <div class="universities-section">
                 <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -1887,267 +1904,254 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mise à jour de la date actuelle
-            function updateCurrentDate() {
-                const now = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                document.getElementById('current-date').textContent = now.toLocaleDateString('fr-FR', options);
-            }
-            
-            updateCurrentDate();
-            
-            // Gestion des onglets
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(`${tabId}-content`).classList.add('active');
-                });
-            });
-            
-            // Gestion des départements (Baccalauréat)
-            const deptButtons = document.querySelectorAll('.department-btn');
-            deptButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    deptButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const dept = this.getAttribute('data-dept');
-                    document.getElementById('actuariat-options').style.display = 'none';
-                    document.getElementById('genie-options').style.display = 'none';
-                    
-                    if (dept === 'actuariat') {
-                        document.getElementById('actuariat-options').style.display = 'flex';
-                    } else if (dept === 'genie') {
-                        document.getElementById('genie-options').style.display = 'flex';
-                    }
-                });
-            });
-            
-            // Gestion des années
-            const yearButtons = document.querySelectorAll('.year-btn');
-            yearButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    yearButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Gestion des spécialisations
-            const specButtons = document.querySelectorAll('.specialization-btn');
-            specButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    specButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Calendrier simple
-            let currentDate = new Date();
-            
-            function renderSimpleCalendar(date) {
-                const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", 
-                                   "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-                
-                document.getElementById('calendar-month-title').textContent = 
-                    `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-                
-                const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-                const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-                
-                const prevLastDay = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
-                const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-                const lastDayIndex = lastDay.getDay() === 0 ? 6 : lastDay.getDay() - 1;
-                
-                let days = '';
-                
-                // Jours du mois précédent
-                for (let i = firstDayIndex; i > 0; i--) {
-                    days += `<div class="calendar-day other-month">${prevLastDay - i + 1}</div>`;
-                }
-                
-                // Jours du mois courant
-                const today = new Date();
-                for (let i = 1; i <= lastDay.getDate(); i++) {
-                    const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
-                    const isToday = dayDate.getDate() === today.getDate() && 
-                                   dayDate.getMonth() === today.getMonth() && 
-                                   dayDate.getFullYear() === today.getFullYear();
-                    
-                    const hasEvent = (i === 15 || (i >= 20 && i <= 25));
-                    
-                    days += `<div class="calendar-day ${isToday ? 'today' : ''} ${hasEvent ? 'event' : ''}">${i}</div>`;
-                }
-                
-                // Jours du mois suivant
-                for (let i = 1; i <= (42 - lastDay.getDate() - firstDayIndex); i++) {
-                    days += `<div class="calendar-day other-month">${i}</div>`;
-                }
-                
-                document.getElementById('calendar-days').innerHTML = days;
-            }
-            
-            document.getElementById('prev-month').addEventListener('click', function() {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                renderSimpleCalendar(currentDate);
-            });
-            
-            document.getElementById('next-month').addEventListener('click', function() {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                renderSimpleCalendar(currentDate);
-            });
-            
-            renderSimpleCalendar(currentDate);
-            
-            // FullCalendar
-            const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: [
-                    {
-                        title: 'Rentrée Académique',
-                        start: '2024-10-01',
-                        color: '#0a2463'
-                    },
-                    {
-                        title: 'Début des Cours',
-                        start: '2024-10-15',
-                        color: '#3a7bd5'
-                    },
-                    {
-                        title: 'Examens Partiels',
-                        start: '2024-12-10',
-                        end: '2024-12-20',
-                        color: '#d7263d'
-                    },
-                    {
-                        title: 'Vacances de Noël',
-                        start: '2024-12-21',
-                        end: '2025-01-05',
-                        color: '#27ae60'
-                    },
-                    {
-                        title: 'Examens Finaux',
-                        start: '2025-03-15',
-                        end: '2025-03-30',
-                        color: '#d7263d'
-                    }
-                ],
-                locale: 'fr',
-                buttonText: {
-                    today: 'Aujourd\'hui',
-                    month: 'Mois',
-                    week: 'Semaine',
-                    day: 'Jour'
-                }
-            });
-            calendar.render();
-            
-            // Taux de change et convertisseur
-            const exchangeRates = {
-                USD: 2850,
-                EUR: 3150,
-                GBP: 3600,
-                RWF: 2.5
-            };
-            
-            function renderExchangeRates() {
-                const container = document.getElementById('exchange-rates-container');
-                container.innerHTML = '';
-                
-                Object.keys(exchangeRates).forEach(currency => {
-                    const change = Math.random() > 0.5 ? 'positive' : 'negative';
-                    const changeValue = change === 'positive' ? 
-                        `+${(Math.random() * 0.5).toFixed(1)}%` : 
-                        `-${(Math.random() * 0.5).toFixed(1)}%`;
-                    
-                    const rateItem = document.createElement('div');
-                    rateItem.className = 'rate-item';
-                    rateItem.innerHTML = `
-                        <div class="currency">${currency}</div>
-                        <div class="rate">${exchangeRates[currency].toLocaleString('fr-FR')} BIF</div>
-                        <div class="change ${change}">${changeValue}</div>
-                    `;
-                    
-                    container.appendChild(rateItem);
-                });
-            }
-            
-            // Convertisseur de devises
-            document.getElementById('convert-btn').addEventListener('click', function() {
-                const amount = parseFloat(document.getElementById('amount').value);
-                if (isNaN(amount)) {
-                    alert('Veuillez entrer un montant valide');
-                    return;
-                }
-                
-                const fromCurrency = document.getElementById('from-currency').value;
-                const toCurrency = document.getElementById('to-currency').value;
-                
-                // Conversion en BIF d'abord si nécessaire
-                let amountInBif;
-                if (fromCurrency === 'BIF') {
-                    amountInBif = amount;
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mise à jour de la date actuelle
+    function updateCurrentDate() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dateEl = document.getElementById('current-date');
+        if (dateEl) dateEl.textContent = now.toLocaleDateString('fr-FR', options);
+    }
+    updateCurrentDate();
+
+    // Gestion des onglets actualités
+    const tabs = document.querySelectorAll('#news-tabs .tab');
+    const cards = document.querySelectorAll('.news-card');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            const type = this.getAttribute('data-type');
+            cards.forEach(card => {
+                if (type === 'all') {
+                    card.style.display = '';
+                } else if (card.classList.contains('news-type-' + type)) {
+                    card.style.display = '';
                 } else {
-                    amountInBif = amount * exchangeRates[fromCurrency];
+                    card.style.display = 'none';
                 }
-                
-                // Conversion vers la devise cible
-                let result;
-                if (toCurrency === 'BIF') {
-                    result = amountInBif;
-                } else {
-                    result = amountInBif / exchangeRates[toCurrency];
-                }
-                
-                document.getElementById('result').value = result.toFixed(2);
             });
-            
-            // Initialisation
-            renderExchangeRates();
-            
-            // Animation de défilement pour la section d'inscription
-            const registrationPhase = document.querySelector('.registration-phase');
-            registrationPhase.addEventListener('mouseover', function() {
-                this.style.animation = 'pulse 1s infinite';
-            });
-            
-            registrationPhase.addEventListener('mouseout', function() {
-                this.style.animation = 'pulse 2s infinite';
-            });
-            
-            // Simulation de données météo
-            function updateWeather() {
-                const weatherConditions = ['☀️', '⛅', '🌧️', '⛈️', '🌤️'];
-                const weatherDescs = ['Ensoleillé', 'Partiellement nuageux', 'Pluvieux', 'Orageux', 'Nuageux'];
-                const randomIndex = Math.floor(Math.random() * weatherConditions.length);
-                
-                document.getElementById('weather-icon').textContent = weatherConditions[randomIndex];
-                document.getElementById('weather-desc').textContent = weatherDescs[randomIndex];
-                
-                // Température aléatoire entre 25 et 30
-                const temp = Math.floor(Math.random() * 6) + 25;
-                document.getElementById('current-temp').textContent = `${temp}°C`;
-            }
-            
-            updateWeather();
         });
-    </script>
+    });
+    // Affiche toutes les actualités au chargement
+    cards.forEach(card => {
+        card.style.display = '';
+    });
+
+    // Gestion des départements (Baccalauréat)
+    const deptButtons = document.querySelectorAll('.department-btn');
+    deptButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            deptButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const dept = this.getAttribute('data-dept');
+            const actuariatOptions = document.getElementById('actuariat-options');
+            const genieOptions = document.getElementById('genie-options');
+            if (actuariatOptions) actuariatOptions.style.display = 'none';
+            if (genieOptions) genieOptions.style.display = 'none';
+            if (dept === 'actuariat' && actuariatOptions) {
+                actuariatOptions.style.display = 'flex';
+            } else if (dept === 'genie' && genieOptions) {
+                genieOptions.style.display = 'flex';
+            }
+        });
+    });
+
+    // Gestion des années
+    const yearButtons = document.querySelectorAll('.year-btn');
+    yearButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            yearButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Gestion des spécialisations
+    const specButtons = document.querySelectorAll('.specialization-btn');
+    specButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            specButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Calendrier simple
+    let currentDate = new Date();
+    function renderSimpleCalendar(date) {
+        const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", 
+                            "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+        const titleEl = document.getElementById('calendar-month-title');
+        if (titleEl) titleEl.textContent = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        const prevLastDay = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+        const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+        let days = '';
+        // Jours du mois précédent
+        for (let i = firstDayIndex; i > 0; i--) {
+            days += `<div class="calendar-day other-month">${prevLastDay - i + 1}</div>`;
+        }
+        // Jours du mois courant
+        const today = new Date();
+        for (let i = 1; i <= lastDay.getDate(); i++) {
+            const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
+            const isToday = dayDate.getDate() === today.getDate() && 
+                            dayDate.getMonth() === today.getMonth() && 
+                            dayDate.getFullYear() === today.getFullYear();
+            const hasEvent = (i === 15 || (i >= 20 && i <= 25));
+            days += `<div class="calendar-day${isToday ? ' today' : ''}${hasEvent ? ' event' : ''}">${i}</div>`;
+        }
+        // Jours du mois suivant
+        for (let i = 1; i <= (42 - lastDay.getDate() - firstDayIndex); i++) {
+            days += `<div class="calendar-day other-month">${i}</div>`;
+        }
+        const daysEl = document.getElementById('calendar-days');
+        if (daysEl) daysEl.innerHTML = days;
+    }
+    const prevMonthBtn = document.getElementById('prev-month');
+    const nextMonthBtn = document.getElementById('next-month');
+    if (prevMonthBtn) prevMonthBtn.addEventListener('click', function() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderSimpleCalendar(currentDate);
+    });
+    if (nextMonthBtn) nextMonthBtn.addEventListener('click', function() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderSimpleCalendar(currentDate);
+    });
+    renderSimpleCalendar(currentDate);
+
+    // FullCalendar
+    const calendarEl = document.getElementById('calendar');
+    if (calendarEl && typeof FullCalendar !== 'undefined') {
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: [
+                {
+                    title: 'Rentrée Académique',
+                    start: '2024-10-01',
+                    color: '#0a2463'
+                },
+                {
+                    title: 'Début des Cours',
+                    start: '2024-10-15',
+                    color: '#3a7bd5'
+                },
+                {
+                    title: 'Examens Partiels',
+                    start: '2024-12-10',
+                    end: '2024-12-20',
+                    color: '#d7263d'
+                },
+                {
+                    title: 'Vacances de Noël',
+                    start: '2024-12-21',
+                    end: '2025-01-05',
+                    color: '#27ae60'
+                },
+                {
+                    title: 'Examens Finaux',
+                    start: '2025-03-15',
+                    end: '2025-03-30',
+                    color: '#d7263d'
+                }
+            ],
+            locale: 'fr',
+            buttonText: {
+                today: 'Aujourd\'hui',
+                month: 'Mois',
+                week: 'Semaine',
+                day: 'Jour'
+            }
+        });
+        calendar.render();
+    }
+
+    // Taux de change et convertisseur
+    const exchangeRates = {
+        USD: 2850,
+        EUR: 3150,
+        GBP: 3600,
+        RWF: 2.5
+    };
+    function renderExchangeRates() {
+        const container = document.getElementById('exchange-rates-container');
+        if (!container) return;
+        container.innerHTML = '';
+        Object.keys(exchangeRates).forEach(currency => {
+            const change = Math.random() > 0.5 ? 'positive' : 'negative';
+            const changeValue = change === 'positive' ? 
+                `+${(Math.random() * 0.5).toFixed(1)}%` : 
+                `-${(Math.random() * 0.5).toFixed(1)}%`;
+            const rateItem = document.createElement('div');
+            rateItem.className = 'rate-item';
+            rateItem.innerHTML = `
+                <div class="currency">${currency}</div>
+                <div class="rate">${exchangeRates[currency].toLocaleString('fr-FR')} BIF</div>
+                <div class="change ${change}">${changeValue}</div>
+            `;
+            container.appendChild(rateItem);
+        });
+    }
+    renderExchangeRates();
+
+    // Convertisseur de devises
+    const convertBtn = document.getElementById('convert-btn');
+    if (convertBtn) convertBtn.addEventListener('click', function() {
+        const amount = parseFloat(document.getElementById('amount').value);
+        if (isNaN(amount)) {
+            alert('Veuillez entrer un montant valide');
+            return;
+        }
+        const fromCurrency = document.getElementById('from-currency').value;
+        const toCurrency = document.getElementById('to-currency').value;
+        let amountInBif;
+        if (fromCurrency === 'BIF') {
+            amountInBif = amount;
+        } else {
+            amountInBif = amount * exchangeRates[fromCurrency];
+        }
+        let result;
+        if (toCurrency === 'BIF') {
+            result = amountInBif;
+        } else {
+            result = amountInBif / exchangeRates[toCurrency];
+        }
+        document.getElementById('result').value = result.toFixed(2);
+    });
+
+    // Animation de défilement pour la section d'inscription
+    const registrationPhase = document.querySelector('.registration-phase');
+    if (registrationPhase) {
+        registrationPhase.addEventListener('mouseover', function() {
+            this.style.animation = 'pulse 1s infinite';
+        });
+        registrationPhase.addEventListener('mouseout', function() {
+            this.style.animation = 'pulse 2s infinite';
+        });
+    }
+
+    // Simulation de données météo
+    function updateWeather() {
+        const weatherConditions = ['☀️', '⛅', '🌧️', '⛈️', '🌤️'];
+        const weatherDescs = ['Ensoleillé', 'Partiellement nuageux', 'Pluvieux', 'Orageux', 'Nuageux'];
+        const randomIndex = Math.floor(Math.random() * weatherConditions.length);
+        const iconEl = document.getElementById('weather-icon');
+        const descEl = document.getElementById('weather-desc');
+        const tempEl = document.getElementById('current-temp');
+        if (iconEl) iconEl.textContent = weatherConditions[randomIndex];
+        if (descEl) descEl.textContent = weatherDescs[randomIndex];
+        if (tempEl) tempEl.textContent = `${Math.floor(Math.random() * 6) + 25}°C`;
+    }
+    updateWeather();
+});
+</script>
 </body>
 </html>
