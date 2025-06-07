@@ -4,10 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenISTA - Portail Universitaire</title>
-  
-    <!-- Dans le <head> de votre document -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>OpenISTA - Portail Universitaire Numérique</title>
+    <meta name="description" content="Portail numérique de l'ISTA pour étudiants, enseignants et administration. Accédez à vos cours, résultats et services universitaires.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --primary-color: #0a2463; /* Bleu universitaire profond */
@@ -15,6 +23,7 @@
             --accent-color: #d7263d; /* Rouge académique */
             --light-color: #f8f9fa;
             --dark-color: #212529;
+            --gradient-blue: linear-gradient(135deg, #0a2463 0%, #3a7bd5 100%);
         }
 
         /* Reset des styles par défaut */
@@ -24,29 +33,82 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         /* Styles généraux */
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: var(--light-color);
             color: var(--dark-color);
             line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
         }
 
         /* En-tête */
         header {
-            background-color: var(--primary-color);
+            background: var(--gradient-blue);
             padding: 15px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: relative;
+            position: fixed;
+            width: 100%;
+            top: 0;
             z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 10px 40px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         header .logo {
             display: flex;
             align-items: center;
+            text-decoration: none;
         }
 
         header .logo img {
@@ -62,14 +124,15 @@
             color: white;
             margin-left: 15px;
             font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         header nav ul {
             list-style: none;
             display: flex;
-            gap: 30px;
+            gap: 25px;
         }
 
         header nav ul li a {
@@ -81,6 +144,13 @@
             padding: 8px 12px;
             border-radius: 4px;
             position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        header nav ul li a i {
+            margin-right: 8px;
+            font-size: 0.9rem;
         }
 
         header nav ul li a:hover {
@@ -103,54 +173,50 @@
             width: 100%;
         }
 
-        /* Contenu principal */
-        main {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 60px 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            min-height: calc(100vh - 140px);
+        /* Menu mobile */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
 
-        .hero {
-            flex: 1;
-            max-width: 50%;
-            text-align: left;
-            padding-right: 40px;
-        }
-
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--primary-color);
-            margin-bottom: 25px;
-            line-height: 1.2;
+        /* Hero Section */
+        .hero-section {
+            margin-top: 90px;
+            background: linear-gradient(rgba(10, 36, 99, 0.8), rgba(10, 36, 99, 0.8)), url('{{url_for("static", filename="images/hero-bg.jpg")}}') no-repeat center center/cover;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
             position: relative;
-            display: inline-block;
         }
 
-        .hero h1::after {
-            content: '';
-            position: absolute;
-            width: 60%;
-            height: 4px;
-            bottom: -10px;
-            left: 0;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
         }
 
-        .hero p {
-            font-size: 1.2rem;
-            color: #555;
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-content p {
+            font-size: 1.3rem;
             margin-bottom: 40px;
-            max-width: 90%;
+            opacity: 0.9;
         }
 
-        .buttons {
+        .hero-buttons {
             display: flex;
             gap: 20px;
+            justify-content: center;
             margin-top: 30px;
         }
 
@@ -163,37 +229,89 @@
             transition: all 0.3s ease;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 8px;
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            border: 2px solid var(--primary-color);
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border: 2px solid var(--secondary-color);
         }
 
         .btn-primary:hover {
             background-color: transparent;
-            color: var(--primary-color);
+            color: var(--secondary-color);
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(10, 36, 99, 0.2);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
         }
 
         .btn-secondary {
             background-color: transparent;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
+            color: white;
+            border: 2px solid white;
         }
 
         .btn-secondary:hover {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
             transform: translateY(-3px);
         }
 
+        /* Features Section */
+        .features-section {
+            background-color: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: rgb(225, 247, 165);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
         /* Carrousel */
+        .carousel-section {
+            background-color: #f5f7fa;
+        }
+
+        .carousel-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
         .carousel {
-            flex: 1;
-            max-width: 45%;
             height: 500px;
             overflow: hidden;
             position: relative;
@@ -215,252 +333,1201 @@
             animation: fadeIn 1.5s;
         }
 
+        .carousel-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .carousel-dot.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
 
-        /* Pied de page */
-        footer {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 30px 0;
-            text-align: center;
+        /* News Section */
+        .news-section {
+            background-color: white;
         }
 
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .news-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+            background: white;
+        }
+
+        .news-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .news-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .news-card:hover .news-image img {
+            transform: scale(1.1);
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-date {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .news-card h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .news-excerpt {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
         }
 
-        .footer-logo {
+        .read-more i {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+
+        .read-more:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: var(--gradient-blue);
+            color: white;
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-item {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Testimonials */
+        .testimonials-section {
+            background-color: #f5f7fa;
+        }
+
+        .testimonials-container {
+                display: flex;
+                gap: 30px;
+                justify-content: center;
+                align-items: stretch;
+                overflow: hidden;
+                min-height: 320px;
+            }
+            .testimonial-card {
+                background: #111;
+                color:#fff;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+                min-width: 320px;
+                max-width: 400px;
+                flex: 0 0 45%;
+                opacity: 0;
+                display: none;
+                transition: opacity 0.5s;
+            }
+            .testimonial-card.active {
+                opacity: 1;
+                display: block;
+            }
+        .testimonial-card::before {
+            content: '"';
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            color: rgba(10, 36, 99, 0.1);
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            line-height: 1;
+        }
+
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #fff;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
             height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-info h4 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+            color: #ffd700;
+        }
+
+        .author-info p {
+            color: #09f729;
+            font-size: 0.9rem;
+        }
+
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(rgba(10, 36, 99, 0.9), rgba(10, 36, 99, 0.9)), url('{{url_for("static", filename="images/cta-bg.jpg")}}') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            padding: 80px 0;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-content h2 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+
+        .cta-content p {
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Pied de page */
+        footer {
+            background: var(--gradient-blue);
+            color: white;
+            padding: 60px 0 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand {
             margin-bottom: 20px;
         }
 
-        .footer-links {
-            list-style: none;
+        .footer-logo {
             display: flex;
-            gap: 30px;
-            margin: 20px 0;
+            align-items: center;
+            margin-bottom: 20px;
+            text-decoration: none;
         }
 
-        .footer-links li a {
+        .footer-logo img {
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        .footer-logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .footer-about p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .footer-social a:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-links h3, .footer-contact h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-links h3::after, .footer-contact h3::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--secondary-color);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
             color: white;
             text-decoration: none;
             transition: color 0.3s;
-            font-weight: 500;
-        }
-
-        .footer-links li a:hover {
-            color: var(--secondary-color);
-        }
-
-        .social-icons {
             display: flex;
-            gap: 20px;
-            margin: 20px 0;
+            align-items: center;
         }
 
-        .social-icons a {
-            color: white;
-            font-size: 1.5rem;
-            transition: transform 0.3s, color 0.3s;
+        .footer-links a i {
+            margin-right: 8px;
+            font-size: 0.8rem;
         }
 
-        .social-icons a:hover {
+        .footer-links a:hover {
             color: var(--secondary-color);
-            transform: translateY(-5px);
         }
 
-        .copyright {
-            margin-top: 20px;
-            font-size: 0.9rem;
+        .footer-contact p {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .footer-contact i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            margin-top: 3px;
+        }
+
+        .footer-bottom {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer-bottom p {
             opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .footer-bottom a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-3px);
         }
 
         /* Responsive design */
         @media (max-width: 1024px) {
-            main {
-                flex-direction: column;
-                padding: 40px 20px;
+            .hero-content h1 {
+                font-size: 3rem;
             }
-
-            .hero, .carousel {
-                max-width: 100%;
-                padding-right: 0;
-            }
-
-            .hero {
-                margin-bottom: 40px;
-                text-align: center;
-            }
-
-            .hero h1::after {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-
-            .hero p {
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .buttons {
-                justify-content: center;
-            }
-
-            .carousel {
-                height: 400px;
-                max-width: 80%;
+            
+            .section-title h2 {
+                font-size: 2.2rem;
             }
         }
 
         @media (max-width: 768px) {
             header {
-                flex-direction: column;
-                padding: 15px;
+                padding: 15px 20px;
             }
-
-            header .logo {
-                margin-bottom: 15px;
+            
+            .mobile-menu-btn {
+                display: block;
             }
-
+            
+            header nav {
+                position: fixed;
+                top: 90px;
+                left: 0;
+                width: 100%;
+                background: var(--gradient-blue);
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                transform: translateY(-150%);
+                transition: transform 0.4s ease;
+                z-index: 999;
+            }
+            
+            header nav.active {
+                transform: translateY(0);
+            }
+            
             header nav ul {
-                gap: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .hero h1 {
-                font-size: 2.2rem;
-            }
-
-            .buttons {
                 flex-direction: column;
                 gap: 15px;
             }
-
+            
+            .hero-section {
+                padding: 100px 0;
+                margin-top: 70px;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-content p {
+                font-size: 1.1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
             .btn {
                 width: 100%;
             }
-
-            .footer-links {
-                flex-direction: column;
-                gap: 15px;
+            
+            .carousel {
+                height: 350px;
             }
-
-            .social-icons {
-                display: flex;
-                gap: 15px;
-                margin: 20px 0;
+            
+            section {
+                padding: 60px 0;
             }
-
-            .social-icons a {
-                color: white;
-                font-size: 1.2rem;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: rgba(255, 255, 255, 0.1);
-                transition: all 0.3s ease;
-            }
-
-            .social-icons a:hover {
-            color: var(--secondary-color);
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
         }
+
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* News Section */
+
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1rem;
+                    }
+
+            .news-card {
+                background: #94eeeb;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+                transition: transform 0.2s;
+                min-width: 0;
+                max-width: 320px;
+                margin: auto;
+            }
+
+            .news-card:hover {
+                transform: translateY(-4px) scale(1.02);
+            }
+
+            .news-image {
+                width: 100%;
+                height: 120px;
+                object-fit: cover;
+                border-radius: 10px 10px 0 0;
+                display: block;
+                background: #f0f0f0;
+            }
+
+            .news-content {
+                padding: 0.8rem 1rem;
+            }
+
+            .news-category {
+                font-size: 0.75rem;
+                padding: 0.15rem 0.5rem;
+                margin-bottom: 0.4rem;
+                color: #856404;
+                background: #fff3cd;
+                border-radius: 5px;
+                display: inline-block;
+            }
+
+            .news-title {
+                font-size: 1rem;
+                font-weight: 600;
+                margin-bottom: 0.2rem;
+                color: #222;
+            }
+
+            .news-date {
+                font-size: 0.75rem;
+                color: #888;
+                margin-bottom: 0.5rem;
+            }
+
+            .news-excerpt {
+                font-size: 0.85rem;
+                color: #444;
+                margin-bottom: 0.7rem;
+                line-height: 1.4;
+                max-height: 3.2em;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .btn.btn-secondary {
+                padding: 0.35rem 0.9rem;
+                font-size: 0.85rem;
+                border-radius: 20px;
+            }
+
+            .news-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        .news-tabs .tab {
+            padding: 10px 28px;
+            border-radius: 25px;
+            background: #f5f7fa;
+            color: #0a2463;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 8px rgba(10,36,99,0.06);
+            border: 2px solid transparent;
+        }
+
+        .news-tabs .tab.active,
+        .news-tabs .tab:hover {
+            background: linear-gradient(90deg, #0a2463 60%, #ffd700 100%);
+            color: #fff;
+            border: 2px solid #ffd700;
+            box-shadow: 0 4px 16px rgba(10,36,99,0.10);
+        }
+
+        /* Maintenance Mode */
+        .maintenance-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(10, 36, 99, 0.1);
+            text-align: center;
+        }
+
+        .maintenance-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .maintenance-message {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .maintenance-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-left: 4px solid var(--secondary-color);
+            text-align: left;
+        }
+
+        .maintenance-details h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .maintenance-contact {
+            margin-top: 2rem;
+            padding-top: 2rem;
+        }
+
+        .contact-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .contact-link:hover {
+            background: #08316b; /* Légèrement plus foncé */
+            transform: translateY(-2px);
         }
     </style>
 </head>
 
 <body>
+
+
     <!-- En-tête -->
-    <header>
-        <!-- Example improvement for logo -->
-<div class="logo">
-    <img src="{{url_for('static', filename='images/0.jpeg')}}" 
-         alt="Université Logo - OpenISTA" 
-         aria-label="OpenISTA Portail Universitaire">
-    <span class="logo-text">OpenISTA</span>
-</div>
-        <nav>
+    <header id="header">
+        <a href="#" class="logo">
+            <img src="{{url_for('static', filename='images/0.jpeg')}}" 
+                 alt="Université Logo - OpenISTA" 
+                 aria-label="OpenISTA Portail Universitaire">
+            <span class="logo-text">OpenISTA</span>
+        </a>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <nav id="mainNav">
             <ul>
-                <li><a href="#">Espace Etudiant</a></li>
-                <li><a href="#">Espace Professeur</a></li>
-                <li><a href="#">Espace Administration</a></li>
-                <li><a href="#">Actualités</a></li>
-                <li><a href="#">Recherche</a></li>
-                
+                <li><a href="#"><i class="fas fa-user-graduate"></i> Espace Etudiant</a></li>
+                <li><a href="#"><i class="fas fa-chalkboard-teacher"></i> Espace Professeur</a></li>
+                <li><a href="#"><i class="fas fa-user-tie"></i> Espace Administration</a></li>
+                <li><a href="#news"><i class="far fa-newspaper"></i> Actualités</a></li>
+                <li><a href="#"><i class="fas fa-search"></i> Recherche</a></li>
+                <li><a href="{{url_for('auth.login')}}" class="btn btn-secondary" style="padding: 8px 15px;"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Contenu principal -->
-    <main>
-        <!-- Section texte et boutons -->
-        <div class="hero">
-            <h1>Bienvenue sur OpenISTA</h1>
-            <p>La plateforme numérique de l'ISTA conçue pour accompagner votre réussite académique. Accédez à vos ressources pédagogiques, consultez vos résultats et participez à la vie étudiante en un seul clic.</p>
-            <div class="buttons">
-                <a href="{{url_for('auth.login')}}" class="btn btn-primary">Se connecter</a>
-                <a href="{{url_for('auth.register')}}" class="btn btn-secondary">S'inscrire</a>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Portail Numérique de l'ISTA</h1>
+                <p>Une plateforme complète pour gérer votre parcours académique, accéder aux ressources pédagogiques et participer à la vie étudiante.</p>
+                <div class="hero-buttons">
+                    <a href="{{url_for('auth.login')}}" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Se connecter</a>
+                    <a href="{{url_for('auth.register')}}" class="btn btn-secondary"><i class="fas fa-user-plus"></i> S'inscrire</a>
+                </div>
             </div>
         </div>
-    
-        <!-- Carrousel -->
-        <div class="carousel">
-            <img src="{{url_for('static', filename='images/1.jpeg')}}" alt="Campus universitaire" class="active">  
-            <img src="{{url_for('static', filename='images/2.jpeg')}}" alt="Bibliothèque universitaire">
-            <img src="{{url_for('static', filename='images/3.jpeg')}}" alt="Amphithéâtre">
-            <img src="{{url_for('static', filename='images/4.jpeg')}}" alt="Laboratoire de recherche">
-            <img src="{{url_for('static', filename='images/5.jpeg')}}" alt="Vie étudiante">
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nos Services</h2>
+            </div>
+            <div class="features-grid">
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-book-open"></i>
         </div>
-    </main>
+        <h3>Ressources Pédagogiques</h3>
+        <p>Accédez à tous vos cours, supports de formation et bibliothèque numérique en un seul endroit.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-clipboard-check"></i>
+        </div>
+        <h3>Gestion des Notes</h3>
+        <p>Consultez vos résultats académiques et suivez votre progression tout au long de l'année.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h3>Emploi du Temps</h3>
+        <p>Visualisez votre emploi du temps personnalisé et recevez des notifications pour les changements.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-comments"></i>
+        </div>
+        <h3>Espace de Discussion</h3>
+        <p>Échangez avec vos professeurs, étudiants et collègues dans un environnement sécurisé et dédié.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-bullhorn"></i>
+        </div>
+        <h3>Actualités</h3>
+        <p>Restez informé des dernières annonces et événements de l'université.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-user-edit"></i>
+        </div>
+        <h3>Inscription Académique</h3>
+        <p>Inscrivez-vous facilement en ligne, suivez l’état de votre dossier et recevez vos documents officiels.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <h3>Clubs</h3>
+        <p>Rejoignez ou créez des clubs étudiants pour partager vos passions et développer votre réseau.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">
+            <i class="fas fa-cogs"></i>
+        </div>
+        <h3>Administration Système</h3>
+        <p>Gérez les paramètres de la plateforme, les accès utilisateurs et la sécurité du système.</p>
+    </div>
+</div>
+            
+    </section>
+
+    <!-- Carrousel Section -->
+    <section class="carousel-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Découvrez Notre Campus</h2>
+            </div>
+            
+            <div class="carousel-container">
+                <div class="carousel" id="mainCarousel">
+                    <img src="{{url_for('static', filename='images/1.jpeg')}}" alt="Campus universitaire" class="active">  
+                    <img src="{{url_for('static', filename='images/2.jpeg')}}" alt="Bibliothèque universitaire">
+                    <img src="{{url_for('static', filename='images/3.jpeg')}}" alt="Amphithéâtre">
+                    <img src="{{url_for('static', filename='images/4.jpeg')}}" alt="Laboratoire de recherche">
+                    <img src="{{url_for('static', filename='images/5.jpeg')}}" alt="Vie étudiante">
+                </div>
+                
+                <div class="carousel-nav" id="carouselNav">
+                    <div class="carousel-dot active" data-index="0"></div>
+                    <div class="carousel-dot" data-index="1"></div>
+                    <div class="carousel-dot" data-index="2"></div>
+                    <div class="carousel-dot" data-index="3"></div>
+                    <div class="carousel-dot" data-index="4"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="studentsCount">0</div>
+                    <div class="stat-label">Étudiants</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number" id="teachersCount">0</div>
+                    <div class="stat-label">Enseignants</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number" id="programsCount">0</div>
+                    <div class="stat-label">Programmes</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number" id="yearsCount">0</div>
+                    <div class="stat-label">Années d'expérience</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Section -->
+    <section class="news-section" id="news">
+        <div class="container">
+            <div class="section-title">
+                <h2>Dernières Actualités</h2>
+            </div>
+            
+            <div class="news-tabs" id="news-tabs">
+                    <div class="tab active" data-type="all">Toutes</div>
+                    <div class="tab active" data-type="ista">ISTA</div>
+                    <div class="tab" data-type="nationale">Nationale</div>
+                    <div class="tab" data-type="internationale">Internationale</div>
+                </div>
+                <div id="news-tab-content">
+                    <div class="news-container">
+                    {% for actualite in actualites_recentes [:5]%}
+                        <div class="news-card{% if actualite.type_actualite %} news-type-{{ actualite.type_actualite }}{% endif %}">
+                            <img src="{{ actualite.image_url or url_for('static', filename='images/default-news.jpg') }}"
+                                alt="{{ actualite.image_alt or 'Actualité ISTA' }}"
+                                class="news-image">
+                            <div class="news-content">
+                                <span class="news-category">{{ actualite.categorie }}</span>
+                                <h3 class="news-title">{{ actualite.titre }}</h3>
+                                <div class="news-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    {{ actualite.date_publication.strftime('%d %B %Y') }}
+                                </div>
+                                <p class="news-excerpt">{{ actualite.resume }}</p>
+                                {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('actualites.detail_actualite', actualite_id=actualite.id) }}"
+                                class="btn btn-secondary">
+                                Lire plus
+                                </a>
+                                {% else %}
+                                <a href="#" class="btn btn-secondary" onclick="showLoginAlert(event)">
+                                    Lire plus
+                                </a>
+                            {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('actualites.liste_actualites') }}" class="btn btn-primary">
+                        Voir toutes les actualités <i class="fas fa-arrow-right"></i>
+                    </a>
+                    {% else %}
+                    <a href="#" class="btn btn-primary" onclick="showLoginAlert(event)">
+                        Voir toutes les actualités <i class="fas fa-arrow-right"></i>
+                    </a>
+                {% endif %}
+                </div>
+            </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Témoignages</h2>
+            </div>
+            
+            <div class="testimonials-container">
+                <div class="testimonial-card">
+                    <p class="testimonial-content">OpenISTA a révolutionné ma façon d'enseigner. La plateforme est intuitive et me permet de partager facilement des ressources avec mes étudiants et de suivre leur progression.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="{{url_for('static', filename='images/teacher1.jpg')}}" alt="Professeur Jean">
+                        </div>
+                        <div class="author-info">
+                            <h4>Msc.Mathieu MVUYEKURE</h4>
+                            <p>Chef de Département d'Actuariat</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-content">En tant qu'étudiante en Bac, j'apprécie particulièrement la facilité d'accès à tous mes cours, Syllabus, Livres Metiers et la possibilité de consulter mes notes en temps réel. Tout est centralisé et accessible 24/7.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="{{url_for('static', filename='images/student1.jpg')}}" alt="Étudiante Alice">
+                        </div>
+                        <div class="author-info">
+                            <h4>Cherissa Niyonkuru</h4>
+                            <p>Étudiante en Sciences Economique Bac II</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-content">En tant qu'étudiant en Master, j'avoue que la plateforme OpenISTA a changé notre vie au campus surtout par le fait que on disctute entre nous sur la plateforme en toutes securités.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="{{url_for('static', filename='images/student1.jpg')}}" alt="Étudiante Alice">
+                        </div>
+                        <div class="author-info">
+                            <h4>Thierry KWIZERA </h4>
+                            <p>Étudiant en Actuariat et Finance Master I</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <p class="testimonial-content">Inscription Académique et ses services academiques sont devenus faciles</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="{{url_for('static', filename='images/student1.jpg')}}" alt="Étudiante Alice">
+                        </div>
+                        <div class="author-info">
+                            <h4>Aline NSENGIMANA </h4>
+                            <p>Secretaire Adminisatratif de l'ISTA</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <p class="testimonial-content">La gestion administrative est devenue beaucoup plus simple avec OpenISTA. Nous pouvons maintenant traiter les dossiers étudiants de manière efficace et sécurisée.</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="{{url_for('static', filename='images/admin1.jpg')}}" alt="Administrateur Pierre">
+                        </div>
+                        <div class="author-info">
+                            <h4>Prof. Menedore KARIMUMURYANGO</h4>
+                            <p>Doyen de L'ISTA</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Prêt à rejoindre notre communauté ?</h2>
+                <p>Inscrivez-vous dès maintenant pour accéder à tous les services de la plateforme OpenISTA et commencer votre parcours académique avec nous.</p>
+                <div class="hero-buttons">
+                    <a href="{{url_for('auth.register')}}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Créer un compte</a>
+                    <a href="#" class="btn btn-secondary"><i class="fas fa-info-circle"></i> En savoir plus</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Pied de page -->
     <footer>
-        <div class="footer-content">
-            <div class="footer-brand">
-                <img src="{{url_for('static', filename='images/0logo-UB.jpeg')}}" alt="Logo Université" class="footer-logo">
-                <p>Plateforme numérique de l'Université pour la réussite académique.</p>
-            </div>
-            
-            <div class="footer-links-section">
-                <h3>Liens utiles</h3>
-                <ul class="footer-links">
-                    <li><a href="/mentions-legales">Mentions légales</a></li>
-                    <li><a href="/confidentialite">Politique de confidentialité</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/plan-du-site">Plan du site</a></li>
-                    <li><a href="/faq">FAQ</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-contact">
-                <h3>Contactez-nous</h3>
-                <p><i class="fas fa-map-marker-alt"></i> RN6 ISTA, Nyamugerera</p>
-                <p><i class="fas fa-phone"></i> +257 62495566</p>
-                <p><i class="fas fa-envelope"></i> contact@openista.edu</p>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="footer-logo">
+                        <img src="{{url_for('static', filename='images/0.jpeg')}}" alt="Logo Université">
+                        <span class="footer-logo-text">OpenISTA</span>
+                    </a>
+                    <div class="footer-about">
+                        <p>Plateforme numérique de l'Institut de Statistique Appliquée pour la gestion des activités académiques et administratives.</p>
+                    </div>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
                 
-                <div class="social-icons">
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <div class="footer-links">
+                    <h3>Liens rapides</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Accueil</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> À propos</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Programmes</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Admission</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Recherche</a></li>
+                        <li><a href="#news"><i class="fas fa-chevron-right"></i> Actualités</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Ressources</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Bibliothèque</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Calendrier académique</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Documents officiels</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Galerie</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Plan du site</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h3>Contactez-nous</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> RN6 ISTA, Nyamugerera, Burundi</p>
+                    <p><i class="fas fa-phone"></i> +257 62 495 566</p>
+                    <p><i class="fas fa-envelope"></i> contact@openista.edu</p>
+                    <p><i class="fas fa-clock"></i> Lundi-Vendredi: 8h00-18h00</p>
+                    
+                    <div class="footer-newsletter" style="margin-top: 20px;">
+                        <h3>Newsletter</h3>
+                        <form>
+                            <input type="email" placeholder="Votre email" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ddd;">
+                            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px;">S'abonner</button>
+                        </form>
+                    </div>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p class="copyright">&copy; 2025 OpenISTA - Université. Tous droits réservés.</p>
-                <p class="credits">Conçu avec <i class="fas fa-heart"></i> par Fleury NIYOKWIZERA Etudiant Chercheur en SAID</p>
+                <p>&copy; 2025 OpenISTA - Institut de Statistique Appliquée (ISTA). Tous droits réservés.</p>
+                <p>
+    Conçu avec <i class="fas fa-heart" style="color: var(--secondary-color);"></i> par
+    <strong style="font-size:2rem; color:var(--secondary-color); font-weight:900; letter-spacing:1px;">
+        Fleury NIYOKWIZERA
+    </strong>
+    - Étudiant Chercheur en SAID
+</p>
             </div>
         </div>
     </footer>
+
+    <!-- Back to top button -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mainNav = document.getElementById('mainNav');
+    mobileMenuBtn.addEventListener('click', () => {
+        mainNav.classList.toggle('active');
+        mobileMenuBtn.innerHTML = mainNav.classList.contains('active') ?
+            '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    });
+
+    // Header scroll effect
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    // Carousel functionality
+    const carousel = document.getElementById('mainCarousel');
+    const carouselImages = carousel.querySelectorAll('img');
+    const carouselDots = document.querySelectorAll('.carousel-dot');
+    let currentIndex = 0;
+
+    function showImage(index) {
+        carouselImages.forEach(img => img.classList.remove('active'));
+        carouselDots.forEach(dot => dot.classList.remove('active'));
+        carouselImages[index].classList.add('active');
+        carouselDots[index].classList.add('active');
+        currentIndex = index;
+    }
+
+    carouselDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const index = parseInt(dot.getAttribute('data-index'));
+            showImage(index);
+        });
+    });
+
+    // Auto-rotate carousel
+    setInterval(() => {
+        let nextIndex = (currentIndex + 1) % carouselImages.length;
+        showImage(nextIndex);
+    }, 5000);
+
+    // --- Témoignages défilement 2 par 2 ---
+    const testimonialCards = document.querySelectorAll('.testimonial-card');
+    const visibleCount = 3;
+    let testimonialIndex = 0;
+
+    function showTestimonials(start) {
+        testimonialCards.forEach((card, i) => {
+            card.classList.remove('active');
+            card.style.display = 'none';
+        });
+        for (let j = 0; j < visibleCount; j++) {
+            let idx = (start + j) % testimonialCards.length;
+            testimonialCards[idx].classList.add('active');
+            testimonialCards[idx].style.display = 'block';
+        }
+    }
+
+    // Affiche les deux premiers au départ
+    showTestimonials(testimonialIndex);
+
+    // Défilement automatique toutes les 2 secondes
+    setInterval(() => {
+        testimonialIndex = (testimonialIndex + 1) % testimonialCards.length;
+        showTestimonials(testimonialIndex);
+    }, 60000);
+
+    // Animated counter for stats
+    const counters = document.querySelectorAll('.stat-number');
+    const speed = 200;
+
+    function animateCounters() {
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target') ||
+                (counter.id === 'studentsCount' ? 2500 :
+                    counter.id === 'teachersCount' ? 150 :
+                        counter.id === 'programsCount' ? 25 :
+                            counter.id === 'yearsCount' ? 15 : 0));
+            const count = +counter.innerText;
+            const increment = target / speed;
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(animateCounters, 1);
+            } else {
+                counter.innerText = target.toLocaleString();
+            }
+        });
+    }
+
+    // Start counters when stats section is in view
+    const statsSection = document.querySelector('.stats-section');
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            animateCounters();
+            observer.unobserve(statsSection);
+        }
+    }, { threshold: 0.5 });
+
+    observer.observe(statsSection);
+
+    // Back to top button
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            backToTop.classList.add('active');
+        } else {
+            backToTop.classList.remove('active');
+        }
+    });
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+</script>
+
+<script>
+function showLoginAlert(e) {
+    e.preventDefault();
+    var flash = document.getElementById('login-flash');
+    flash.style.display = 'block';
+    setTimeout(function() {
+        flash.style.display = 'none';
+      //  window.location.href = "{{ url_for('auth.login') }}";
+    }, 3500);
+}
+</script>
+<div id="login-flash" style="display:none; position:fixed; top:30px; left:50%; transform:translateX(-50%); background:#28a745; color:#fff; padding:18px 32px; border-radius:8px; font-size:1.1rem; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+    Vous devez vous connecter ou vous inscrire pour profiter de ces ressources.
+</div> 
+  
+</body>
+</html>
