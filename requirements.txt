@@ -1,14 +1,18 @@
-Flask==2.3.2
+Flask==3.0.0
 Flask-SQLAlchemy==3.0.5
 Flask-Login==0.6.3
 Flask-Migrate==4.0.4
-pymysql==1.1.0
-cryptography==42.0.4
-Flask-MySQLdb==1.0.1
-Werkzeug==2.3.7    
+Flask-Mail==0.9.1
+Werkzeug==3.0.0
 python-dotenv==1.0.0
 gunicorn==20.1.0
-Flask-Mail==0.9.1
 requests==2.31.0
 psutil==5.9.8
 humanize==4.9.0
+cryptography==42.0.4
+
+# PostgreSQL driver
+psycopg2-binary==2.9.9
+
+# Optionnel : pour le développement et debug
+flask-shell-ipython==0.5.3

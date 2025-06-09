@@ -1,5 +1,5 @@
 
-import os
+'''import os
 from dotenv import load_dotenv
 
 # Charger les variables d'environnement depuis .env
@@ -68,7 +68,8 @@ config = {
 }
 
 
-'''import os
+'''
+import os
 from dotenv import load_dotenv
 
 # Charger les variables d'environnement depuis .env
@@ -78,7 +79,7 @@ class Config:
     # Configuration de base
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'votre-cle-secure-par-defaut-123!'
     
-    # Configuration PostgreSQL
+    # Configuration PostgreSQL (migration depuis MySQL)
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'postgresql://fleury:NouveauMotDePasse123@127.0.0.1:5432/openista'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -87,7 +88,9 @@ class Config:
         'pool_recycle': 3600,
         'pool_size': 10,
         'max_overflow': 20,
-        'client_encoding': 'utf8'
+        'echo': False,
+        'pool_timeout': 30,
+        'pool_reset_on_return': 'commit'
     }
 
     # Configuration Flask-Mail
@@ -103,12 +106,21 @@ class Config:
     PERMANENT_SESSION_LIFETIME = 3600  # 1 heure
     DEBUG = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
 
+    # Configuration spécifique PostgreSQL
+    SQLALCHEMY_BINDS = {}
+    SQLALCHEMY_RECORD_QUERIES = False
+    SQLALCHEMY_DATABASE_URI_OPTIONS = {
+        'sslmode': 'prefer',
+        'connect_timeout': 10
+    }
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
         'postgresql://fleury:NouveauMotDePasse123@localhost:5432/openista_dev'
+    SQLALCHEMY_RECORD_QUERIES = True
 
 
 class TestingConfig(Config):
@@ -116,6 +128,7 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
         'postgresql://fleury:NouveauMotDePasse123@localhost:5432/openista_test'
     WTF_CSRF_ENABLED = False
+    SQLALCHEMY_ECHO = False
 
 
 class ProductionConfig(Config):
@@ -124,11 +137,15 @@ class ProductionConfig(Config):
     REMEMBER_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
+    
+    # Configuration optimisée pour la production
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,
         'pool_recycle': 1800,
         'pool_size': 20,
-        'max_overflow': 30
+        'max_overflow': 30,
+        'pool_timeout': 30,
+        'pool_reset_on_return': 'commit'
     }
 
 
@@ -137,4 +154,4 @@ config = {
     'testing': TestingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig
-}'''
+}

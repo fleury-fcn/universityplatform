@@ -1,4 +1,4 @@
-from flask import Flask
+'''from flask import Flask
 from flask_migrate import Migrate
 from .extensions import db, login_manager, mail
 import os
@@ -122,4 +122,4 @@ def create_app(config_name=None):
             except Exception as e:
                 print(f"⚠️ Erreur lors de la création des tables: {e}")
 
-    return app '''
+    return app 
