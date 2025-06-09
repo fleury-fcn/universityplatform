@@ -1,0 +1,2 @@
+[flask.commands]
+shell = flask_shell_ipython:shell

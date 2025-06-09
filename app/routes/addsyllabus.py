@@ -1,5 +1,3 @@
-
-
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from ..models.addsyllabus import Course
@@ -29,8 +27,12 @@ def addsyllabus():
         file_path = None
         file_size = None
 
-        if file:
-            if file.content_length > MAX_FILE_SIZE:
+        if file and file.filename:
+            # Vérification de la taille du fichier uploadé
+            file.seek(0, os.SEEK_END)
+            size = file.tell()
+            file.seek(0)
+            if size > MAX_FILE_SIZE:
                 flash('Le fichier est trop volumineux. Taille maximale : 5 Mo.', 'danger')
                 return redirect(url_for('addsyllabusbp.addsyllabus'))
 
@@ -41,7 +43,7 @@ def addsyllabus():
             filename = secure_filename(file.filename)
             file_path = os.path.join(upload_folder, filename)
             file.save(file_path)
-            file_size = file.content_length
+            file_size = size
         else:
             url = request.form.get('url')
             if url:
@@ -49,7 +51,7 @@ def addsyllabus():
                     response = requests.get(url)
                     response.raise_for_status()  # Vérifie si la requête a réussi
 
-                    # Vérifie la taille du fichier
+                    # Vérifie la taille du fichier téléchargé
                     if len(response.content) > MAX_FILE_SIZE:
                         flash('Le fichier est trop volumineux. Taille maximale : 5 Mo.', 'danger')
                         return redirect(url_for('addsyllabusbp.addsyllabus'))
@@ -92,4 +94,3 @@ def addsyllabus():
         return redirect(url_for('addsyllabus.addsyllabus'))
 
     return render_template('Pageaddsyllabus.html', current_user=current_user)
-    

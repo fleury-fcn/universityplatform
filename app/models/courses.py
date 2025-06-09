@@ -4,7 +4,7 @@ from flask_login import UserMixin
 
 class Cours(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(20), unique=True, nullable=False)
+    code = db.Column(db.String(50), unique=True, nullable=False)
     titre = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     credits = db.Column(db.Integer)

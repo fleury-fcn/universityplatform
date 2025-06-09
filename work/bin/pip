@@ -1,4 +1,4 @@
-#!/home/fleury/projets/OpenISTA/work/bin/python3
+#!/home/fleury/projets/OpenISTA/work/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

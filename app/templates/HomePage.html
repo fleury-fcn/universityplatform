@@ -495,10 +495,13 @@
                 opacity: 0;
                 display: none;
                 transition: opacity 0.5s;
+                flex-direction: column; /* Affichage horizontal */
+                align-items: flex-start;
+                position: relative;
             }
             .testimonial-card.active {
                 opacity: 1;
-                display: block;
+                display: flex;
             }
         .testimonial-card::before {
             content: '"';
@@ -512,16 +515,19 @@
         }
 
         .testimonial-content {
-            position: relative;
-            z-index: 1;
-            margin-bottom: 20px;
+            flex: 1;
+            margin-right: 20px;
             font-style: italic;
             color: #fff;
+            position: relative;
+            z-index: 1;
         }
 
         .testimonial-author {
             display: flex;
+            flex-direction: column;
             align-items: center;
+            min-width: 120px;
         }
 
         .author-avatar {
@@ -529,7 +535,7 @@
             height: 50px;
             border-radius: 50%;
             overflow: hidden;
-            margin-right: 15px;
+            margin-bottom: 10px;
         }
 
         .author-avatar img {
@@ -542,11 +548,14 @@
             margin-bottom: 5px;
             color: var(--primary-color);
             color: #ffd700;
+            font-size: 1rem;
+            text-align: center;
         }
 
         .author-info p {
             color: #09f729;
             font-size: 0.9rem;
+            text-align: center;
         }
 
         /* Call to Action */
@@ -996,6 +1005,108 @@
             background: #08316b; /* Légèrement plus foncé */
             transform: translateY(-2px);
         }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: #fff;
+            background: #bbb; /* fallback */
+            transition: transform 0.2s, background 0.3s;
+            text-decoration: none;
+        }
+
+        .footer-social .social-facebook { background: #3b5998; }
+        .footer-social .social-twitter { background: #1da1f2; }
+        .footer-social .social-instagram { background: #e4405f; }
+        .footer-social .social-linkedin { background: #0077b5; }
+        .footer-social .social-youtube { background: #ff0000; }
+        .footer-social .social-whatsapp { background: #25d366; }
+
+        .footer-social a:hover {
+            transform: scale(1.15);
+            filter: brightness(1.15);
+        }
+
+        .campus-cards {
+        display: flex;
+        gap: 30px;
+        justify-content: center;
+        align-items: stretch;
+        overflow: hidden;
+        min-height: 320px;
+        margin-top: 30px;
+    }
+    .campus-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.10);
+        overflow: hidden;
+        min-width: 320px;
+        max-width: 350px;
+        flex: 0 0 32%;
+        display: none;
+        flex-direction: column;
+        transition: box-shadow 0.3s, transform 0.3s;
+        position: relative;
+    }
+    .campus-card.active {
+        display: flex;
+        animation: fadeIn 1s;
+    }
+    .campus-card img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        display: block;
+    }
+    .campus-label {
+        background: var(--primary-color);
+        color: #fff;
+        font-weight: 600;
+        padding: 14px 0;
+        text-align: center;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px);}
+        to { opacity: 1; transform: translateY(0);}
+    }
+
+    /* Responsive pour mobile */
+@media (max-width: 768px) {
+    .testimonials-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .testimonial-card,
+    .testimonial-card.active {
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 100%;
+    }
+    .testimonial-content {
+        margin-right: 0;
+        margin-bottom: 18px;
+    }
+    .testimonial-author {
+        flex-direction: row;
+        justify-content: flex-start;
+        min-width: 0;
+    }
+    .author-info h4, .author-info p {
+        text-align: left;
+    }
     </style>
 </head>
 
@@ -1117,12 +1228,29 @@
             </div>
             
             <div class="carousel-container">
-                <div class="carousel" id="mainCarousel">
-                    <img src="{{url_for('static', filename='images/1.jpeg')}}" alt="Campus universitaire" class="active">  
-                    <img src="{{url_for('static', filename='images/2.jpeg')}}" alt="Bibliothèque universitaire">
-                    <img src="{{url_for('static', filename='images/3.jpeg')}}" alt="Amphithéâtre">
-                    <img src="{{url_for('static', filename='images/4.jpeg')}}" alt="Laboratoire de recherche">
-                    <img src="{{url_for('static', filename='images/5.jpeg')}}" alt="Vie étudiante">
+                
+                <div class="campus-cards" id="campusCards">
+                    <div class="campus-card">
+                        <img src="{{url_for('static', filename='images/1.jpeg')}}" alt="Campus universitaire">
+                        <div class="campus-label">Drapeau de la Repubrique du Burundi</div>
+                    </div>
+                    <div class="campus-card">
+                        <img src="{{url_for('static', filename='images/2.jpeg')}}" alt="Bibliothèque universitaire">
+                        <div class="campus-label">Doyenne de l'ISTA, Prof. Menedore KARIMUMUNRYANGO</div>
+                    </div>
+                    <div class="campus-card">
+                        <img src="{{url_for('static', filename='images/3.jpeg')}}" alt="Amphithéâtre">
+                        <div class="campus-label">Developpeur de la plateforme,Etudiant Chercheur en M1 SAID, Fleury NIYOKWIZERA </div>
+                    </div>
+                    <div class="campus-card">
+                        <img src="{{url_for('static', filename='images/4.jpeg')}}" alt="Laboratoire de recherche">
+                        <div class="campus-label">Vue de face de l'Institut de Statistique Appliquée (ISTA)</div>
+                    </div>
+                    <div class="campus-card">
+                        <img src="{{url_for('static', filename='images/5.jpeg')}}" alt="Vie étudiante">
+                        <div class="campus-label">Bibliothèque de l'Institut de Statistique Appliquée (ISTA) </div>
+                    </div>
+                </div>
                 </div>
                 
                 <div class="carousel-nav" id="carouselNav">
@@ -1323,13 +1451,7 @@
                     <div class="footer-about">
                         <p>Plateforme numérique de l'Institut de Statistique Appliquée pour la gestion des activités académiques et administratives.</p>
                     </div>
-                    <div class="footer-social">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
+                    
                 </div>
                 
                 <div class="footer-links">
@@ -1382,8 +1504,22 @@
     </strong>
     - Étudiant Chercheur en SAID
 </p>
+<div style="text-align:center; margin-top:40px;">
+    <p style="font-size:1.2rem; font-weight:600; color:#222;">
+        On contacte ou suit <span style="color:var(--secondary-color); font-weight:900;">Fleury NIYOKWIZERA</span> sur :
+    </p>
+    <div class="footer-social" style="justify-content:center; margin-top:12px;">
+        <a href="https://www.facebook.com/fleury.niyokwizera.1" target="_blank" aria-label="Facebook" class="social-facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://twitter.com/@Niyokwizer66301" target="_blank" aria-label="Twitter" class="social-twitter"><i class="fab fa-twitter"></i></a>
+        <a href="https://instagram.com/fleuryniyokwizera" target="_blank" aria-label="Instagram" class="social-instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://linkedin.com/FleuryNIYOKWIZERA" target="_blank" aria-label="LinkedIn" class="social-linkedin"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://youtube.com/" target="_blank" aria-label="YouTube" class="social-youtube"><i class="fab fa-youtube"></i></a>
+        <a href="https://wa.me/+25762495566" target="_blank" aria-label="WhatsApp" class="social-whatsapp"><i class="fab fa-whatsapp"></i></a>
+    </div>
+</div>
             </div>
         </div>
+        
     </footer>
 
     <!-- Back to top button -->
@@ -1392,77 +1528,83 @@
     </div>
 
     <script>
+document.addEventListener('DOMContentLoaded', function() {
     // Mobile Menu Toggle
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mainNav = document.getElementById('mainNav');
-    mobileMenuBtn.addEventListener('click', () => {
-        mainNav.classList.toggle('active');
-        mobileMenuBtn.innerHTML = mainNav.classList.contains('active') ?
-            '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-    });
+    if (mobileMenuBtn && mainNav) {
+        mobileMenuBtn.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+            mobileMenuBtn.innerHTML = mainNav.classList.contains('active') ?
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+    }
 
     // Header scroll effect
     const header = document.getElementById('header');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
+    if (header) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    }
 
     // Carousel functionality
     const carousel = document.getElementById('mainCarousel');
-    const carouselImages = carousel.querySelectorAll('img');
-    const carouselDots = document.querySelectorAll('.carousel-dot');
-    let currentIndex = 0;
+    if (carousel) {
+        const carouselImages = carousel.querySelectorAll('img');
+        const carouselDots = document.querySelectorAll('.carousel-dot');
+        let currentIndex = 0;
 
-    function showImage(index) {
-        carouselImages.forEach(img => img.classList.remove('active'));
-        carouselDots.forEach(dot => dot.classList.remove('active'));
-        carouselImages[index].classList.add('active');
-        carouselDots[index].classList.add('active');
-        currentIndex = index;
-    }
-
-    carouselDots.forEach(dot => {
-        dot.addEventListener('click', () => {
-            const index = parseInt(dot.getAttribute('data-index'));
-            showImage(index);
-        });
-    });
-
-    // Auto-rotate carousel
-    setInterval(() => {
-        let nextIndex = (currentIndex + 1) % carouselImages.length;
-        showImage(nextIndex);
-    }, 5000);
-
-    // --- Témoignages défilement 2 par 2 ---
-    const testimonialCards = document.querySelectorAll('.testimonial-card');
-    const visibleCount = 3;
-    let testimonialIndex = 0;
-
-    function showTestimonials(start) {
-        testimonialCards.forEach((card, i) => {
-            card.classList.remove('active');
-            card.style.display = 'none';
-        });
-        for (let j = 0; j < visibleCount; j++) {
-            let idx = (start + j) % testimonialCards.length;
-            testimonialCards[idx].classList.add('active');
-            testimonialCards[idx].style.display = 'block';
+        function showImage(index) {
+            carouselImages.forEach(img => img.classList.remove('active'));
+            carouselDots.forEach(dot => dot.classList.remove('active'));
+            carouselImages[index].classList.add('active');
+            carouselDots[index].classList.add('active');
+            currentIndex = index;
         }
+
+        carouselDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const index = parseInt(dot.getAttribute('data-index'));
+                showImage(index);
+            });
+        });
+
+        setInterval(() => {
+            let nextIndex = (currentIndex + 1) % carouselImages.length;
+            showImage(nextIndex);
+        }, 5000);
     }
 
-    // Affiche les deux premiers au départ
-    showTestimonials(testimonialIndex);
+    // Témoignages défilement 3 par 3
+    const testimonialContainer = document.querySelector('.testimonials-container');
+    if (testimonialContainer) {
+        const testimonialCards = testimonialContainer.querySelectorAll('.testimonial-card');
+        const visibleCount = 3;
+        let testimonialIndex = 0;
 
-    // Défilement automatique toutes les 2 secondes
-    setInterval(() => {
-        testimonialIndex = (testimonialIndex + 1) % testimonialCards.length;
+        function showTestimonials(start) {
+            testimonialCards.forEach(card => {
+                card.classList.remove('active');
+                card.style.display = 'none';
+            });
+            for (let j = 0; j < visibleCount; j++) {
+                let idx = (start + j) % testimonialCards.length;
+                testimonialCards[idx].classList.add('active');
+                testimonialCards[idx].style.display = 'flex';
+            }
+        }
         showTestimonials(testimonialIndex);
-    }, 60000);
+
+        setInterval(() => {
+            testimonialIndex = (testimonialIndex + 1) % testimonialCards.length;
+            showTestimonials(testimonialIndex);
+        }, 60000);
+    }
 
     // Animated counter for stats
     const counters = document.querySelectorAll('.stat-number');
@@ -1471,10 +1613,10 @@
     function animateCounters() {
         counters.forEach(counter => {
             const target = parseInt(counter.getAttribute('data-target') ||
-                (counter.id === 'studentsCount' ? 2500 :
-                    counter.id === 'teachersCount' ? 150 :
-                        counter.id === 'programsCount' ? 25 :
-                            counter.id === 'yearsCount' ? 15 : 0));
+                (counter.id === 'studentsCount' ? 365 :
+                    counter.id === 'teachersCount' ? 15 :
+                        counter.id === 'programsCount' ? 8 :
+                            counter.id === 'yearsCount' ? 6 : 0));
             const count = +counter.innerText;
             const increment = target / speed;
             if (count < target) {
@@ -1488,46 +1630,73 @@
 
     // Start counters when stats section is in view
     const statsSection = document.querySelector('.stats-section');
-    const observer = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-            animateCounters();
-            observer.unobserve(statsSection);
-        }
-    }, { threshold: 0.5 });
-
-    observer.observe(statsSection);
+    if (statsSection) {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                animateCounters();
+                observer.unobserve(statsSection);
+            }
+        }, { threshold: 0.5 });
+        observer.observe(statsSection);
+    }
 
     // Back to top button
     const backToTop = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            backToTop.classList.add('active');
-        } else {
-            backToTop.classList.remove('active');
-        }
-    });
-    backToTop.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    if (backToTop) {
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('active');
+            } else {
+                backToTop.classList.remove('active');
+            }
         });
-    });
-</script>
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 
-<script>
-function showLoginAlert(e) {
-    e.preventDefault();
-    var flash = document.getElementById('login-flash');
-    flash.style.display = 'block';
-    setTimeout(function() {
-        flash.style.display = 'none';
-      //  window.location.href = "{{ url_for('auth.login') }}";
-    }, 3500);
-}
+    // Campus cards défilement 3 par 3
+    const campusContainer = document.getElementById('campusCards');
+    if (campusContainer) {
+        const campusCards = campusContainer.querySelectorAll('.campus-card');
+        const campusVisibleCount = 3;
+        let campusIndex = 0;
+
+        function showCampusCards(start) {
+            campusCards.forEach(card => {
+                card.classList.remove('active');
+                card.style.display = 'none';
+            });
+            for (let j = 0; j < campusVisibleCount; j++) {
+                let idx = (start + j) % campusCards.length;
+                campusCards[idx].classList.add('active');
+                campusCards[idx].style.display = 'flex';
+            }
+        }
+        showCampusCards(campusIndex);
+
+        setInterval(() => {
+            campusIndex = (campusIndex + 1) % campusCards.length;
+            showCampusCards(campusIndex);
+        }, 15000);
+    }
+
+    // Login alert
+    window.showLoginAlert = function(e) {
+        e.preventDefault();
+        var flash = document.getElementById('login-flash');
+        if (flash) {
+            flash.style.display = 'block';
+            setTimeout(function() {
+                flash.style.display = 'none';
+            }, 3500);
+        }
+    };
+});
 </script>
-<div id="login-flash" style="display:none; position:fixed; top:30px; left:50%; transform:translateX(-50%); background:#28a745; color:#fff; padding:18px 32px; border-radius:8px; font-size:1.1rem; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
-    Vous devez vous connecter ou vous inscrire pour profiter de ces ressources.
-</div> 
   
 </body>
 </html>
