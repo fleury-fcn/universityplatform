@@ -32,6 +32,9 @@
             --info: #17a2b8;
             --box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
+
+
+            
         }
 
         * {
@@ -222,7 +225,7 @@
         }
 
         .welcome-banner h1 {
-            font-size: clamp(1.8rem, 3.5vw, 3rem);
+            font-size: clamp(2.5rem, 2vw, 3rem) !important;
             margin-bottom: 0.5rem;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
             font-weight: 700;
@@ -264,8 +267,8 @@
         /* Registration Phase */
         .registration-phase {
             background: var(--warning-bg);
-            padding: 1.8rem;
-            border-radius: 12px;
+            padding: 1.2rem;
+            border-radius: 10px;
             margin-bottom: 2.5rem;
             border-left: 5px solid var(--secondary);
             display: flex;
@@ -277,6 +280,7 @@
             box-shadow: var(--box-shadow);
             transition: var(--transition);
             background-image: linear-gradient(to right, var(--warning-bg), #fff8e1);
+            font-size: 0.95rem !important;
         }
 
         .registration-phase:hover {
@@ -296,7 +300,7 @@
             display: flex;
             align-items: center;
             gap: 0.8rem;
-            font-size: 1.3rem;
+            font-size: 1.05rem;
         }
 
         .registration-phase h3 i {
@@ -307,7 +311,12 @@
         .registration-phase p {
             color: var(--dark);
             margin-bottom: 0;
-            font-size: 1rem;
+            font-size: 0.92rem;
+        }
+
+        .registration-phase .btn {
+            padding: 0.7rem 1.2rem !important;
+            font-size: 0.95rem !important;
         }
 
         /* Quick Actions */
@@ -774,217 +783,301 @@
             transform: translateX(3px);
         }
 
-        /* Exchange Rates */
-        .exchange-rates {
-            background: var(--exchange-bg);
-            color: white;
-            border-radius: 15px;
-            padding: 2rem;
-            margin: 3rem 0;
-            box-shadow: var(--box-shadow);
-            transition: var(--transition);
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(5px);
-        }
+        /* Exchange Rates - Design Standard Attractif */
+.exchange-rates {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 900px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
 
-        .exchange-rates:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
+.exchange-rates::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    pointer-events: none;
+}
 
-        .exchange-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
+.exchange-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
 
-        .exchange-title {
-            font-size: 1.4rem;
-            color: white;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
+.exchange-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 
-        .exchange-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--secondary);
-            color: var(--text-dark);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: var(--transition);
-        }
+.exchange-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
 
-        .exchange-rates:hover .exchange-icon {
-            transform: rotate(15deg);
-        }
+.exchange-rates:hover .exchange-icon {
+    transform: scale(1.1) rotate(5deg);
+    background: rgba(255, 255, 255, 0.3);
+}
 
-        .rates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1.5rem;
-        }
+.rates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
 
-        .rate-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1.5rem;
-            border-radius: 10px;
-            text-align: center;
-            transition: var(--transition);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+.rate-item {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
 
-        .rate-item:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
+.rate-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
 
-        .currency {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+.rate-item:hover::before {
+    left: 100%;
+}
 
-        .rate {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--secondary);
-            margin: 0.5rem 0;
-        }
+.rate-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
 
-        .change {
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.3rem;
-        }
+.currency {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
 
-        .positive {
-            color: #2ecc71;
-        }
+.currency-flag {
+    width: 24px;
+    height: 18px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    display: inline-block;
+}
 
-        .negative {
-            color: #e74c3c;
-        }
+.rate {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #FFD700;
+    margin: 0.5rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
 
-        /* Currency Converter */
-        .converter-container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2rem;
-            border-radius: 12px;
-            margin-top: 2rem;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(5px);
-        }
+.change {
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+}
 
-        .converter-title {
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-            color: var(--secondary);
-            text-align: center;
-            font-weight: 600;
-        }
+.positive {
+    color: #4ade80;
+}
 
-        .converter-form {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 1.5rem;
-            align-items: center;
-        }
+.negative {
+    color: #f87171;
+}
 
-        .converter-input {
-            padding: 1rem;
-            border-radius: 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            text-align: center;
-            transition: var(--transition);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
+.change-icon {
+    font-size: 0.8rem;
+}
 
-        .converter-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
-        }
+/* Currency Converter */
+.converter-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 1;
+}
 
-        .converter-select {
-            padding: 1rem;
-            border-radius: 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1rem;
-        }
+.converter-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #FFD700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
 
-        .converter-select:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
-        }
+.converter-form {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    align-items: center;
+}
 
-        .converter-equals {
-            font-size: 1.8rem;
-            color: white;
-            text-align: center;
-            font-weight: bold;
-        }
+.converter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
 
-        .converter-result {
-            padding: 1rem;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            text-align: center;
-            color: var(--primary);
-            font-weight: bold;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
+.converter-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
 
-        .converter-btn {
-            grid-column: 1 / -1;
-            padding: 1rem;
-            border-radius: 8px;
-            border: none;
-            background: var(--secondary);
-            color: var(--text-dark);
-            font-weight: bold;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+.converter-input, .converter-select {
+    padding: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-        .converter-btn:hover {
-            background: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
+.converter-input:focus, .converter-select:focus {
+    outline: none;
+    border-color: #FFD700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+    transform: scale(1.02);
+}
 
+.converter-select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    padding-right: 3rem;
+}
+
+.converter-equals {
+    font-size: 2rem;
+    color: #FFD700;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+}
+
+.converter-result {
+    padding: 1rem;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    color: #1f2937;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.converter-btn {
+    grid-column: 1 / -1;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #1f2937;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 1rem;
+}
+
+.converter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+}
+
+.converter-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .exchange-rates {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .rates-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+    
+    .converter-form {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .converter-equals {
+        transform: rotate(90deg);
+    }
+}
         /* Universities Section */
         .universities-section {
             background: white;
@@ -1758,6 +1851,88 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-light);
         }
+
+        /* Réduction générale des tailles de texte */
+body {
+    font-size: 0.95rem;
+}
+
+.section-title,
+h1, h2, h3, h4 {
+    font-size: 1.5rem !important;
+}
+
+.main-content {
+    padding: 1rem !important;
+}
+
+.card,
+.news-card,
+.university-card {
+    padding: 1rem !important;
+    max-width: 250px !important;
+    min-width: 0 !important;
+}
+
+.news-title,
+.university-name,
+.card-title {
+    font-size: 1rem !important;
+}
+
+.news-content,
+.university-content,
+.card-header {
+    padding: 1rem !important;
+}
+
+.news-excerpt,
+.news-date,
+.news-category,
+.university-country {
+    font-size: 0.85rem !important;
+}
+
+.quick-actions .action-btn {
+    padding: 1rem 0.5rem !important;
+    font-size: 0.95rem !important;
+}
+
+.action-btn i {
+    font-size: 1.3rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 0.5rem !important;
+    }
+    .card,
+    .news-card,
+    .university-card {
+        padding: 0.7rem !important;
+        max-width: 100% !important;
+    }
+}
+
+.registration-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.registration-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.registration-phase .btn {
+    white-space: nowrap;
+    font-size: 0.98rem;
+    padding: 0.6rem 1.2rem;
+}
     </style>
 </head>
 <body>
@@ -1818,7 +1993,7 @@
             <!-- Welcome Banner -->
             <section class="welcome-banner fade-in">
                 <h1>Bienvenue sur OpenISTA, {{ current_user.prenom }} {{ current_user.nom }} !</h1>
-                <p>Votre portail unique pour la vie académique à l'ISTA - Accédez à toutes vos ressources pédagogiques, informations et services en un seul endroit.</p>
+                
                 <div class="date-display">
                     <i class="far fa-calendar-alt"></i> <span id="current-date">{{ current_date }}</span>
                 </div>
@@ -1838,14 +2013,14 @@
 
             <!-- Période d'inscription -->
             <div class="registration-phase fade-in delay-2">
-                <div>
-                    <h3><i class="fas fa-calendar-check"></i> Période d'Inscription Académique</h3>
-                    <p>Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre. Ne tardez pas à compléter votre dossier.</p>
-                </div>
+            <div class="registration-header">
+                <h3><i class="fas fa-calendar-check"></i> Période d'Inscription Académique</h3>
                 <a href="{{ url_for('registrationbp.inscription') }}" class="btn btn-yellow">
                     Procéder à l'inscription <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
+            <p>Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre. Ne tardez pas à compléter votre dossier.</p>
+        </div>
 
             <!-- Quick Actions -->
             <h2 class="section-title fade-in delay-3">
@@ -2154,94 +2329,7 @@
                 </div>
             </div>
 
-            <!-- Cards Grid -->
-            <div class="cards-grid">
-                <!-- Urgent Tasks Card -->
-                <div class="card fade-in delay-1">
-                    <div class="card-header">
-                        <h3 class="card-title">Tâches Urgentes</h3>
-                        <div class="card-icon icon-urgent">
-                            <i class="fas fa-exclamation"></i>
-                        </div>
-                    </div>
-                    <div class="task-list">
-                        <div class="task-item">
-                            <span class="task-priority priority-high"></span>
-                            TP Réseaux à rendre demain
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-medium"></span>
-                            Questionnaire à compléter
-                        </div>
-                        {% if current_user.role == 'professeur' %}
-                        <div class="task-item">
-                            <span class="task-priority priority-high"></span>
-                            Notes à saisir avant vendredi
-                        </div>
-                        {% endif %}
-                        <div class="task-item">
-                            <span class="task-priority priority-medium"></span>
-                            Paiement frais académiques
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Current Courses Card -->
-                <div class="card fade-in delay-2">
-                    <div class="card-header">
-                        <h3 class="card-title">Mes Cours</h3>
-                        <div class="card-icon icon-courses">
-                            <i class="fas fa-book"></i>
-                        </div>
-                    </div>
-                    <div class="task-list">
-                        <div class="task-item" onclick="location.href='#'">
-                            <span class="task-priority priority-low"></span>
-                            Réseaux Informatiques (Aujourd'hui 10h)
-                        </div>
-                        <div class="task-item" onclick="location.href='#'">
-                            <span class="task-priority priority-low"></span>
-                            Base de Données (Demain 8h)
-                        </div>
-                        <div class="task-item" onclick="location.href='#'">
-                            <span class="task-priority priority-low"></span>
-                            Probabilités (Mercredi 14h)
-                        </div>
-                        <div class="task-item" onclick="location.href='#'">
-                            <span class="task-priority priority-low"></span>
-                            Analyse Statistique (Vendredi 16h)
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Resources Card -->
-                <div class="card fade-in delay-3">
-                    <div class="card-header">
-                        <h3 class="card-title">Nouvelles Ressources</h3>
-                        <div class="card-icon icon-resources">
-                            <i class="fas fa-file-download"></i>
-                        </div>
-                    </div>
-                    <div class="task-list">
-                        <div class="task-item">
-                            <span class="task-priority priority-low"></span>
-                            Slides Réseaux - Chapitre 3
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-low"></span>
-                            Annales Examens 2023
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-low"></span>
-                            Exercices corrigés Probas
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-low"></span>
-                            Guide méthodologique
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
             
             <!-- Organisation Académique de l'ISTA -->
             <div class="academic-organization fade-in delay-4">
@@ -2337,28 +2425,8 @@
                     </div>
                 </div>
 
-                <!-- Doctorat Content -->
-                <div class="tab-content" id="doctorat-content">
-                    <div class="department-options">
-                        <div class="department-btn active" data-dept="all">Tous programmes</div>
-                        <div class="department-btn" data-dept="ds">Data Science</div>
-                        <div class="department-btn" data-dept="as">Applied Statistics</div>
-                        <div class="department-btn" data-dept="qm">Quantitative Methods</div>
-                    </div>
-                    
-                    <div class="task-list">
-                        <div class="task-item">
-                            <span class="task-priority priority-high"></span>
-                            Soumission des propositions de thèse - 30 Novembre
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-medium"></span>
-                            Séminaire doctoral mensuel - 15 Décembre
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-low"></span>
-                            Atelier de rédaction scientifique
-                        </div>
+                
+                          
                     </div>
                 </div>
             </div>
@@ -2509,23 +2577,23 @@
                 events: [
                     {
                         title: 'Rentrée Académique',
-                        start: '2024-10-01',
+                        start: '2025-10-01',
                         color: '#0a2463'
                     },
                     {
                         title: 'Début des Cours',
-                        start: '2024-10-15',
+                        start: '2025-10-15',
                         color: '#3a7bd5'
                     },
                     {
                         title: 'Examens Partiels',
-                        start: '2024-12-10',
+                        start: '2025-12-10',
                         end: '2024-12-20',
                         color: '#d7263d'
                     },
                     {
                         title: 'Vacances de Noël',
-                        start: '2024-12-21',
+                        start: '2025-12-21',
                         end: '2025-01-05',
                         color: '#27ae60'
                     },
@@ -2537,13 +2605,13 @@
                     },
                     {
                         title: 'Journée Portes Ouvertes',
-                        start: '2024-11-15',
+                        start: '2026-11-15',
                         color: '#8e44ad'
                     },
                     {
-                        title: 'Semaine des Sciences',
-                        start: '2024-11-20',
-                        end: '2024-11-25',
+                        title: 'Semaine de l\'Université',
+                        start: '2025-11-20',
+                        end: '2025-11-25',
                         color: '#f39c12'
                     }
                 ],
