@@ -85,7 +85,6 @@ def telecharger_cours(cours_id):
         flash("Une erreur est survenue lors du téléchargement", "danger")
         return redirect(url_for('courses.courses'))
 
-
 @coursesbp.route('/ajouter', methods=['GET', 'POST'])
 @login_required
 def ajouter_cours():
@@ -107,7 +106,48 @@ def ajouter_cours():
         specialisation = request.form.get('specialisation', None)
         horaire = request.form['horaire']
         lieu = request.form['lieu']
-        professeur_id = int(request.form['professeur'])
+        
+        # Gestion du professeur (saisie manuelle)
+        professeur_input = request.form['professeur'].strip()
+        
+        try:
+            # Essayer de convertir en int (si c'est un ID)
+            professeur_id = int(professeur_input)
+            # Vérifier que le professeur existe
+            professeur = Professeur.query.get(professeur_id)
+            if not professeur:
+                flash('Professeur non trouvé', 'danger')
+                return redirect(request.url)
+        except ValueError:
+            # C'est une chaîne de caractères (nom du professeur)
+            # Diviser le nom complet en prénom et nom
+            parties = professeur_input.split()
+            if len(parties) >= 2:
+                prenom = parties[0]
+                nom = ' '.join(parties[1:])
+            elif len(parties) == 1:
+                prenom = parties[0]
+                nom = ""
+            else:
+                flash('Nom du professeur invalide', 'danger')
+                return redirect(request.url)
+            
+            # Chercher le professeur existant
+            professeur = Professeur.query.filter_by(nom=nom, prenom=prenom).first()
+            
+            if not professeur:
+                # Créer un nouveau professeur
+                try:
+                    professeur = Professeur(nom=nom, prenom=prenom)
+                    db.session.add(professeur)
+                    db.session.commit()
+                    flash(f'Nouveau professeur créé: {prenom} {nom}', 'info')
+                except Exception as e:
+                    db.session.rollback()
+                    flash('Erreur lors de la création du professeur', 'danger')
+                    return redirect(request.url)
+            
+            professeur_id = professeur.id
         
         # Gestion du fichier
         if 'fichier' not in request.files:
@@ -124,27 +164,36 @@ def ajouter_cours():
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             
             # Créer le cours
-            nouveau_cours = Cours(
-                code=code,
-                titre=titre,
-                description=description,
-                credits=credits,
-                cycle=cycle,
-                annee=annee,
-                departement=departement,
-                parcours=parcours,
-                semestre=semestre,
-                specialisation=specialisation,
-                horaire=horaire,
-                lieu=lieu,
-                fichier=filename,
-                professeur_id=professeur_id
-            )
+            try:
+                nouveau_cours = Cours(
+                    code=code,
+                    titre=titre,
+                    description=description,
+                    credits=credits,
+                    cycle=cycle,
+                    annee=annee,
+                    departement=departement,
+                    parcours=parcours,
+                    semestre=semestre,
+                    specialisation=specialisation,
+                    horaire=horaire,
+                    lieu=lieu,
+                    fichier=filename,
+                    professeur_id=professeur_id
+                )
+                
+                db.session.add(nouveau_cours)
+                db.session.commit()
+                flash('Cours ajouté avec succès', 'success')
+                return redirect(url_for('courses.courses'))
             
-            db.session.add(nouveau_cours)
-            db.session.commit()
-            flash('Cours ajouté avec succès', 'success')
-            return redirect(url_for('courses.courses'))
+            except Exception as e:
+                db.session.rollback()
+                flash('Erreur lors de la création du cours', 'danger')
+                return redirect(request.url)
+        else:
+            flash('Format de fichier non autorisé', 'danger')
+            return redirect(request.url)
     
     # Pour GET: afficher le formulaire
     professeurs = Professeur.query.all()

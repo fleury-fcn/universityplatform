@@ -25,11 +25,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #f5f7fa;
+            background-color: rgb(181, 246, 183);;
             color: var(--dark);
             line-height: 1.6;
         }
@@ -459,13 +459,19 @@
                                     <option value="probastate">Probabilité et Statistique</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                           <!-- <div class="form-group">
                                 <label for="professeur" class="form-label required">Professeur</label>
                                 <select class="form-select" id="professeur" name="professeur" required>
                                     <option value="">Sélectionner...</option>
                                     {% for prof in professeurs %}
                                     <option value="{{ prof.id }}">{{ prof.prenom }} {{ prof.nom }}</option>
-                                    {% endfor %}
+                                    {% endfor %}-->
+
+                                    <div class="form-group">
+                                        <label for="professeur" class="form-label required">Professeur</label>
+                                        <input type="text" class="form-control" id="professeur" name="professeur" required>
+                                    </div>
+
                                 </select>
                             </div>
                         </div>
