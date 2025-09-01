@@ -6,13 +6,19 @@
     <title>OpenISTA - Tableau de Bord</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #0a2463;
+            --primary-light: #1a3a8f;
             --secondary: #ffd700;
+            --secondary-dark: #e6c300;
             --accent: #d7263d;
+            --accent-light: #e74c3c;
             --light: #f8f9fa;
             --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
             --professor: #8e44ad;
             --student: #3498db;
             --admin: #e74c3c;
@@ -21,24 +27,30 @@
             --warning-bg: #fff3cd;
             --warning-border: #ffeeba;
             --news-bg: rgba(255, 255, 255, 0.9);
-            --exchange-bg: rgba(10, 36, 99, 0.9);
+            --exchange-bg: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(13, 41, 51, 0.95));
+            --success: #28a745;
+            --info: #17a2b8;
+            --box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
             background-color: #f5f7fa;
             color: var(--dark);
-            background-image: url('https://source.unsplash.com/random/1920x1080/?university,campus');
+            background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
             min-height: 100vh;
+            line-height: 1.6;
+            font-size: 0.95rem;
         }
 
         .dashboard-container {
@@ -53,58 +65,77 @@
             color: var(--text-light);
             padding: 2rem 1rem;
             position: relative;
-            z-index: 10;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+        .sidebar:hover {
+            box-shadow: 8px 0 25px rgba(0, 0, 0, 0.3);
         }
 
         .user-profile {
             text-align: center;
             margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .avatar-container {
+            position: relative;
+            display: inline-block;
         }
 
         .avatar {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            border: 3px solid var(--secondary);
+            border: 4px solid var(--secondary);
             object-fit: cover;
             margin-bottom: 1rem;
-            transition: transform 0.3s;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .avatar:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--secondary-dark);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .user-role {
             display: inline-block;
-            padding: 0.3rem 0.8rem;
+            padding: 0.3rem 1rem;
             border-radius: 20px;
             font-size: 0.8rem;
             margin-top: 0.5rem;
             color: var(--text-light);
-            font-weight: bold;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
-        .role-student { background: var(--student); }
-        .role-professor { background: var(--professor); }
-        .role-admin { background: var(--admin); }
+        .role-etudiant { background: var(--student); }
+        .role-professeur { background: var(--professor); }
+        .role-administrateur { background: var(--admin); }
 
         .nav-menu {
             margin-top: 2rem;
         }
 
         .nav-item {
-            padding: 0.8rem 1rem;
+            padding: 0.8rem 1.2rem;
             margin: 0.5rem 0;
             border-radius: 8px;
-            transition: all 0.3s;
+            transition: var(--transition);
             display: flex;
             align-items: center;
             color: var(--text-light);
             text-decoration: none;
             position: relative;
             overflow: hidden;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         .nav-item::before {
@@ -114,49 +145,75 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: var(--transition);
             z-index: -1;
         }
 
         .nav-item:hover::before, .nav-item.active::before {
-            left: 0;
+            left: 100%;
         }
 
         .nav-item:hover, .nav-item.active {
-            transform: translateX(5px);
+            transform: translateX(8px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
         }
 
         .nav-item i {
-            margin-right: 10px;
+            margin-right: 12px;
             width: 20px;
             text-align: center;
             color: var(--secondary);
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.2);
+            color: var(--secondary-dark);
+        }
+
+        .badge {
+            position: absolute;
+            right: 1rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
 
         /* Main Content */
         .main-content {
             padding: 2rem;
             background-color: rgba(245, 247, 250, 0.95);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
             overflow-x: hidden;
         }
 
+        /* Welcome Banner */
         .welcome-banner {
-            background: linear-gradient(135deg, var(--primary), #3a7bd5);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: var(--text-light);
-            padding: 2rem;
-            border-radius: 10px;
+            padding: 2.5rem;
+            border-radius: 15px;
             margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            background-image: url('https://source.unsplash.com/random/1200x400/?university'), 
-                            linear-gradient(135deg, var(--primary), #3a7bd5);
+            box-shadow: var(--box-shadow);
+            background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'), 
+                            linear-gradient(135deg, var(--primary), var(--primary-light));
             background-blend-mode: overlay;
             background-size: cover;
             background-position: center;
             animation: gradientBG 15s ease infinite;
+            border-left: 5px solid var(--secondary);
         }
 
         @keyframes gradientBG {
@@ -166,182 +223,147 @@
         }
 
         .welcome-banner h1 {
-            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-size: clamp(2.5rem, 2vw, 3rem) !important;
             margin-bottom: 0.5rem;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .welcome-banner h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--secondary);
+            border-radius: 3px;
+        }
+
+        .welcome-banner p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-bottom: 1.5rem;
         }
 
         .date-display {
             opacity: 0.9;
-            font-size: 0.9rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            width: fit-content;
+            backdrop-filter: blur(5px);
         }
 
         /* Registration Phase */
         .registration-phase {
             background: var(--warning-bg);
-            padding: 1.5rem;
+            padding: 1.2rem;
             border-radius: 10px;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             border-left: 5px solid var(--secondary);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 1.5rem;
             animation: pulse 2s infinite;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            background-image: linear-gradient(to right, var(--warning-bg), #fff8e1);
+            font-size: 0.95rem !important;
+        }
+
+        .registration-phase:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
 
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
             100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
         }
 
         .registration-phase h3 {
             color: var(--primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
+            font-size: 1.05rem;
         }
 
         .registration-phase h3 i {
             color: var(--accent);
+            font-size: 1.5rem;
         }
 
         .registration-phase p {
             color: var(--dark);
             margin-bottom: 0;
+            font-size: 0.92rem;
         }
 
-        /* Cards Grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+        .registration-phase .btn {
+            padding: 0.7rem 1.2rem !important;
+            font-size: 0.95rem !important;
         }
-
-        .card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--secondary);
-            transition: width 0.3s;
-        }
-
-        .card:hover::before {
-            width: 10px;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #eee;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            color: var(--primary);
-        }
-
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: transform 0.3s;
-        }
-
-        .card:hover .card-icon {
-            transform: rotate(15deg);
-        }
-
-        .icon-urgent { background: var(--accent); }
-        .icon-courses { background: var(--primary); }
-        .icon-events { background: var(--professor); }
-        .icon-resources { background: #27ae60; }
-        .icon-news { background: #9b59b6; }
-        .icon-exchange { background: #f39c12; }
-        .icon-calendar { background: #16a085; }
-
-        .task-item {
-            padding: 0.8rem 0;
-            border-bottom: 1px dashed #eee;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .task-item:hover {
-            background-color: rgba(10, 36, 99, 0.05);
-            padding-left: 10px;
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
-        }
-
-        .task-priority {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .priority-high { background: var(--accent); }
-        .priority-medium { background: #f39c12; }
-        .priority-low { background: #2ecc71; }
 
         /* Quick Actions */
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 2rem 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--secondary);
+            border-radius: 3px;
+        }
+
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.8rem;
+            margin: 2.5rem 0;
         }
 
         .action-btn {
             background: white;
-            border-radius: 10px;
-            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            padding: 1.8rem 1rem;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
             cursor: pointer;
             color: var(--primary);
             border: 2px solid transparent;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
 
         .action-btn::before {
@@ -352,7 +374,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: 0.5s;
+            transition: 0.6s;
         }
 
         .action-btn:hover::before {
@@ -362,865 +384,93 @@
         .action-btn:hover {
             background: var(--primary);
             color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(10, 36, 99, 0.2);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(10, 36, 99, 0.3);
             border-color: var(--secondary);
         }
 
         .action-btn i {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
             display: block;
             color: var(--primary);
-            transition: all 0.3s;
+            transition: var(--transition);
         }
 
         .action-btn:hover i {
-            color: white;
-            transform: scale(1.2);
+            color: var(--secondary);
+            transform: scale(1.2) rotate(10deg);
         }
 
-        /* News Tabs */
-        .news-tabs {
-            display: flex;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #eee;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 0.8rem 1.5rem;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
+        .action-btn span {
             font-weight: 600;
-            color: var(--text-dark);
-            position: relative;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            transition: var(--transition);
         }
 
-        .tab::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--primary);
-            transition: width 0.3s;
-        }
-
-        .tab:hover::after {
-            width: 100%;
-        }
-
-        .tab.active {
-            color: var(--primary);
-        }
-
-        .tab.active::after {
-            width: 100%;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .department-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin: 1rem 0;
-        }
-
-        .department-btn {
-            padding: 0.5rem 1rem;
-            background: #e0e0e0;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            border: 1px solid transparent;
-        }
-
-        .department-btn:hover {
-            background: #d0d0d0;
-        }
-
-        .department-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .year-options {
-            display: flex;
-            gap: 0.5rem;
-            margin: 1rem 0;
-            flex-wrap: wrap;
-        }
-
-        .year-btn {
-            padding: 0.4rem 0.8rem;
-            background: #f0f0f0;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .action-btn small {
             font-size: 0.85rem;
-            border: 1px solid transparent;
+            opacity: 0.8;
+            transition: var(--transition);
         }
 
-        .year-btn:hover {
-            background: #e0e0e0;
-        }
-
-        .year-btn.active {
-            background: var(--secondary);
-            color: var(--text-dark);
-            border-color: var(--secondary);
-        }
-
-        .specialization-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin: 1rem 0;
-        }
-
-        .specialization-btn {
-            padding: 0.5rem 1rem;
-            background: #e8f4fc;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            border: 1px solid #d0e3f7;
-        }
-
-        .specialization-btn:hover {
-            background: #d8eaf8;
-        }
-
-        .specialization-btn.active {
-            background: var(--student);
-            color: white;
-            border-color: var(--student);
-        }
-
-        /* Student Directory */
-        .student-directory {
-            margin-top: 2rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
-            transition: transform 0.3s;
-        }
-
-        .student-directory:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .directory-filters {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-select {
-            padding: 0.6rem 1rem;
-            border-radius: 8px;
-            border: 2px solid #ddd;
-            min-width: 200px;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            background: white;
-        }
-
-        .filter-select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(10, 36, 99, 0.1);
-        }
-
-        .student-list {
-            margin-top: 1rem;
-        }
-
-        .student-card {
-            background: white;
-            border-radius: 8px;
-            padding: 1.2rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-        }
-
-        .student-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-left-color: var(--secondary);
-        }
-
-        .student-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-right: 1.2rem;
-            object-fit: cover;
-            border: 2px solid var(--light);
-            transition: transform 0.3s;
-        }
-
-        .student-card:hover .student-avatar {
-            transform: scale(1.1);
-        }
-
-        .student-info h4 {
-            color: var(--primary);
-            margin-bottom: 0.3rem;
-        }
-
-        .student-info p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        /* News Section */
-        .news-section {
-            margin-top: 2rem;
-        }
-
-        .news-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        .news-card {
-            background: var(--news-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-
-        .news-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .news-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-        }
-
-        .news-content {
-            padding: 1.5rem;
-        }
-
-        .news-category {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            background: var(--secondary);
-            color: var(--text-dark);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-bottom: 0.8rem;
-            font-weight: bold;
-        }
-
-        .news-title {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .news-date {
-            font-size: 0.8rem;
-            color: #666;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .news-excerpt {
-            font-size: 0.9rem;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        /* Exchange Rates */
-        .exchange-rates {
-            background: var(--exchange-bg);
-            color: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .exchange-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .exchange-title {
-            font-size: 1.2rem;
-            color: white;
-        }
-
-        .exchange-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--secondary);
-            color: var(--text-dark);
-        }
-
-        .rates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-
-        .rate-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-
-        .rate-item:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .currency {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 0.3rem;
-        }
-
-        .rate {
-            font-size: 1.3rem;
-            font-weight: bold;
+        .action-btn:hover small {
+            opacity: 1;
             color: var(--secondary);
-        }
-
-        .change {
-            font-size: 0.8rem;
-            margin-top: 0.3rem;
-        }
-
-        .positive {
-            color: #2ecc71;
-        }
-
-        .negative {
-            color: #e74c3c;
-        }
-
-        /* Currency Converter */
-        .converter-container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-top: 1.5rem;
-        }
-
-        .converter-title {
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            color: var(--secondary);
-            text-align: center;
-        }
-
-        .converter-form {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .converter-input {
-            padding: 0.8rem;
-            border-radius: 5px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        .converter-select {
-            padding: 0.8rem;
-            border-radius: 5px;
-            border: none;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .converter-equals {
-            font-size: 1.5rem;
-            color: white;
-            text-align: center;
-        }
-
-        .converter-result {
-            padding: 0.8rem;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            text-align: center;
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .converter-btn {
-            grid-column: 1 / -1;
-            padding: 0.8rem;
-            border-radius: 5px;
-            border: none;
-            background: var(--secondary);
-            color: var(--text-dark);
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .converter-btn:hover {
-            background: white;
-            transform: translateY(-2px);
-        }
-
-        /* Calendar */
-        .calendar-container {
-            margin-top: 2rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .calendar-title {
-            font-size: 1.2rem;
-            color: var(--primary);
-        }
-
-        .calendar-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--primary);
-            color: white;
-        }
-
-        #calendar {
-            margin-top: 1rem;
-        }
-
-        /* Simple Calendar */
-        .simple-calendar {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            padding: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .calendar-month-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .calendar-month-title {
-            font-size: 1.2rem;
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .calendar-nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .calendar-nav-btn:hover {
-            background: var(--accent);
-            transform: scale(1.1);
-        }
-
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0.5rem;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .calendar-day:hover {
-            background: #f0f0f0;
-        }
-
-        .calendar-day.today {
-            background: var(--secondary);
-            color: var(--text-dark);
-            font-weight: bold;
-        }
-
-        .calendar-day.event::after {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--accent);
-        }
-
-        .calendar-day.other-month {
-            color: #ccc;
-        }
-
-        .calendar-events {
-            margin-top: 1rem;
-        }
-
-        .calendar-event {
-            padding: 0.8rem;
-            border-left: 3px solid var(--primary);
-            background: #f8f9fa;
-            margin-bottom: 0.5rem;
-            border-radius: 0 5px 5px 0;
-        }
-
-        .calendar-event-date {
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .calendar-event-title {
-            margin-top: 0.3rem;
-        }
-
-        /* Scroll Animation */
-        .scroll-section {
-            margin-top: 2rem;
-            padding: 2rem;
-            background: linear-gradient(to right, var(--primary), #3a7bd5);
-            color: white;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .scroll-container {
-            display: flex;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            gap: 1.5rem;
-            padding: 1rem 0;
-            scrollbar-width: none; /* Firefox */
-        }
-
-        .scroll-container::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
-        }
-
-        .scroll-item {
-            min-width: 300px;
-            scroll-snap-align: start;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 1.5rem;
-            transition: transform 0.3s;
-        }
-
-        .scroll-item:hover {
-            transform: scale(1.03);
-        }
-
-        .scroll-title {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: var(--secondary);
-        }
-
-        .scroll-content {
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        /* International Universities */
-        .universities-section {
-            margin-top: 2rem;
-        }
-
-        .universities-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        .university-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-        }
-
-        .university-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .university-logo {
-            width: 100%;
-            height: 120px;
-            object-fit: contain;
-            padding: 1rem;
-            background: #f8f9fa;
-        }
-
-        .university-content {
-            padding: 1.5rem;
-        }
-
-        .university-name {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .university-country {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        .university-link {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: var(--primary);
-            color: white;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .university-link:hover {
-            background: var(--secondary);
-            color: var(--text-dark);
-        }
-
-        /* Weather Widget */
-        .weather-widget {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .weather-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .weather-title {
-            font-size: 1.2rem;
-            color: var(--primary);
-        }
-
-        .weather-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--primary);
-            color: white;
-        }
-
-        .weather-current {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .weather-temp {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary);
-            margin: 0.5rem 0;
-        }
-
-        .weather-desc {
-            color: #666;
-        }
-
-        .weather-forecast {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 0.5rem;
-        }
-
-        .weather-day {
-            padding: 0.5rem;
-            border-radius: 5px;
-            background: #f8f9fa;
-        }
-
-        .weather-day-name {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 0.8rem;
-        }
-
-        .weather-day-temp {
-            font-size: 0.9rem;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            border: none;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-            border: 2px solid var(--primary);
-        }
-
-        .btn-primary:hover {
-            background-color: transparent;
-            color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(10, 36, 99, 0.2);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--primary);
-            color: white;
-            transform: translateY(-3px);
-        }
-
-        .btn-yellow {
-            background-color: var(--secondary);
-            color: var(--text-dark);
-            border: 2px solid var(--secondary);
-        }
-
-        .btn-yellow:hover {
-            background-color: transparent;
-            color: var(--text-dark);
-            transform: translateY(-3px);
         }
 
         /* Marquee */
+        .marquee-container {
+            position: relative;
+            margin: 2.5rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
         .marquee {
-            background: var(--primary);
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
             color: white;
-            padding: 0.8rem 0;
-            margin: 2rem 0;
-            border-radius: 5px;
+            padding: 1rem 0;
+            border-radius: 8px;
             overflow: hidden;
             white-space: nowrap;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .marquee::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(10,36,99,0.9) 0%, rgba(10,36,99,0) 20%, rgba(10,36,99,0) 80%, rgba(10,36,99,0.9) 100%);
+            z-index: 1;
         }
 
         .marquee-content {
             display: inline-block;
             padding-left: 100%;
-            animation: marquee 20s linear infinite;
+            animation: marquee 25s linear infinite;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .marquee-item {
+            display: inline-block;
+            margin-right: 4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+        }
+
+        .marquee-item i {
+            margin-right: 0.5rem;
+            color: var(--secondary);
         }
 
         @keyframes marquee {
@@ -1228,10 +478,1304 @@
             100% { transform: translateX(-100%); }
         }
 
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem; /* Réduit l'espacement entre les cartes */
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--secondary);
+            transition: var(--transition);
+        }
+
+        .card:hover::before {
+            width: 8px;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover .card-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .icon-urgent { background: var(--accent); }
+        .icon-courses { background: var(--primary); }
+        .icon-events { background: var(--professor); }
+        .icon-resources { background: var(--success); }
+        .icon-news { background: #9b59b6; }
+        .icon-exchange { background: #f39c12; }
+        .icon-calendar { background: #16a085; }
+
+        .task-item {
+            padding: 1rem 0;
+            border-bottom: 1px dashed var(--light-gray);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .task-item:hover {
+            background-color: rgba(10, 36, 99, 0.05);
+            padding-left: 15px;
+            border-bottom-color: var(--secondary);
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-priority {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .priority-high { background: var(--accent); }
+        .priority-medium { background: #f39c12; }
+        .priority-low { background: var(--success); }
+
+        /* News Section */
+        .news-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .news-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .news-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem; /* Réduit l'espacement */
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .news-tabs .tab {
+            padding: 0.8rem 1.8rem;
+            border-radius: 30px;
+            background: var(--light-gray);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(10,36,99,0.06);
+            border: 2px solid transparent;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .news-tabs .tab.active,
+        .news-tabs .tab:hover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: #fff;
+            border: 2px solid var(--secondary);
+            box-shadow: 0 5px 15px rgba(10,36,99,0.15);
+            transform: translateY(-2px);
+        }
+
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem; /* Réduit l'espacement entre les cartes */
+            margin-top: 1rem;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: var(--transition);
+            min-width: 0;
+            max-width: 350px;
+            margin: 0 auto;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .news-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7));
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .news-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .news-card:hover::before {
+            opacity: 1;
+        }
+
+        .news-image-container {
+            position: relative;
+            overflow: hidden;
+            height: 180px;
+        }
+
+        .news-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+            display: block;
+        }
+
+        .news-card:hover .news-image {
+            transform: scale(1.1);
+        }
+
+        .news-category {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            color: #856404;
+            background: var(--warning-bg);
+            border-radius: 20px;
+            display: inline-block;
+            z-index: 2;
+            font-weight: 600;
+        }
+
+        .news-content {
+            padding: 1.2rem; /* Réduit le padding */
+            position: relative;
+            z-index: 2;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+
+        .news-card:hover .news-title {
+            color: white;
+        }
+
+        .news-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-bottom: 0.8rem; /* Réduit l'espacement */
+            transition: var(--transition);
+        }
+
+        .news-card:hover .news-date {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .news-excerpt {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1.2rem; /* Réduit l'espacement */
+            line-height: 1.5;
+            transition: var(--transition);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-card:hover .news-excerpt {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .news-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .news-card:hover .news-link {
+            color: var(--secondary);
+        }
+
+        .news-link i {
+            transition: var(--transition);
+        }
+
+        .news-link:hover i {
+            transform: translateX(3px);
+        }
+
+        /* Enhanced Exchange Rates */
+        .exchange-rates {
+            background: var(--exchange-bg);
+            color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 900px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exchange-rates::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='grid' width='20' height='20' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 20 0 L 0 0 0 20' fill='none' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grid)' /%3E%3C/svg%3E"),
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .exchange-rates > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .exchange-rates:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .exchange-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .exchange-title {
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .exchange-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: var(--text-dark);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            font-size: 1.5rem;
+        }
+
+        .exchange-rates:hover .exchange-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .live-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--success);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .market-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+
+        .rates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .rate-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rate-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+            transition: var(--transition);
+        }
+
+        .rate-item:hover::before {
+            left: 100%;
+        }
+
+        .rate-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .currency {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .currency-flag {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .rate {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 0.8rem 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .change {
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .positive {
+            color: var(--success);
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .negative {
+            color: var(--danger);
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .converter-container {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2rem;
+            border-radius: 18px;
+            margin-top: 2rem;
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .converter-title {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+            text-align: center;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .converter-form {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .converter-input, .converter-select {
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 1.1rem;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .converter-input:focus, .converter-select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .converter-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2rem;
+        }
+
+        .converter-equals {
+            font-size: 2rem;
+            color: var(--secondary);
+            text-align: center;
+            font-weight: bold;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .converter-result {
+            padding: 1.2rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+            font-size: 1.1rem;
+            text-align: center;
+            color: var(--primary);
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .converter-btn {
+            grid-column: 1 / -1;
+            padding: 1.2rem;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: var(--text-dark);
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .converter-btn:hover {
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Universities Section */
+        .universities-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .universities-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .universities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem; /* Réduit l'espacement */
+            margin-top: 1.5rem;
+        }
+
+        .university-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .university-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .university-logo-container {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .university-logo {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
+            filter: grayscale(30%);
+        }
+
+        .university-card:hover .university-logo {
+            transform: scale(1.05);
+            filter: grayscale(0%);
+        }
+
+        .university-content {
+            padding: 1.5rem;
+        }
+
+        .university-name {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .university-country {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+        }
+
+        .university-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+            box-shadow: 0 3px 10px rgba(10, 36, 99, 0.2);
+        }
+
+        .university-link:hover {
+            background: var(--secondary);
+            color: var(--text-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(10, 36, 99, 0.3);
+        }
+
+        /* Weather Widget */
+        .weather-widget {
+            background: linear-gradient(135deg, #76a9ef, #3a7bd5);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            margin: 3rem 0;
+            transition: var(--transition);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weather-widget:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .weather-widget::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+        }
+
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .weather-title {
+            font-size: 1.4rem;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .weather-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .weather-widget:hover .weather-icon {
+            transform: rotate(15deg);
+        }
+
+        .weather-current {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        #weather-icon {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .weather-widget:hover #weather-icon {
+            transform: scale(1.1);
+        }
+
+        .weather-temp {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .weather-temp span {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+        }
+
+        .weather-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .weather-forecast {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .weather-day {
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(5px);
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .weather-day:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-5px);
+        }
+
+        .weather-day-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .weather-day-icon {
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .weather-day-temp {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Calendars */
+        .calendars-row {
+            display: flex;
+            gap: 2rem;
+            margin: 3rem 0;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .calendar-container,
+        .simple-calendar {
+            flex: 1 1 0;
+            min-width: 320px;
+            max-width: 500px;
+            padding: 1.8rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .calendar-container:hover,
+        .simple-calendar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-title {
+            font-size: 1.4rem;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .calendar-day.event {
+            position: relative;
+        }
+
+        .calendar-day.event::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .calendar-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .calendar-container:hover .calendar-icon {
+            transform: rotate(15deg);
+        }
+
+        #calendar {
+            margin-top: 1.5rem;
+        }
+
+        /* Simple Calendar */
+        .simple-calendar {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calendar-month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .calendar-month-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .calendar-nav-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-nav-btn:hover {
+            background: var(--accent);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .calendar-weekdays {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr); /* Supprimer le ) */
+                text-align: center;
+                margin-bottom: 1rem;
+                font-weight: 600;
+                color: var(--primary);
+                font-size: 0.9rem;
+            }
+
+            .calendar-days {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr); /* Supprimer le ) */
+                gap: 0.8rem;
+            }
+
+        .calendar-weekday {
+            padding: 0.5rem;
+            background: rgba(10, 36, 99, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .calendar-weekday:hover {
+            background: rgba(10, 36, 99, 0.15);
+            transform: scale(1.05);
+        }
+
+
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            font-weight: 500;
+            background: rgba(10, 36, 99, 0.05);
+        }
+
+        .calendar-day:hover {
+            background: rgba(10, 36, 99, 0.1);
+            transform: scale(1.05);
+        }
+
+        .calendar-day.today {
+            background: var(--secondary);
+            color: var(--text-dark);
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .calendar-day.event::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
+            background: transparent;
+        }
+
+        .calendar-events {
+            margin-top: 2rem;
+        }
+
+        .calendar-event {
+            padding: 1rem;
+            border-left: 4px solid var(--primary);
+            background: var(--light-gray);
+            margin-bottom: 0.8rem;
+            border-radius: 0 8px 8px 0;
+            transition: var(--transition);
+        }
+
+        .calendar-event:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-event-date {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .calendar-event-title {
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Academic Organization */
+        .academic-organization {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            grid-column: 1 / -1;
+        }
+
+        .academic-organization:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .org-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .org-tab {
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            background: var(--light-gray);
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(10,36,99,0.06);
+            border: 2px solid transparent;
+        }
+
+        .org-tab.active,
+        .org-tab:hover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: #fff;
+            border: 2px solid var(--secondary);
+            box-shadow: 0 5px 15px rgba(10,36,99,0.15);
+        }
+
+        .department-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .department-btn {
+            padding: 0.6rem 1.2rem;
+            background: #e0e0e0;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+        }
+
+        .department-btn:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .department-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--secondary);
+            box-shadow: 0 3px 10px rgba(10, 36, 99, 0.2);
+        }
+
+        .year-options {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .year-btn {
+            padding: 0.5rem 1rem;
+            background: #f0f0f0;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+        }
+
+        .year-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .year-btn.active {
+            background: var(--secondary);
+            color: var(--text-dark);
+            border-color: var(--secondary-dark);
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .specialization-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .specialization-btn {
+            padding: 0.6rem 1.2rem;
+            background: #e8f4fc;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 2px solid #d0e3f7;
+        }
+
+        .specialization-btn:hover {
+            background: #d8eaf8;
+            transform: translateY(-2px);
+        }
+
+        .specialization-btn.active {
+            background: var(--student);
+            color: white;
+            border-color: var(--student);
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.9rem 1.8rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            border: 2px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(10, 36, 99, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(10, 36, 99, 0.3);
+        }
+
+        .btn-yellow {
+            background-color: var(--secondary);
+            color: var(--text-dark);
+            border-color: var(--secondary);
+        }
+
+        .btn-yellow:hover {
+            background-color: transparent;
+            color: var(--text-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn i {
+            transition: var(--transition);
+        }
+
+        .btn:hover i {
+            transform: translateX(3px);
+        }
+
+        /* View All Button */
+        .view-all {
+            text-align: center;
+            margin-top: 2.5rem;
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .quick-actions {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
             
             .converter-form {
@@ -1259,6 +1803,15 @@
             .news-container {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .calendars-row {
+                flex-direction: column;
+            }
+
+            .calendar-container,
+            .simple-calendar {
+                max-width: 100%;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1267,20 +1820,20 @@
                 text-align: center;
             }
             
-            .directory-filters {
-                flex-direction: column;
-            }
-            
-            .filter-select {
-                width: 100%;
-            }
-            
             .news-container {
                 grid-template-columns: 1fr;
             }
             
             .main-content {
-                padding: 1rem;
+                padding: 1.5rem;
+            }
+
+            .welcome-banner {
+                padding: 1.8rem 1.2rem;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
             }
         }
 
@@ -1290,25 +1843,85 @@
             }
             
             .action-btn i {
-                font-size: 1.5rem;
+                font-size: 2rem;
             }
             
             .news-tabs {
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: stretch;
             }
             
             .tab {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
-            
-            .welcome-banner {
-                padding: 1.5rem 1rem;
+                width: 100%;
             }
             
             .card {
-                padding: 1rem;
+                padding: 1.5rem;
             }
+
+            .converter-form {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .converter-btn {
+                margin-top: 1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+
+        .registration-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .registration-header h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .registration-phase .btn {
+            white-space: nowrap;
+            font-size: 0.98rem;
+            padding: 0.6rem 1.2rem;
         }
     </style>
 </head>
@@ -1321,7 +1934,7 @@
                     <img src="{{ current_user.get_avatar_url() }}" 
                          alt="Photo de profil" class="avatar" id="avatarPreview">
                     <div>
-                        <h3 style="color: var(--text-light);">{{ current_user.prenom }} {{ current_user.nom }}</h3>
+                        <h3>{{ current_user.prenom }} {{ current_user.nom }}</h3>
                         <span class="user-role role-{{ current_user.role }}">{{ current_user.role|capitalize }}</span>
                     </div>
                 </div>
@@ -1351,7 +1964,10 @@
                 </a>
                 <a href="{{ url_for('messagerie.PageMessagerie') }}" class="nav-item">
                     <i class="fas fa-envelope"></i> Messages
-                    <span class="badge"></span>
+                    <span class="badge">3</span>
+                </a>
+                <a href="{{ url_for('actualites.liste_actualites') }}" class="nav-item">
+                    <i class="fas fa-newspaper"></i> Actualités
                 </a>
                 <a href="{{ url_for('profile.profile') }}" class="nav-item">
                     <i class="fas fa-user-cog"></i> Mon Profil
@@ -1365,287 +1981,465 @@
         <!-- Main Content -->
         <main class="main-content">
             <!-- Welcome Banner -->
-            <section class="welcome-banner">
+            <section class="welcome-banner fade-in">
                 <h1>Bienvenue sur OpenISTA, {{ current_user.prenom }} {{ current_user.nom }} !</h1>
-                <p>Votre portail unique pour la vie académique à l'ISTA</p>
+                
                 <div class="date-display">
                     <i class="far fa-calendar-alt"></i> <span id="current-date">{{ current_date }}</span>
                 </div>
             </section>
 
             <!-- Marquee for Important Announcements -->
-            <div class="marquee">
-                <div class="marquee-content">
-                    <span style="margin-right: 50px;">📢 Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre 2024</span>
-                    <span style="margin-right: 50px;">🎓 Conférence sur la Data Science le 15 novembre avec le Dr. Niyonkuru</span>
-                    <span style="margin-right: 50px;">🏆 Concours de programmation ISTA - Inscriptions ouvertes jusqu'au 20 novembre</span>
+            <div class="marquee-container fade-in delay-1">
+                <div class="marquee">
+                    <div class="marquee-content">
+                        <span class="marquee-item"><i class="fas fa-bullhorn"></i> Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre 2024</span>
+                        <span class="marquee-item"><i class="fas fa-chalkboard-teacher"></i> Conférence sur la Data Science le 15 novembre avec le Dr. Niyonkuru</span>
+                        <span class="marquee-item"><i class="fas fa-trophy"></i> Concours d'admission au Baccalauréat ISTA - Inscriptions ouvertes jusqu'au 20 octobre</span>
+                        <span class="marquee-item"><i class="fas fa-graduation-cap"></i> Concours d'admission au Master ISTA - Inscriptions ouvertes jusqu'au 10 novembre</span>
+                    </div>
                 </div>
             </div>
 
             <!-- Période d'inscription -->
-            <div class="registration-phase">
-                <div>
+            <div class="registration-phase fade-in delay-2">
+                <div class="registration-header">
                     <h3><i class="fas fa-calendar-check"></i> Période d'Inscription Académique</h3>
-                    <p>Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre.</p>
+                    <a href="{{ url_for('registrationbp.inscription') }}" class="btn btn-yellow">
+                        Procéder à l'inscription <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
-                <a href="{{ url_for('registrationbp.inscription') }}" class="btn btn-yellow">
-                    Procéder à l'inscription <i class="fas fa-arrow-right"></i>
-                </a>
+                <p>Les inscriptions pour l'année académique 2024-2025 sont ouvertes jusqu'au 30 octobre. Ne tardez pas à compléter votre dossier.</p>
             </div>
 
             <!-- Quick Actions -->
+            <h2 class="section-title fade-in delay-3">
+                <i class="fas fa-bolt"></i> Accès Rapide
+            </h2>
+            
             <div class="quick-actions">
-                <div class="action-btn" onclick="location.href='{{ url_for('syllabusbp.syllabus')}}'">
+                <div class="action-btn fade-in delay-1" onclick="location.href='{{ url_for('syllabusbp.syllabus')}}'">
                     <i class="fas fa-book"></i>
                     <span>Mes Syllabus</span>
                     <small>Accéder aux ressources</small>
                 </div>
-                <div class="action-btn" onclick="location.href='{{ url_for('courses.courses') }}'">
+                <div class="action-btn fade-in delay-2" onclick="location.href='{{ url_for('courses.courses') }}'">
                     <i class="fas fa-book-open"></i>
                     <span>Mes Cours</span>
                     <small>Voir le programme</small>
                 </div>
-                <div class="action-btn" onclick="location.href='{{ url_for('books.library')}}'">
+                <div class="action-btn fade-in delay-3" onclick="location.href='{{ url_for('books.library')}}'">
                     <i class="fas fa-book"></i>
                     <span>Bibliothèque</span>
                     <small>Accéder aux Livres</small>
                 </div>
-                <div class="action-btn" onclick="location.href='{{ url_for('clubs.clubs_page') }}'">
+                <div class="action-btn fade-in delay-4" onclick="location.href='{{ url_for('clubs.clubs_page') }}'">
                     <i class="fas fa-users"></i>
                     <span>Clubs</span>
                     <small>Rejoindre une activité</small>
                 </div>
-                <div class="action-btn" onclick="location.href='{{ url_for('tuyaux.PageTuyaux') }}'">
+                <div class="action-btn fade-in delay-5" onclick="location.href='{{ url_for('tuyaux.PageTuyaux') }}'">
                     <i class="fas fa-file-alt"></i>
                     <span>Tuyaux d'Examens</span>
                     <small>Réussite pour tous</small>
                 </div>
-                <div class="action-btn" onclick="location.href='{{ url_for('profile.profile') }}'">
-                    <i class="fas fa-user-cog"></i>
-                    <span>Mon Profil</span>
-                    <small></small>
-                </div>
-                <div class="action-btn" onclick="location.href='{{ url_for('messagerie.PageMessagerie') }}'">
+                <div class="action-btn fade-in delay-1" onclick="location.href='{{ url_for('messagerie.PageMessagerie') }}'">
                     <i class="fas fa-envelope"></i>
                     <span>Messages</span>
                     <small>Discuter pour apprendre</small>
                 </div>
-                <div class="action-btn" onclick="location.href='{{ url_for('admin.PageAdmin') }}'">
+                <div class="action-btn fade-in delay-2" onclick="location.href='{{ url_for('actualites.liste_actualites') }}'">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Actualités</span>
+                    <small>pour tous</small>
+                </div>
+                <div class="action-btn fade-in delay-3" onclick="location.href='{{ url_for('profile.profile') }}'">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Mon Profil</span>
+                    <small>Personnaliser</small>
+                </div>
+                <div class="action-btn fade-in delay-4" onclick="location.href='{{ url_for('admin.PageAdmin') }}'">
                     <i class="fas fa-cog"></i>
                     <span>Paramètrage</span>
                     <small>Système</small>
                 </div>
             </div>
 
-            <!-- Cards Grid -->
-            <div class="cards-grid">
-                <!-- Urgent Tasks Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Tâches Urgentes</h3>
-                        <div class="card-icon icon-urgent">
-                            <i class="fas fa-exclamation"></i>
-                        </div>
-                    </div>
-                    <div class="task-list">
-                        <div class="task-item">
-                            <span class="task-priority priority-high"></span>
-                            TP Réseaux à rendre demain
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-medium"></span>
-                            Questionnaire à compléter
-                        </div>
-                        {% if current_user.role == 'professor' %}
-                        <div class="task-item">
-                            <span class="task-priority priority-high"></span>
-                            Notes à saisir avant vendredi
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Current Courses Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Mes Cours</h3>
-                        <div class="card-icon icon-courses">
-                            <i class="fas fa-book"></i>
-                        </div>
-                    </div>
-                    <div class="task-list">
-                        <div class="task-item" onclick="location.href='#'">
-                            <span class="task-priority priority-low"></span>
-                            Réseaux Informatiques (Aujourd'hui 10h)
-                        </div>
-                        <div class="task-item" onclick="location.href='#'">
-                            <span class="task-priority priority-low"></span>
-                            Base de Données (Demain 8h)
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Resources Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Nouvelles Ressources</h3>
-                        <div class="card-icon icon-resources">
-                            <i class="fas fa-file-download"></i>
-                        </div>
-                    </div>
-                    <div class="task-list">
-                        <div class="task-item">
-                            <span class="task-priority priority-low"></span>
-                            Slides Réseaux - Chapitre 3
-                        </div>
-                        <div class="task-item">
-                            <span class="task-priority priority-low"></span>
-                            Annales Examens 2023
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Simple Calendar -->
-            <div class="simple-calendar">
-                <div class="calendar-month-header">
-                    <button class="calendar-nav-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
-                    <h3 class="calendar-month-title" id="calendar-month-title">Novembre 2024</h3>
-                    <button class="calendar-nav-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                
-                <div class="calendar-weekdays">
-                    <div>Lun</div>
-                    <div>Mar</div>
-                    <div>Mer</div>
-                    <div>Jeu</div>
-                    <div>Ven</div>
-                    <div>Sam</div>
-                    <div>Dim</div>
-                </div>
-                
-                <div class="calendar-days" id="calendar-days">
-                    <!-- Days will be populated by JavaScript -->
-                </div>
-                
-                <div class="calendar-events">
-                    <h4 style="margin: 1rem 0 0.5rem; color: var(--primary);">Événements ce mois-ci</h4>
-                    <div class="calendar-event">
-                        <div class="calendar-event-date">15 Novembre</div>
-                        <div class="calendar-event-title">Journée Portes Ouvertes</div>
-                    </div>
-                    <div class="calendar-event">
-                        <div class="calendar-event-date">20-25 Novembre</div>
-                        <div class="calendar-event-title">Semaine des Sciences</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Taux de Change avec Convertisseur -->
-            <div class="exchange-rates">
+            <!-- Enhanced Exchange Rates -->
+            <div class="exchange-rates fade-in delay-3">
                 <div class="exchange-header">
-                    <h3 class="exchange-title">Taux de Change (BIF)</h3>
-                    <div class="exchange-icon">
-                        <i class="fas fa-exchange-alt"></i>
+                    <div class="exchange-title">
+                        <div class="exchange-icon">💱</div>
+                        <div>
+                            <div>Taux de Change</div>
+                            <div class="live-status">
+                                <div class="live-dot"></div>
+                                En Direct
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: right; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                        <div>Dernière mise à jour</div>
+                        <div id="lastUpdate" style="color: var(--secondary); font-weight: bold;">--:--:--</div>
                     </div>
                 </div>
-                <div class="rates-grid" id="exchange-rates-container">
-                    <!-- Les taux seront chargés dynamiquement via JavaScript -->
+
+                <div class="market-stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Volume 24h</div>
+                        <div class="stat-value">$2.1T</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Volatilité</div>
+                        <div class="stat-value">±1.2%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Paires Actives</div>
+                        <div class="stat-value">156</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Tendance</div>
+                        <div class="stat-value" style="color: var(--success);">📈 Hausse</div>
+                    </div>
                 </div>
-                
-                <!-- Convertisseur de Devises -->
+
+                <div class="rates-grid" id="exchange-rates-container">
+                    <div class="rate-item">
+                        <div class="currency">
+                            <div class="currency-flag">🇺🇸</div>
+                            USD/BIF
+                        </div>
+                        <div class="rate">2,850</div>
+                        <div class="change positive">
+                            ▲ +0.25% (+7.12)
+                        </div>
+                    </div>
+                    
+                    <div class="rate-item">
+                        <div class="currency">
+                            <div class="currency-flag">🇹🇿</div>
+                            TZS/BIF
+                        </div>
+                        <div class="rate">1.21</div>
+                        <div class="change negative">
+                            ▼ -0.18% (-0.002)
+                        </div>
+                    </div>
+                    
+                    <div class="rate-item">
+                        <div class="currency">
+                            <div class="currency-flag">🇷🇼</div>
+                            RWF/BIF
+                        </div>
+                        <div class="rate">2.32</div>
+                        <div class="change positive">
+                            ▲ +0.42% (+0.010)
+                        </div>
+                    </div>
+                    
+                    <div class="rate-item">
+                        <div class="currency">
+                            <div class="currency-flag">🇪🇺</div>
+                            EUR/BIF
+                        </div>
+                        <div class="rate">3,254</div>
+                        <div class="change positive">
+                            ▲ +0.15% (+4.88)
+                        </div>
+                    </div>
+                    
+                    <div class="rate-item">
+                        <div class="currency">
+                            <div class="currency-flag">🇰🇪</div>
+                            KES/BIF
+                        </div>
+                        <div class="rate">22.15</div>
+                        <div class="change negative">
+                            ▼ -0.33% (-0.073)
+                        </div>
+                    </div>
+                    
+                    <div class="rate-item">
+                        <div class="currency">
+                            <div class="currency-flag">🇺🇬</div>
+                            UGX/BIF
+                        </div>
+                        <div class="rate">0.78</div>
+                        <div class="change positive">
+                            ▲ +0.67% (+0.005)
+                        </div>
+                    </div>
+                </div>
+
                 <div class="converter-container">
-                    <h4 class="converter-title">Convertisseur de Devises</h4>
-                    <form class="converter-form" id="currency-converter">
-                        <input type="number" class="converter-input" id="amount" placeholder="Montant" min="0" step="0.01" required>
-                        <select class="converter-select" id="from-currency">
-                            <option value="BIF">BIF</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="GBP">GBP</option>
-                        </select>
+                    <div class="converter-title">
+                        🔄 Convertisseur de Devises
+                    </div>
+                    <div class="converter-form">
+                        <div>
+                            <input type="number" class="converter-input" id="fromAmount" placeholder="100" value="100">
+                            <select class="converter-select" id="fromCurrency">
+                                <option value="BIF">BIF - Franc Burundais</option>
+                                <option value="USD">USD - Dollar US</option>
+                                <option value="TZS">TZS - Shilling Tanzanien</option>
+                                <option value="RWF">RWF - Franc Rwandais</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="KES">KES - Shilling Kenyan</option>
+                                <option value="UGX">UGX - Shilling Ougandais</option>
+                            </select>
+                        </div>
+                        
                         <div class="converter-equals">=</div>
-                        <input type="text" class="converter-result" id="result" placeholder="Résultat" readonly>
-                        <select class="converter-select" id="to-currency">
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                            <option value="GBP">GBP</option>
-                            <option value="BIF">BIF</option>
-                        </select>
-                        <button type="button" class="converter-btn" id="convert-btn">Convertir</button>
-                    </form>
+                        
+                        <div>
+                            <div class="converter-result" id="result">285.00</div>
+                            <select class="converter-select" id="toCurrency">
+                                <option value="USD">USD - Dollar US</option>
+                                <option value="BIF">BIF - Franc Burundais</option>
+                                <option value="TZS">TZS - Shilling Tanzanien</option>
+                                <option value="RWF">RWF - Franc Rwandais</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="KES">KES - Shilling Kenyan</option>
+                                <option value="UGX">UGX - Shilling Ougandais</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="converter-btn" onclick="convert()">
+                        🔄 Convertir
+                    </button>
                 </div>
             </div>
 
             <!-- Actualités ISTA -->
-            <div class="news-section">
-                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-newspaper"></i> Actualités ISTA
+            <div class="news-section fade-in delay-4">
+                <h2 class="section-title">
+                    <i class="fas fa-newspaper"></i> Espace d'Actualités 
                 </h2>
                 
-                <div class="news-container">
-                    <!-- News Item 1 -->
-                    <div class="news-card">
-                        <img src="https://source.unsplash.com/random/600x400/?university,event" alt="Actualité" class="news-image">
-                        <div class="news-content">
-                            <span class="news-category">Événement</span>
-                            <h3 class="news-title">Journée Portes Ouvertes 2024</h3>
-                            <div class="news-date">
-                                <i class="far fa-calendar-alt"></i> 15 Novembre 2024
+                <div class="news-tabs" id="news-tabs">
+                    <div class="tab active" data-type="all">Toutes</div>
+                    <div class="tab" data-type="ista">ISTA</div>
+                    <div class="tab" data-type="nationale">Nationale</div>
+                    <div class="tab" data-type="internationale">Internationale</div>
+                </div>
+                
+                <div id="news-tab-content">
+                    <div class="news-container">
+                    {% for actualite in actualites_recentes[:6] %}
+                        <div class="news-card news-type-{{ actualite.type_actualite|default('ista') }}">
+                            <div class="news-image-container">
+                                <img src="{{ actualite.image_url or url_for('static', filename='images/default-news.jpg') }}"
+                                    alt="{{ actualite.image_alt or 'Actualité ISTA' }}"
+                                    class="news-image">
+                                <span class="news-category">{{ actualite.categorie }}</span>
                             </div>
-                            <p class="news-excerpt">
-                                L'ISTA organise sa journée portes ouvertes annuelle. Venez découvrir nos formations et rencontrer nos enseignants.
-                            </p>
-                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                            <div class="news-content">
+                                <h3 class="news-title">{{ actualite.titre }}</h3>
+                                <div class="news-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    {{ actualite.date_publication.strftime('%d %B %Y') }}
+                                </div>
+                                <p class="news-excerpt">{{ actualite.resume }}</p>
+                                <a href="{{ url_for('actualites.detail_actualite', actualite_id=actualite.id) }}"
+                                class="news-link">
+                                Lire plus <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="view-all">
+                    <a href="{{ url_for('actualites.liste_actualites') }}" class="btn btn-primary">
+                        Voir toutes les actualités <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Universités Internationales -->
+            <div class="universities-section fade-in delay-5">
+                <h2 class="section-title">
+                    <i class="fas fa-graduation-cap"></i> Universités Internationales Partenaires
+                </h2>
+                
+                <div class="universities-grid">
+                    <!-- University 1 -->
+                    <div class="university-card">
+                        <div class="university-logo-container">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/44/University_of_Cape_Town_logo.svg/1200px-University_of_Cape_Town_logo.svg.png" 
+                                 alt="UCT" class="university-logo">
+                        </div>
+                        <div class="university-content">
+                            <h3 class="university-name">Université du Cap</h3>
+                            <div class="university-country">
+                                <i class="fas fa-map-marker-alt"></i> Afrique du Sud
+                            </div>
+                            <a href="https://www.uct.ac.za/" target="_blank" class="university-link">
+                                Visiter le site <i class="fas fa-external-link-alt"></i>
+                            </a>
                         </div>
                     </div>
                     
-                    <!-- News Item 2 -->
-                    <div class="news-card">
-                        <img src="https://source.unsplash.com/random/600x400/?graduation" alt="Actualité" class="news-image">
-                        <div class="news-content">
-                            <span class="news-category">Diplômes</span>
-                            <h3 class="news-title">Remise des Diplômes 2023</h3>
-                            <div class="news-date">
-                                <i class="far fa-calendar-alt"></i> 30 Octobre 2024
+                    <!-- University 2 -->
+                    <div class="university-card">
+                        <div class="university-logo-container">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/79/University_of_Nairobi_logo.svg/1200px-University_of_Nairobi_logo.svg.png" 
+                                 alt="UoN" class="university-logo">
+                        </div>
+                        <div class="university-content">
+                            <h3 class="university-name">Université de Nairobi</h3>
+                            <div class="university-country">
+                                <i class="fas fa-map-marker-alt"></i> Kenya
                             </div>
-                            <p class="news-excerpt">
-                                Cérémonie de remise des diplômes pour la promotion 2023. Félicitations à tous nos nouveaux diplômés !
-                            </p>
-                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                            <a href="https://www.uonbi.ac.ke/" target="_blank" class="university-link">
+                                Visiter le site <i class="fas fa-external-link-alt"></i>
+                            </a>
                         </div>
                     </div>
                     
-                    <!-- News Item 3 -->
-                    <div class="news-card">
-                        <img src="https://source.unsplash.com/random/600x400/?conference,speaker" alt="Actualité" class="news-image">
-                        <div class="news-content">
-                            <span class="news-category">Conférence</span>
-                            <h3 class="news-title">Data Science et IA</h3>
-                            <div class="news-date">
-                                <i class="far fa-calendar-alt"></i> 10 Novembre 2024
+                    <!-- University 3 -->
+                    <div class="university-card">
+                        <div class="university-logo-container">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/ETH_Zurich_logo.svg/1200px-ETH_Zurich_logo.svg.png" 
+                                 alt="ETH" class="university-logo">
+                        </div>
+                        <div class="university-content">
+                            <h3 class="university-name">ETH Zurich</h3>
+                            <div class="university-country">
+                                <i class="fas fa-map-marker-alt"></i> Suisse
                             </div>
-                            <p class="news-excerpt">
-                                Conférence exceptionnelle sur les dernières avancées en Data Science et Intelligence Artificielle.
-                            </p>
-                            <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
+                            <a href="https://ethz.ch/" target="_blank" class="university-link">
+                                Visiter le site <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- University 4 -->
+                    <div class="university-card">
+                        <div class="university-logo-container">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/70/University_of_Toronto_crest.svg/1200px-University_of_Toronto_crest.svg.png" 
+                                 alt="UofT" class="university-logo">
+                        </div>
+                        <div class="university-content">
+                            <h3 class="university-name">Université de Toronto</h3>
+                            <div class="university-country">
+                                <i class="fas fa-map-marker-alt"></i> Canada
+                            </div>
+                            <a href="https://www.utoronto.ca/" target="_blank" class="university-link">
+                                Visiter le site <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget Météo -->
+            <div class="weather-widget fade-in delay-1">
+                <div class="weather-header">
+                    <h3 class="weather-title"><i class="fas fa-cloud-sun"></i> Météo à Bujumbura</h3>
+                    <div class="weather-icon">
+                        <i class="fas fa-location-arrow"></i>
+                    </div>
+                </div>
+                
+                <div class="weather-current">
+                    <div id="weather-icon">☀️</div>
+                    <div class="weather-temp" id="current-temp">28<span>°C</span></div>
+                    <div class="weather-desc" id="weather-desc">Ensoleillé</div>
+                </div>
+                
+                <div class="weather-forecast">
+                    <div class="weather-day">
+                        <div class="weather-day-name">Lun</div>
+                        <div class="weather-day-icon">🌤️</div>
+                        <div class="weather-day-temp">28° / 22°</div>
+                    </div>
+                    <div class="weather-day">
+                        <div class="weather-day-name">Mar</div>
+                        <div class="weather-day-icon">⛅</div>
+                        <div class="weather-day-temp">27° / 22°</div>
+                    </div>
+                    <div class="weather-day">
+                        <div class="weather-day-name">Mer</div>
+                        <div class="weather-day-icon">🌧️</div>
+                        <div class="weather-day-temp">26° / 21°</div>
+                    </div>
+                    <div class="weather-day">
+                        <div class="weather-day-name">Jeu</div>
+                        <div class="weather-day-icon">🌤️</div>
+                        <div class="weather-day-temp">28° / 22°</div>
+                    </div>
+                    <div class="weather-day">
+                        <div class="weather-day-name">Ven</div>
+                        <div class="weather-day-icon">☀️</div>
+                        <div class="weather-day-temp">29° / 23°</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendriers -->
+            <div class="calendars-row">   
+                <div class="calendar-container fade-in delay-2">
+                    <div class="calendar-header">
+                        <h3 class="calendar-title"><i class="fas fa-calendar-alt"></i> Calendrier Académique</h3>
+                        <div class="calendar-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                    </div>
+                    <div id="calendar"></div>
+                </div>
+
+                <!-- Simple Calendar -->
+                <div class="simple-calendar fade-in delay-3">
+                    <div class="calendar-month-header">
+                        <button class="calendar-nav-btn" id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                        <h3 class="calendar-month-title" id="calendar-month-title">Novembre 2024</h3>
+                        <button class="calendar-nav-btn" id="next-month"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    
+                    <div class="calendar-weekdays">
+                        <div>Lun</div>
+                        <div>Mar</div>
+                        <div>Mer</div>
+                        <div>Jeu</div>
+                        <div>Ven</div>
+                        <div>Sam</div>
+                        <div>Dim</div>
+                    </div>
+                    
+                    <div class="calendar-days" id="calendar-days">
+                        <!-- Days will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="calendar-events">
+                        <h4>Événements ce mois-ci</h4>
+                        <div class="calendar-event">
+                            <div class="calendar-event-date"><i class="far fa-calendar"></i> 15 Novembre</div>
+                            <div class="calendar-event-title">Journée Portes Ouvertes</div>
+                        </div>
+                        <div class="calendar-event">
+                            <div class="calendar-event-date"><i class="far fa-calendar"></i> 20-25 Novembre</div>
+                            <div class="calendar-event-title">Semaine des Sciences</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Organisation Académique de l'ISTA -->
-            <div class="card" style="grid-column: 1 / -1; margin-top: 2rem;">
+            <div class="academic-organization fade-in delay-4">
                 <div class="card-header">
-                    <h3 class="card-title">Organisation Académique de l'ISTA</h3>
+                    <h3 class="card-title"><i class="fas fa-university"></i> Organisation Académique de l'ISTA</h3>
                     <div class="card-icon icon-news">
-                        <i class="fas fa-university"></i>
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
                 </div>
                 
-                <div class="news-tabs">
-                    <div class="tab active" data-tab="bac">Baccalauréat</div>
-                    <div class="tab" data-tab="master">Master</div>
+                <div class="org-tabs">
+                    <div class="org-tab active" data-tab="bac">Baccalauréat</div>
+                    <div class="org-tab" data-tab="master">Master</div>
+                    <div class="org-tab" data-tab="doctorat">Doctorat</div>
                 </div>
                 
                 <!-- Baccalauréat Content -->
@@ -1673,6 +2467,7 @@
                     
                     <div class="year-options">
                         <div class="year-btn active" data-year="all">Tous niveaux</div>
+                        <div class="year-btn" data-year="1">Bac 1</div>
                         <div class="year-btn" data-year="2">Bac 2</div>
                         <div class="year-btn" data-year="3">Bac 3</div>
                     </div>
@@ -1689,6 +2484,10 @@
                         <div class="task-item">
                             <span class="task-priority priority-high"></span>
                             Date limite pour le choix des options - 15 Novembre
+                        </div>
+                        <div class="task-item">
+                            <span class="task-priority priority-medium"></span>
+                            Séminaire d'orientation professionnelle
                         </div>
                     </div>
                 </div>
@@ -1715,198 +2514,9 @@
                             <span class="task-priority priority-low"></span>
                             Séminaire de recherche hebdomadaire - Tous les mercredis
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Full Calendar -->
-            <div class="calendar-container">
-                <div class="calendar-header">
-                    <h3 class="calendar-title">Calendrier Académique</h3>
-                    <div class="calendar-icon">
-                        <i class="fas fa-calendar-alt"></i>
-                    </div>
-                </div>
-                <div id="calendar"></div>
-            </div>
-
-            <!-- Actualités Nationales et Internationales -->
-            <div class="news-section">
-                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-globe"></i> Actualités Nationales & Internationales
-                </h2>
-                
-                <div class="news-tabs">
-                    <div class="tab active" data-tab="national">Nationales</div>
-                    <div class="tab" data-tab="international">Internationales</div>
-                </div>
-                
-                <!-- Actualités Nationales -->
-                <div class="tab-content active" id="national-content">
-                    <div class="news-container">
-                        <!-- News Item 1 -->
-                        <div class="news-card">
-                            <img src="https://source.unsplash.com/random/600x400/?burundi" alt="Actualité" class="news-image">
-                            <div class="news-content">
-                                <span class="news-category">Éducation</span>
-                                <h3 class="news-title">Réforme de l'Enseignement Supérieur</h3>
-                                <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 5 Novembre 2024
-                                </div>
-                                <p class="news-excerpt">
-                                    Le gouvernement annonce une nouvelle réforme visant à améliorer la qualité de l'enseignement supérieur au Burundi.
-                                </p>
-                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                            </div>
-                        </div>
-                        
-                        <!-- News Item 2 -->
-                        <div class="news-card">
-                            <img src="https://source.unsplash.com/random/600x400/?technology,africa" alt="Actualité" class="news-image">
-                            <div class="news-content">
-                                <span class="news-category">Technologie</span>
-                                <h3 class="news-title">Croissance du Secteur Tech</h3>
-                                <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 1 Novembre 2024
-                                </div>
-                                <p class="news-excerpt">
-                                    Le Burundi enregistre une croissance de 15% dans le secteur des technologies de l'information cette année.
-                                </p>
-                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Actualités Internationales -->
-                <div class="tab-content" id="international-content">
-                    <div class="news-container">
-                        <!-- News Item 1 -->
-                        <div class="news-card">
-                            <img src="https://source.unsplash.com/random/600x400/?technology,world" alt="Actualité" class="news-image">
-                            <div class="news-content">
-                                <span class="news-category">Technologie</span>
-                                <h3 class="news-title">Nouvelle Percée en IA</h3>
-                                <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 3 Novembre 2024
-                                </div>
-                                <p class="news-excerpt">
-                                    Des chercheurs ont développé une nouvelle architecture de réseau neuronal qui révolutionne l'apprentissage automatique.
-                                </p>
-                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                            </div>
-                        </div>
-                        
-                        <!-- News Item 2 -->
-                        <div class="news-card">
-                            <img src="https://source.unsplash.com/random/600x400/?education,world" alt="Actualité" class="news-image">
-                            <div class="news-content">
-                                <span class="news-category">Éducation</span>
-                                <h3 class="news-title">Classement des Universités 2024</h3>
-                                <div class="news-date">
-                                    <i class="far fa-calendar-alt"></i> 28 Octobre 2024
-                                </div>
-                                <p class="news-excerpt">
-                                    Le nouveau classement mondial des universités montre une progression des établissements africains.
-                                </p>
-                                <a href="#" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Lire plus</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Widget Météo -->
-            <div class="weather-widget">
-                <div class="weather-header">
-                    <h3 class="weather-title">Météo à Bujumbura</h3>
-                    <div class="weather-icon">
-                        <i class="fas fa-cloud-sun"></i>
-                    </div>
-                </div>
-                
-                <div class="weather-current">
-                    <div id="weather-icon" style="font-size: 2rem;">☀️</div>
-                    <div class="weather-temp" id="current-temp">28°C</div>
-                    <div class="weather-desc" id="weather-desc">Ensoleillé</div>
-                </div>
-                
-                <div class="weather-forecast">
-                    <div class="weather-day">
-                        <div class="weather-day-name">Lun</div>
-                        <div class="weather-day-temp">28° / 22°</div>
-                    </div>
-                    <div class="weather-day">
-                        <div class="weather-day-name">Mar</div>
-                        <div class="weather-day-temp">27° / 22°</div>
-                    </div>
-                    <div class="weather-day">
-                        <div class="weather-day-name">Mer</div>
-                        <div class="weather-day-temp">26° / 21°</div>
-                    </div>
-                    <div class="weather-day">
-                        <div class="weather-day-name">Jeu</div>
-                        <div class="weather-day-temp">28° / 22°</div>
-                    </div>
-                    <div class="weather-day">
-                        <div class="weather-day-name">Ven</div>
-                        <div class="weather-day-temp">29° / 23°</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Universités Internationales -->
-            <div class="universities-section">
-                <h2 style="color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-graduation-cap"></i> Universités Internationales Partenaires
-                </h2>
-                
-                <div class="universities-grid">
-                    <!-- University 1 -->
-                    <div class="university-card">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/44/University_of_Cape_Town_logo.svg/1200px-University_of_Cape_Town_logo.svg.png" alt="UCT" class="university-logo">
-                        <div class="university-content">
-                            <h3 class="university-name">Université du Cap</h3>
-                            <div class="university-country">
-                                <i class="fas fa-map-marker-alt"></i> Afrique du Sud
-                            </div>
-                            <a href="https://www.uct.ac.za/" target="_blank" class="university-link">Visiter le site</a>
-                        </div>
-                    </div>
-                    
-                    <!-- University 2 -->
-                    <div class="university-card">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/79/University_of_Nairobi_logo.svg/1200px-University_of_Nairobi_logo.svg.png" alt="UoN" class="university-logo">
-                        <div class="university-content">
-                            <h3 class="university-name">Université de Nairobi</h3>
-                            <div class="university-country">
-                                <i class="fas fa-map-marker-alt"></i> Kenya
-                            </div>
-                            <a href="https://www.uonbi.ac.ke/" target="_blank" class="university-link">Visiter le site</a>
-                        </div>
-                    </div>
-                    
-                    <!-- University 3 -->
-                    <div class="university-card">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/ETH_Zurich_logo.svg/1200px-ETH_Zurich_logo.svg.png" alt="ETH" class="university-logo">
-                        <div class="university-content">
-                            <h3 class="university-name">ETH Zurich</h3>
-                            <div class="university-country">
-                                <i class="fas fa-map-marker-alt"></i> Suisse
-                            </div>
-                            <a href="https://ethz.ch/" target="_blank" class="university-link">Visiter le site</a>
-                        </div>
-                    </div>
-                    
-                    <!-- University 4 -->
-                    <div class="university-card">
-                        <img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/70/University_of_Toronto_crest.svg/1200px-University_of_Toronto_crest.svg.png" alt="UofT" class="university-logo">
-                        <div class="university-content">
-                            <h3 class="university-name">Université de Toronto</h3>
-                            <div class="university-country">
-                                <i class="fas fa-map-marker-alt"></i> Canada
-                            </div>
-                            <a href="https://www.utoronto.ca/" target="_blank" class="university-link">Visiter le site</a>
+                        <div class="task-item">
+                            <span class="task-priority priority-medium"></span>
+                            Atelier méthodologique pour les mémoires
                         </div>
                     </div>
                 </div>
@@ -1924,46 +2534,64 @@
             function updateCurrentDate() {
                 const now = new Date();
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                document.getElementById('current-date').textContent = now.toLocaleDateString('fr-FR', options);
+                const dateEl = document.getElementById('current-date');
+                if (dateEl) dateEl.textContent = now.toLocaleDateString('fr-FR', options);
             }
-            
             updateCurrentDate();
-            
-            // Gestion des onglets
-            const tabs = document.querySelectorAll('.tab');
+
+            // Gestion des onglets actualités
+            const tabs = document.querySelectorAll('#news-tabs .tab');
+            const cards = document.querySelectorAll('.news-card');
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     tabs.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
-                    
+                    const type = this.getAttribute('data-type');
+                    cards.forEach(card => {
+                        if (type === 'all') {
+                            card.style.display = '';
+                        } else if (card.classList.contains('news-type-' + type)) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // Gestion des onglets organisation académique
+            const orgTabs = document.querySelectorAll('.org-tab');
+            orgTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    orgTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab') + '-content';
                     document.querySelectorAll('.tab-content').forEach(content => {
                         content.classList.remove('active');
                     });
-                    
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(`${tabId}-content`).classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
                 });
             });
-            
+
             // Gestion des départements (Baccalauréat)
             const deptButtons = document.querySelectorAll('.department-btn');
             deptButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
                     deptButtons.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    
                     const dept = this.getAttribute('data-dept');
-                    document.getElementById('actuariat-options').style.display = 'none';
-                    document.getElementById('genie-options').style.display = 'none';
-                    
-                    if (dept === 'actuariat') {
-                        document.getElementById('actuariat-options').style.display = 'flex';
-                    } else if (dept === 'genie') {
-                        document.getElementById('genie-options').style.display = 'flex';
+                    const actuariatOptions = document.getElementById('actuariat-options');
+                    const genieOptions = document.getElementById('genie-options');
+                    if (actuariatOptions) actuariatOptions.style.display = 'none';
+                    if (genieOptions) genieOptions.style.display = 'none';
+                    if (dept === 'actuariat' && actuariatOptions) {
+                        actuariatOptions.style.display = 'flex';
+                    } else if (dept === 'genie' && genieOptions) {
+                        genieOptions.style.display = 'flex';
                     }
                 });
             });
-            
+
             // Gestion des années
             const yearButtons = document.querySelectorAll('.year-btn');
             yearButtons.forEach(btn => {
@@ -1972,7 +2600,7 @@
                     this.classList.add('active');
                 });
             });
-            
+
             // Gestion des spécialisations
             const specButtons = document.querySelectorAll('.specialization-btn');
             specButtons.forEach(btn => {
@@ -1981,201 +2609,249 @@
                     this.classList.add('active');
                 });
             });
-            
+
             // Calendrier simple
             let currentDate = new Date();
-            
             function renderSimpleCalendar(date) {
                 const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", 
-                                   "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-                
-                document.getElementById('calendar-month-title').textContent = 
-                    `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-                
+                                    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+                const titleEl = document.getElementById('calendar-month-title');
+                if (titleEl) titleEl.textContent = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
                 const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
                 const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-                
                 const prevLastDay = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
                 const firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-                const lastDayIndex = lastDay.getDay() === 0 ? 6 : lastDay.getDay() - 1;
-                
                 let days = '';
-                
                 // Jours du mois précédent
                 for (let i = firstDayIndex; i > 0; i--) {
                     days += `<div class="calendar-day other-month">${prevLastDay - i + 1}</div>`;
                 }
-                
                 // Jours du mois courant
                 const today = new Date();
                 for (let i = 1; i <= lastDay.getDate(); i++) {
                     const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
                     const isToday = dayDate.getDate() === today.getDate() && 
-                                   dayDate.getMonth() === today.getMonth() && 
-                                   dayDate.getFullYear() === today.getFullYear();
-                    
+                                    dayDate.getMonth() === today.getMonth() && 
+                                    dayDate.getFullYear() === today.getFullYear();
                     const hasEvent = (i === 15 || (i >= 20 && i <= 25));
-                    
-                    days += `<div class="calendar-day ${isToday ? 'today' : ''} ${hasEvent ? 'event' : ''}">${i}</div>`;
+                    days += `<div class="calendar-day${isToday ? ' today' : ''}${hasEvent ? ' event' : ''}">${i}</div>`;
                 }
-                
                 // Jours du mois suivant
                 for (let i = 1; i <= (42 - lastDay.getDate() - firstDayIndex); i++) {
                     days += `<div class="calendar-day other-month">${i}</div>`;
                 }
-                
-                document.getElementById('calendar-days').innerHTML = days;
+                const daysEl = document.getElementById('calendar-days');
+                if (daysEl) daysEl.innerHTML = days;
             }
-            
-            document.getElementById('prev-month').addEventListener('click', function() {
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            if (prevMonthBtn) prevMonthBtn.addEventListener('click', function() {
                 currentDate.setMonth(currentDate.getMonth() - 1);
                 renderSimpleCalendar(currentDate);
             });
-            
-            document.getElementById('next-month').addEventListener('click', function() {
+            if (nextMonthBtn) nextMonthBtn.addEventListener('click', function() {
                 currentDate.setMonth(currentDate.getMonth() + 1);
                 renderSimpleCalendar(currentDate);
             });
-            
             renderSimpleCalendar(currentDate);
-            
+
             // FullCalendar
             const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: [
-                    {
-                        title: 'Rentrée Académique',
-                        start: '2024-10-01',
-                        color: '#0a2463'
+            if (calendarEl && typeof FullCalendar !== 'undefined') {
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     },
-                    {
-                        title: 'Début des Cours',
-                        start: '2024-10-15',
-                        color: '#3a7bd5'
+                    events: [
+                        {
+                            title: 'Rentrée Académique',
+                            start: '2025-10-01',
+                            color: '#0a2463'
+                        },
+                        {
+                            title: 'Début des Cours',
+                            start: '2025-10-15',
+                            color: '#3a7bd5'
+                        },
+                        {
+                            title: 'Examens Partiels',
+                            start: '2025-12-10',
+                            end: '2024-12-20',
+                            color: '#d7263d'
+                        },
+                        {
+                            title: 'Vacances de Noël',
+                            start: '2025-12-21',
+                            end: '2025-01-05',
+                            color: '#27ae60'
+                        },
+                        {
+                            title: 'Examens Finaux',
+                            start: '2025-03-15',
+                            end: '2025-03-30',
+                            color: '#d7263d'
+                        },
+                        {
+                            title: 'Journée Portes Ouvertes',
+                            start: '2026-11-15',
+                            color: '#8e44ad'
+                        },
+                        {
+                            title: 'Semaine de l\'Université',
+                            start: '2025-11-20',
+                            end: '2025-11-25',
+                            color: '#f39c12'
+                        }
+                    ],
+                    locale: 'fr',
+                    buttonText: {
+                        today: 'Aujourd\'hui',
+                        month: 'Mois',
+                        week: 'Semaine',
+                        day: 'Jour'
                     },
-                    {
-                        title: 'Examens Partiels',
-                        start: '2024-12-10',
-                        end: '2024-12-20',
-                        color: '#d7263d'
-                    },
-                    {
-                        title: 'Vacances de Noël',
-                        start: '2024-12-21',
-                        end: '2025-01-05',
-                        color: '#27ae60'
-                    },
-                    {
-                        title: 'Examens Finaux',
-                        start: '2025-03-15',
-                        end: '2025-03-30',
-                        color: '#d7263d'
+                    eventClick: function(info) {
+                        alert('Événement: ' + info.event.title + '\nDate: ' + info.event.start.toLocaleDateString());
                     }
-                ],
-                locale: 'fr',
-                buttonText: {
-                    today: 'Aujourd\'hui',
-                    month: 'Mois',
-                    week: 'Semaine',
-                    day: 'Jour'
-                }
-            });
-            calendar.render();
-            
-            // Taux de change et convertisseur
-            const exchangeRates = {
-                USD: 2850,
-                EUR: 3150,
-                GBP: 3600,
-                RWF: 2.5
-            };
-            
-            function renderExchangeRates() {
-                const container = document.getElementById('exchange-rates-container');
-                container.innerHTML = '';
-                
-                Object.keys(exchangeRates).forEach(currency => {
-                    const change = Math.random() > 0.5 ? 'positive' : 'negative';
-                    const changeValue = change === 'positive' ? 
-                        `+${(Math.random() * 0.5).toFixed(1)}%` : 
-                        `-${(Math.random() * 0.5).toFixed(1)}%`;
-                    
-                    const rateItem = document.createElement('div');
-                    rateItem.className = 'rate-item';
-                    rateItem.innerHTML = `
-                        <div class="currency">${currency}</div>
-                        <div class="rate">${exchangeRates[currency].toLocaleString('fr-FR')} BIF</div>
-                        <div class="change ${change}">${changeValue}</div>
-                    `;
-                    
-                    container.appendChild(rateItem);
                 });
+                calendar.render();
             }
-            
+
             // Convertisseur de devises
-            document.getElementById('convert-btn').addEventListener('click', function() {
-                const amount = parseFloat(document.getElementById('amount').value);
-                if (isNaN(amount)) {
-                    alert('Veuillez entrer un montant valide');
+            const exchangeRates = {
+                'BIF': { 'USD': 0.000351, 'TZS': 0.827, 'RWF': 0.431, 'EUR': 0.000307, 'KES': 0.0452, 'UGX': 1.282 },
+                'USD': { 'BIF': 2850, 'TZS': 2355, 'RWF': 1228, 'EUR': 0.876, 'KES': 128.5, 'UGX': 3654 },
+                'TZS': { 'BIF': 1.21, 'USD': 0.000425, 'RWF': 0.521, 'EUR': 0.000372, 'KES': 0.0547, 'UGX': 1.551 },
+                'RWF': { 'BIF': 2.32, 'USD': 0.000814, 'TZS': 1.92, 'EUR': 0.000713, 'KES': 0.105, 'UGX': 2.975 },
+                'EUR': { 'BIF': 3254, 'USD': 1.142, 'TZS': 2687, 'RWF': 1403, 'KES': 146.7, 'UGX': 4172 },
+                'KES': { 'BIF': 22.15, 'USD': 0.00778, 'TZS': 18.28, 'RWF': 9.56, 'EUR': 0.00682, 'UGX': 28.4 },
+                'UGX': { 'BIF': 0.78, 'USD': 0.000274, 'TZS': 0.645, 'RWF': 0.336, 'EUR': 0.00024, 'KES': 0.0352 }
+            };
+
+            function convert() {
+                const fromAmount = parseFloat(document.getElementById('fromAmount').value) || 0;
+                const fromCurrency = document.getElementById('fromCurrency').value;
+                const toCurrency = document.getElementById('toCurrency').value;
+                
+                if (fromCurrency === toCurrency) {
+                    document.getElementById('result').textContent = fromAmount.toFixed(2);
                     return;
                 }
                 
-                const fromCurrency = document.getElementById('from-currency').value;
-                const toCurrency = document.getElementById('to-currency').value;
-                
-                // Conversion en BIF d'abord si nécessaire
-                let amountInBif;
-                if (fromCurrency === 'BIF') {
-                    amountInBif = amount;
+                const rate = exchangeRates[fromCurrency] && exchangeRates[fromCurrency][toCurrency];
+                if (rate) {
+                    const result = fromAmount * rate;
+                    document.getElementById('result').textContent = result.toFixed(2);
                 } else {
-                    amountInBif = amount * exchangeRates[fromCurrency];
+                    document.getElementById('result').textContent = 'N/A';
                 }
-                
-                // Conversion vers la devise cible
-                let result;
-                if (toCurrency === 'BIF') {
-                    result = amountInBif;
-                } else {
-                    result = amountInBif / exchangeRates[toCurrency];
-                }
-                
-                document.getElementById('result').value = result.toFixed(2);
-            });
-            
+            }
+
+            // Auto-conversion lors de la saisie
+            document.getElementById('fromAmount').addEventListener('input', convert);
+            document.getElementById('fromCurrency').addEventListener('change', convert);
+            document.getElementById('toCurrency').addEventListener('change', convert);
+
+            // Mise à jour de l'heure
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('fr-FR');
+                document.getElementById('lastUpdate').textContent = timeString;
+            }
+
+            // Simulation des fluctuations des taux
+            function simulateRateChanges() {
+                const rateItems = document.querySelectorAll('.rate');
+                rateItems.forEach(item => {
+                    const currentRate = parseFloat(item.textContent.replace(',', ''));
+                    const change = (Math.random() - 0.5) * 0.01; // ±0.5% max
+                    const newRate = currentRate + change;
+                    item.textContent = newRate.toFixed(4).replace('.', ',');
+                    
+                    // Animation de mise à jour
+                    item.style.transform = 'scale(1.1)';
+                    item.style.color = change >= 0 ? '#2ecc71' : '#e74c3c';
+                    setTimeout(() => {
+                        item.style.transform = 'scale(1)';
+                        item.style.color = '#ffd700';
+                    }, 300);
+                });
+            }
+
             // Initialisation
-            renderExchangeRates();
+            updateTime();
+            convert();
             
-            // Animation de défilement pour la section d'inscription
-            const registrationPhase = document.querySelector('.registration-phase');
-            registrationPhase.addEventListener('mouseover', function() {
-                this.style.animation = 'pulse 1s infinite';
-            });
-            
-            registrationPhase.addEventListener('mouseout', function() {
-                this.style.animation = 'pulse 2s infinite';
-            });
-            
+            // Mise à jour périodique
+            setInterval(updateTime, 1000);
+            setInterval(simulateRateChanges, 5000);
+
             // Simulation de données météo
             function updateWeather() {
-                const weatherConditions = ['☀️', '⛅', '🌧️', '⛈️', '🌤️'];
-                const weatherDescs = ['Ensoleillé', 'Partiellement nuageux', 'Pluvieux', 'Orageux', 'Nuageux'];
+                const weatherConditions = [
+                    {icon: '☀️', desc: 'Ensoleillé', temp: Math.floor(Math.random() * 6) + 25},
+                    {icon: '⛅', desc: 'Partiellement nuageux', temp: Math.floor(Math.random() * 6) + 23},
+                    {icon: '🌧️', desc: 'Pluvieux', temp: Math.floor(Math.random() * 6) + 22},
+                    {icon: '⛈️', desc: 'Orageux', temp: Math.floor(Math.random() * 6) + 24},
+                    {icon: '🌤️', desc: 'Nuageux', temp: Math.floor(Math.random() * 6) + 24}
+                ];
+                const forecastData = [
+                    {day: 'Lun', icon: '🌤️', high: 28, low: 22},
+                    {day: 'Mar', icon: '⛅', high: 27, low: 22},
+                    {day: 'Mer', icon: '🌧️', high: 26, low: 21},
+                    {day: 'Jeu', icon: '🌤️', high: 28, low: 22},
+                    {day: 'Ven', icon: '☀️', high: 29, low: 23}
+                ];
+                
                 const randomIndex = Math.floor(Math.random() * weatherConditions.length);
+                const iconEl = document.getElementById('weather-icon');
+                const descEl = document.getElementById('weather-desc');
+                const tempEl = document.getElementById('current-temp');
+                if (iconEl) iconEl.textContent = weatherConditions[randomIndex].icon;
+                if (descEl) descEl.textContent = weatherConditions[randomIndex].desc;
+                if (tempEl) tempEl.innerHTML = `${weatherConditions[randomIndex].temp}<span>°C</span>`;
                 
-                document.getElementById('weather-icon').textContent = weatherConditions[randomIndex];
-                document.getElementById('weather-desc').textContent = weatherDescs[randomIndex];
-                
-                // Température aléatoire entre 25 et 30
-                const temp = Math.floor(Math.random() * 6) + 25;
-                document.getElementById('current-temp').textContent = `${temp}°C`;
+                const forecastEl = document.querySelector('.weather-forecast');
+                if (forecastEl) {
+                    forecastEl.innerHTML = '';
+                    forecastData.forEach(day => {
+                        const dayEl = document.createElement('div');
+                        dayEl.className = 'weather-day';
+                        dayEl.innerHTML = `
+                            <div class="weather-day-name">${day.day}</div>
+                            <div class="weather-day-icon">${day.icon}</div>
+                            <div class="weather-day-temp">${day.high}° / ${day.low}°</div>
+                        `;
+                        forecastEl.appendChild(dayEl);
+                    });
+                }
+            }
+            updateWeather();
+            
+            // Mettre à jour la météo toutes les heures
+            setInterval(updateWeather, 3600000);
+
+            // Animation au scroll
+            const fadeElements = document.querySelectorAll('.fade-in');
+            function checkScroll() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    if (elementTop < windowHeight - 100) {
+                        element.style.opacity = '1';
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
             }
             
-            updateWeather();
+            // Vérifier au chargement
+            checkScroll();
+            
+            // Vérifier lors du scroll
+            window.addEventListener('scroll', checkScroll);
         });
     </script>
 </body>
