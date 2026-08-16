@@ -1,4 +1,4 @@
-🇬🇧 English version · 🇫🇷 [Version française](README.fr.md)
+🇬🇧🇺🇸 English version · 🇫🇷 [Version française](README.fr.md)
 
 # 🎓 OpenISTA – University Campus Management Platform
 
