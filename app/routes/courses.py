@@ -7,6 +7,11 @@ from app.extensions import db
 import os
 from datetime import datetime
 from ..models.courses import Cours, Ressource, Professeur
+from app.utils.academique import (
+    get_department_variants,
+    normalize_department,
+    normalize_parcours,
+)
 
 # Création du Blueprint
 coursesbp = Blueprint('courses', __name__, url_prefix='/courses')
@@ -25,25 +30,34 @@ def courses():
     try:
         # Debug - Vérifiez ce qui est réellement récupéré
         print(f"Rôle utilisateur: {current_user.role}")
-        
+
         if current_user.role == 'administrateur':
             cours = Cours.query.all()
             print("Mode administrateur - Tous les cours chargés")
         else:
-            print(f"Filtrage pour - Cycle:{current_user.cycle}, Année:{current_user.annee}, Département:{current_user.departement}")
-            cours = Cours.query.filter_by(
-                cycle=current_user.cycle,
-                annee=current_user.annee,
-                departement=current_user.departement
-            ).all()
-        
+            dept_variants = list(get_department_variants(getattr(current_user, 'departement', None)) or [])
+            print(
+                "Filtrage pour - Cycle:{cycle}, Année:{annee}, Département(s):{departements}".format(
+                    cycle=current_user.cycle,
+                    annee=current_user.annee,
+                    departements=dept_variants or ['*']
+                )
+            )
+            query = Cours.query.filter(
+                Cours.cycle == current_user.cycle,
+                Cours.annee == current_user.annee
+            )
+            if dept_variants:
+                query = query.filter(Cours.departement.in_(dept_variants))
+            cours = query.all()
+
         print(f"Nombre de cours trouvés: {len(cours)}")
-        
+
         current_date = datetime.now().strftime("%d/%m/%Y")
-        return render_template('PageCours.html', 
-                            cours_list=cours,  
-                            current_date=current_date)
-    
+        return render_template('PageCours.html',
+                               cours_list=cours,
+                               current_date=current_date)
+
     except Exception as e:
         print(f"ERREUR dans la route courses(): {str(e)}")
         flash("Une erreur est survenue lors du chargement des cours", "danger")
@@ -100,8 +114,8 @@ def ajouter_cours():
         credits = int(request.form['credits'])
         cycle = request.form['cycle']
         annee = int(request.form['annee'])
-        departement = request.form['departement']
-        parcours = request.form.get('parcours', None)
+        departement = normalize_department(request.form['departement'])
+        parcours = normalize_parcours(request.form.get('parcours', None))
         semestre = int(request.form['semestre'])
         specialisation = request.form.get('specialisation', None)
         horaire = request.form['horaire']
@@ -218,8 +232,8 @@ def modifier_cours(cours_id):
         cours.credits = int(request.form['credits'])
         cours.cycle = request.form['cycle']
         cours.annee = int(request.form['annee'])
-        cours.departement = request.form['departement']
-        cours.parcours = request.form.get('parcours', None)
+        cours.departement = normalize_department(request.form['departement'])
+        cours.parcours = normalize_parcours(request.form.get('parcours', None))
         cours.semestre = int(request.form['semestre'])
         cours.specialisation = request.form.get('specialisation', None)
         cours.horaire = request.form['horaire']

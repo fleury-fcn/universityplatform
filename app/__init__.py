@@ -25,6 +25,10 @@ def create_app(config_name=None):
     
     # Enregistrer les context processors
     register_context_processors(app)
+    
+    # Enregistrer les permissions dans le contexte
+    from .permissions import register_permission_context_processor
+    register_permission_context_processor(app)
 
     # Initialize extensions
     db.init_app(app)

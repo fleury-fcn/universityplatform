@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/page_principale.css') }}">
+{% block principale_extra_css %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+{% block principale_content %}{% endblock %}
+{% endblock %}
+
+{% block extra_js %}
+{% block principale_extra_js %}{% endblock %}
+{% endblock %}

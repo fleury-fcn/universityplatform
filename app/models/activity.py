@@ -117,19 +117,3 @@ class ActivityLog(db.Model):
     def get_recent_activities(cls, limit=50):
         """Récupère les activités récentes"""
         return cls.query.order_by(cls.timestamp.desc()).limit(limit).all()
-
-class Notification(db.Model):
-    __tablename__ = 'notifications'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('utilisateurs.id'))
-    subject = db.Column(db.String(255))
-    message = db.Column(db.Text)
-    is_read = db.Column(db.Boolean, default=False)
-    date_sent = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # Relation avec l'utilisateur
-    user = db.relationship('User', backref=db.backref('notifications', lazy='dynamic'))
-    
-    def __repr__(self):
-        return f'<Notification {self.subject} - {self.date_sent}>'

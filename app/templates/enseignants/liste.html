@@ -1,0 +1,280 @@
+{% extends 'layouts/page_principale_base.html' %}
+{% block title %}Gestion des Enseignants{% endblock %}
+
+{% block principale_extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-gradient: linear-gradient(135deg, #101828, #2f2f8f);
+        --card-bg: #ffffff;
+        --accent: #6366f1;
+        --accent-muted: rgba(99, 102, 241, 0.15);
+        --danger: #ef4444;
+        --success: #10b981;
+    }
+    body {
+        font-family: 'Nunito', sans-serif;
+        background: #f4f5fb;
+        color: #1f2933;
+    }
+    .page-wrapper {
+        min-height: 100vh;
+        padding: 2rem 0;
+        background-image: radial-gradient(circle at top right, rgba(99,102,241,0.15), transparent 45%);
+    }
+    .hero {
+        background: var(--bg-gradient);
+        border-radius: 24px;
+        padding: 2.5rem;
+        color: #fff;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 60px rgba(16,24,40,0.25);
+    }
+    .hero h1 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+    }
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 18px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.08);
+        border: 1px solid rgba(99,102,241,0.08);
+    }
+    .stat-card h5 {
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        color: #667085;
+        letter-spacing: 0.08em;
+    }
+    .stat-card .value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .filter-panel {
+        background: var(--card-bg);
+        border-radius: 18px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.05);
+        border: 1px solid rgba(15,23,42,0.06);
+        margin-bottom: 1.5rem;
+    }
+    .btn-accent {
+        background: var(--accent);
+        color: #fff;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-accent:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(99,102,241,0.35);
+        color: #fff;
+    }
+    .table-responsive {
+        background: #fff;
+        border-radius: 18px;
+        padding: 1rem;
+        box-shadow: 0 15px 35px rgba(15,23,42,0.07);
+    }
+    table thead {
+        background: var(--accent-muted);
+        color: #111827;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    table tbody tr {
+        transition: background 0.2s ease;
+    }
+    table tbody tr:hover {
+        background: rgba(99,102,241,0.05);
+    }
+    .status-pill {
+        padding: 0.35rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .status-actif {background: rgba(16,185,129,0.15); color: #047857;}
+    .status-inactif {background: rgba(239,68,68,0.15); color: #b91c1c;}
+    .status-suspendu {background: rgba(251,191,36,0.2); color: #a16207;}
+    .pagination .page-link {
+        border-radius: 10px;
+        margin: 0 0.25rem;
+        color: var(--accent);
+    }
+    .pagination .active .page-link {
+        background: var(--accent);
+        border-color: var(--accent);
+    }
+</style>
+{% endblock %}
+
+{% block principale_content %}
+<div class="container page-wrapper">
+    <div class="hero">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <span class="badge bg-light text-dark mb-3">Module RH Académique</span>
+                <h1 class="display-6 mb-2">Panorama complet des enseignants</h1>
+                <p class="lead text-white-50 mb-0">Centralisez les fiches, les charges horaires et les disponibilités pour des affectations sans friction.</p>
+            </div>
+            <div class="text-end">
+                <a href="{{ url_for('enseignants.nouveau_enseignant') }}" class="btn btn-accent me-2">
+                    <i class="fa fa-plus me-2"></i>Nouvelle fiche
+                </a>
+                <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-light">
+                    <i class="fa fa-chart-pie me-2"></i>Tableau de bord
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card h-100">
+                <h5>Total enseignants</h5>
+                <div class="value">{{ stats.total }}</div>
+                <small class="text-muted">Toutes catégories confondues</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card h-100">
+                <h5>Actifs</h5>
+                <div class="value text-success">{{ stats.actifs }}</div>
+                <small class="text-muted">Disponibles immédiatement</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card h-100">
+                <h5>Temps plein</h5>
+                <div class="value">{{ stats.temps_plein }}</div>
+                <small class="text-muted">Contrats permanents</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card h-100">
+                <h5>Surcharges détectées</h5>
+                <div class="value text-danger">{{ stats.surcharges }}</div>
+                <small class="text-muted">À redistribuer rapidement</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-panel">
+        <form class="row gy-3 gx-3 align-items-end" method="get">
+            <div class="col-md-3">
+                <label class="form-label text-uppercase text-muted">Recherche</label>
+                <input type="text" name="search" class="form-control" placeholder="Nom, matricule, email" value="{{ request.args.get('search', '') }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-uppercase text-muted">Statut</label>
+                <select name="statut" class="form-select">
+                    <option value="">Tous</option>
+                    <option value="actif" {% if request.args.get('statut') == 'actif' %}selected{% endif %}>Actif</option>
+                    <option value="inactif" {% if request.args.get('statut') == 'inactif' %}selected{% endif %}>Inactif</option>
+                    <option value="suspendu" {% if request.args.get('statut') == 'suspendu' %}selected{% endif %}>Suspendu</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label text-uppercase text-muted">Département</label>
+                <select name="departement" class="form-select">
+                    <option value="">Tous</option>
+                    {% for departement in departements %}
+                        <option value="{{ departement.id }}" {% if request.args.get('departement', type=int) == departement.id %}selected{% endif %}>{{ departement.nom }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-accent flex-grow-1">Filtrer</button>
+                <a href="{{ url_for('enseignants.liste_enseignants') }}" class="btn btn-outline-secondary">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive mb-4">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Nom complet</th>
+                    <th>Grade</th>
+                    <th>Département</th>
+                    <th>Charge horaire</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enseignant in enseignants.items %}
+                    <tr>
+                        <td class="fw-semibold">{{ enseignant.matricule }}</td>
+                        <td>
+                            <div class="fw-bold">{{ enseignant.nom_complet }}</div>
+                            <small class="text-muted">{{ enseignant.email_professionnel }}</small>
+                        </td>
+                        <td>{{ enseignant.grade or '—' }}</td>
+                        <td>{{ enseignant.departement.nom if enseignant.departement else 'Non affecté' }}</td>
+                        <td>
+                            {% if enseignant.volume_horaire_annuel %}
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                        <div class="progress-bar {% if enseignant.est_surcharge %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ enseignant.charge_horaire_pourcent }}%"></div>
+                                    </div>
+                                    <small>{{ enseignant.charge_horaire_totale }}h / {{ enseignant.volume_horaire_annuel }}h</small>
+                                </div>
+                            {% else %}
+                                <span class="text-muted">Volume non défini</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-pill status-{{ enseignant.statut }}">{{ enseignant.statut|capitalize }}</span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('enseignants.fiche_enseignant', id=enseignant.id) }}" class="btn btn-sm btn-outline-primary">Fiche</a>
+                                <a href="{{ url_for('enseignants.affectations_enseignant', id=enseignant.id) }}" class="btn btn-sm btn-outline-secondary">Affectations</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">Aucun enseignant trouvé pour ces critères.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if enseignants.pages > 1 %}
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                {% if enseignants.has_prev %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('enseignants.liste_enseignants', page=enseignants.prev_num, **request.args) }}">Précédent</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Précédent</span></li>
+                {% endif %}
+                {% for page_num in enseignants.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == enseignants.page %}active{% endif %}"><a class="page-link" href="{{ url_for('enseignants.liste_enseignants', page=page_num, **request.args) }}">{{ page_num }}</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    {% endif %}
+                {% endfor %}
+                {% if enseignants.has_next %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('enseignants.liste_enseignants', page=enseignants.next_num, **request.args) }}">Suivant</a></li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Suivant</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -5,7 +5,7 @@ from flask_login import login_required, current_user, login_user
 from ..models.Users import User
 from ..models.tuyaux import Tuyau
 from ..models.courses import Cours 
-from ..models.activity import ActivityLog, Notification
+from ..models.activity import ActivityLog
 from ..models.clubs import Club, Member
 from ..models.books import Book
 from ..models.addsyllabus import Course

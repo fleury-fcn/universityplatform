@@ -1,0 +1,109 @@
+{% extends 'layouts/page_principale_base.html' %}
+{% block title %}Relevé de notes{% endblock %}
+{% block principale_extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ body {background:#f4f4f9;font-family:'Inter',sans-serif;}
+ .releve-card {background:#fff;border-radius:30px;padding:2.5rem;box-shadow:0 35px 80px rgba(15,23,42,0.12);}
+ .title-font {font-family:'Space Grotesk',sans-serif;}
+ .badge-mention {padding:0.35rem 1rem;border-radius:999px;font-weight:600;}
+ .badge-mention.passable {background:rgba(251,191,36,0.2);color:#b45309;}
+ .badge-mention.assez_bien {background:rgba(52,211,153,0.2);color:#0f766e;}
+ .badge-mention.bien {background:rgba(59,130,246,0.2);color:#1d4ed8;}
+ .badge-mention.tres_bien {background:rgba(217,70,239,0.2);color:#a21caf;}
+ .summary-block {background:#0f172a;color:#f8fafc;border-radius:22px;padding:1.5rem;}
+</style>
+{% endblock %}
+{% block principale_content %}
+<div class="container py-5">
+    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <a href="{{ url_for('academique.mes_resultats') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Retour</a>
+        </div>
+        <div>
+            <a href="{{ url_for('academique.releve_pdf', releve_id=releve.id) }}" class="btn btn-dark"><i class="bi bi-download me-2"></i>Télécharger le PDF</a>
+        </div>
+    </div>
+
+    <div class="releve-card">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+            <div>
+                <p class="text-uppercase text-muted small mb-1">Relevé officiel</p>
+                <h1 class="title-font mb-1">{{ releve.annee_academique }} · Semestre {{ releve.semestre }}</h1>
+                <p class="mb-0 text-muted">Étudiant: {{ releve.etudiant.nom_complet }} · Niveau {{ releve.niveau }}</p>
+            </div>
+            {% if releve.mention %}
+                <span class="badge-mention {{ releve.mention }}">Mention {{ releve.mention.replace('_',' ')|title }}</span>
+            {% endif %}
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="summary-block">
+                    <small class="text-uppercase text-slate-400">Moyenne générale</small>
+                    <h2 class="title-font">{{ '{:.2f}'.format(releve.moyenne_generale) if releve.moyenne_generale is not none else '--' }}/20</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="summary-block" style="background:#1d4ed8;">
+                    <small>Crédits obtenus</small>
+                    <h2 class="title-font">{{ releve.credits_obtenus }}/{{ releve.credits_totaux or '—' }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="summary-block" style="background:#0f766e;">
+                    <small>Date de délibération</small>
+                    <h2 class="title-font">{{ releve.date_deliberation.strftime('%d/%m/%Y') if releve.date_deliberation else 'En attente' }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>UE</th>
+                        <th>Évaluation</th>
+                        <th>Coefficient</th>
+                        <th>Note /20</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set data = namespace(found=false) %}
+                    {% for note in releve.etudiant.notes %}
+                        {% if note.evaluation and note.evaluation.semestre == releve.semestre and note.evaluation.annee_academique == releve.annee_academique %}
+                            {% set data.found = true %}
+                            <tr>
+                                <td>
+                                    <strong>{{ note.evaluation.unite_enseignement.code }}</strong>
+                                    <div class="text-muted small">{{ note.evaluation.unite_enseignement.intitule }}</div>
+                                </td>
+                                <td>{{ note.evaluation.titre }}</td>
+                                <td>{{ note.evaluation.coefficient }}</td>
+                                <td>
+                                    {% if note.est_absent %}
+                                        <span class="badge bg-danger-subtle text-danger">Absent</span>
+                                    {% elif note.note is not none %}
+                                        {{ '{:.2f}'.format(note.note) }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>{{ 'Validée' if note.est_validee else 'Publiée' if note.evaluation.est_publiee else 'En attente' }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    {% if not data.found %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">Aucune note enregistrée pour ce semestre.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

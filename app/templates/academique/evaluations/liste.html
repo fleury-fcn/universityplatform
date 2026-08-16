@@ -1,0 +1,186 @@
+{% extends 'layouts/page_principale_base.html' %}
+{% block title %}Évaluations{% endblock %}
+{% block principale_extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ body {background:#f5f6fb;font-family:'Inter',sans-serif;}
+ .hero {background:linear-gradient(135deg,#0f172a,#312e81);border-radius:28px;padding:2.5rem;color:#fff;box-shadow:0 25px 60px rgba(15,23,42,0.25);}
+ .hero h1 {font-family:'Space Grotesk',sans-serif;font-size:2.5rem;margin-bottom:0.25rem;}
+ .metric-card {background:#fff;border-radius:20px;padding:1.25rem;box-shadow:0 15px 40px rgba(15,23,42,0.08);}
+ .metric-label {text-transform:uppercase;font-size:0.7rem;color:#94a3b8;letter-spacing:0.08em;margin-bottom:0.25rem;}
+ .metric-value {font-family:'Space Grotesk',sans-serif;font-size:1.8rem;}
+ .filters {background:#fff;border-radius:22px;padding:1.5rem;box-shadow:0 15px 35px rgba(15,23,42,0.08);margin-top:-2.5rem;position:relative;z-index:2;}
+ .badge-status {border-radius:999px;padding:0.35rem 0.95rem;font-size:0.8rem;font-weight:600;}
+ .badge-draft {background:rgba(249,115,22,0.15);color:#ea580c;}
+ .badge-published {background:rgba(16,185,129,0.18);color:#047857;}
+ .table-card {background:#fff;border-radius:24px;padding:1.5rem;box-shadow:0 20px 55px rgba(15,23,42,0.08);}
+ .table thead th {text-transform:uppercase;font-size:0.75rem;color:#94a3b8;border-bottom:1px solid #e2e8f0;letter-spacing:0.05em;}
+ .table tbody td {vertical-align:middle;}
+</style>
+{% endblock %}
+{% block principale_content %}
+<div class="container py-5">
+    <div class="hero d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+        <div>
+            <p class="text-uppercase text-white-50 mb-2">Module académique</p>
+            <h1>Évaluations & Suivi des notes</h1>
+            <p class="mb-0">Planifiez, suivez et publiez vos évaluations avec un aperçu clair des classes et UE.</p>
+        </div>
+        <div>
+            {% if has_permission(Permission.MANAGE_EVALUATIONS) %}
+                <a href="{{ url_for('academique.nouvelle_evaluation') }}" class="btn btn-light btn-lg fw-semibold">
+                    <i class="bi bi-plus-lg me-2"></i>Nouvelle évaluation
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-3 mt-4">
+        <div class="col-6 col-lg-3">
+            <div class="metric-card">
+                <div class="metric-label">Total planifié</div>
+                <div class="metric-value">{{ evaluations.total }}</div>
+                <small class="text-muted">Toutes classes confondues</small>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="metric-card">
+                <div class="metric-label">En attente</div>
+                <div class="metric-value">{{ evaluations.items|rejectattr('est_publiee')|list|length }}</div>
+                <small class="text-muted">Dans la page courante</small>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="metric-card">
+                <div class="metric-label">Publiées</div>
+                <div class="metric-value">{{ evaluations.items|selectattr('est_publiee')|list|length }}</div>
+                <small class="text-muted">Dans la page courante</small>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="metric-card">
+                <div class="metric-label">Classes actives</div>
+                <div class="metric-value">{{ classes|length }}</div>
+                <small class="text-muted">Disponible au filtrage</small>
+            </div>
+        </div>
+    </div>
+
+    <form method="get" class="filters row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label text-uppercase text-muted small">Classe</label>
+            <select name="classe" class="form-select">
+                <option value="">Toutes les classes</option>
+                {% for classe in classes %}
+                    <option value="{{ classe.id }}" {% if request.args.get('classe', type=int) == classe.id %}selected{% endif %}>{{ classe.nom }} · {{ classe.niveau }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label text-uppercase text-muted small">UE</label>
+            <select name="ue" class="form-select">
+                <option value="">Toutes les UE</option>
+                {% for ue in ues %}
+                    <option value="{{ ue.id }}" {% if request.args.get('ue', type=int) == ue.id %}selected{% endif %}>{{ ue.code }} · {{ ue.intitule }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-dark w-100" type="submit"><i class="bi bi-funnel me-2"></i>Filtrer</button>
+        </div>
+        <div class="col-md-2">
+            <a href="{{ url_for('academique.liste_evaluations') }}" class="btn btn-outline-secondary w-100">Réinitialiser</a>
+        </div>
+    </form>
+
+    <div class="table-card mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Liste des évaluations</h5>
+            <small class="text-muted">Page {{ evaluations.page }} / {{ evaluations.pages or 1 }}</small>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>UE</th>
+                        <th>Classe</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evaluation in evaluations.items %}
+                        <tr>
+                            <td class="fw-semibold">{{ evaluation.titre }}</td>
+                            <td>
+                                <div class="fw-semibold">{{ evaluation.unite_enseignement.code }}</div>
+                                <small class="text-muted">{{ evaluation.unite_enseignement.intitule }}</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ evaluation.classe.nom }}</div>
+                                <small class="text-muted">{{ evaluation.classe.niveau }}</small>
+                            </td>
+                            <td>
+                                {{ evaluation.date_evaluation.strftime('%d %b %Y · %Hh%M') if evaluation.date_evaluation else 'Non planifiée' }}
+                            </td>
+                            <td>{{ evaluation.type_evaluation|upper }} · S{{ evaluation.semestre }}</td>
+                            <td>
+                                {% if evaluation.est_publiee %}
+                                    <span class="badge-status badge-published">Publiée</span>
+                                {% else %}
+                                    <span class="badge-status badge-draft">Brouillon</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if has_permission(Permission.MANAGE_GRADES) %}
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('academique.saisie_notes', eval_id=evaluation.id) }}" class="btn btn-sm btn-outline-primary">Notes</a>
+                                        {% if not evaluation.est_publiee %}
+                                            <form method="post" action="{{ url_for('academique.publier_notes', eval_id=evaluation.id) }}" onsubmit="return confirm('Publier les notes ?');">
+                                                <button class="btn btn-sm btn-primary" type="submit">Publier</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">Aucune évaluation trouvée pour les filtres actuels.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if evaluations.pages > 1 %}
+            <nav class="mt-3">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item {% if not evaluations.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('academique.liste_evaluations', page=evaluations.prev_num, classe=request.args.get('classe'), ue=request.args.get('ue')) }}">Précédent</a>
+                    </li>
+                    {% for page_num in evaluations.iter_pages() %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == evaluations.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('academique.liste_evaluations', page=page_num, classe=request.args.get('classe'), ue=request.args.get('ue')) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not evaluations.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('academique.liste_evaluations', page=evaluations.next_num, classe=request.args.get('classe'), ue=request.args.get('ue')) }}">Suivant</a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

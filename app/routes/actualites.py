@@ -172,11 +172,9 @@ def ajouter_actualite():
         ]
     form.departement.choices = [
         ('', 'Sélectionnez un département'),
-        ('info', 'Informatique'),
-        ('genie_civil', 'Génie Civil'),
-        ('electrique', 'Génie Électrique'),
-        ('gestion', 'Gestion'),
-        ('biologie', 'Biologie')
+        ('ACTU', 'Actuariat'),
+        ('GENSTAT', 'Génie Statistique'),
+        ('PROBA', 'Probabilités & Statistique')
     ]
 
     
@@ -263,12 +261,10 @@ def modifier_actualite(actualite_id):
         ('autre', 'Autre')
         ]
     form.departement.choices = [
-        ('', 'Sélectionnez un Domaine'),
-        ('info', 'Politique '),
-        ('Statisti', 'Education'),
-        ('electrique', 'Recherche et Innovation'),
-        ('gestion', 'Sport et Loisirs'),
-        ('biologie', 'Diversite et Environnement')
+        ('', 'Sélectionnez un département'),
+        ('ACTU', 'Actuariat'),
+        ('GENSTAT', 'Génie Statistique'),
+        ('PROBA', 'Probabilités & Statistique')
     ]
     
     if form.validate_on_submit():

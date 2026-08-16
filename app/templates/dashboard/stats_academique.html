@@ -1,0 +1,110 @@
+{% extends 'layouts/page_principale_base.html' %}
+{% block title %}Statistiques académiques{% endblock %}
+{% block principale_extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ body {background:#020617;font-family:'Inter',sans-serif;color:#e2e8f0;}
+ .panel {background:rgba(15,23,42,0.95);border-radius:26px;padding:1.75rem;border:1px solid rgba(148,163,184,0.2);box-shadow:0 35px 80px rgba(0,0,0,0.5);}
+ .kpi {background:rgba(255,255,255,0.04);border-radius:20px;padding:1.25rem;}
+ .kpi small {text-transform:uppercase;font-size:0.65rem;color:#94a3b8;letter-spacing:0.08em;}
+ .kpi strong {display:block;font-size:2rem;font-family:'Space Grotesk',sans-serif;}
+</style>
+{% endblock %}
+{% block principale_content %}
+<div class="container-fluid py-5 px-4 px-xl-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <p class="text-uppercase text-slate-400 small mb-2">Pilotage académique</p>
+            <h1 style="font-family:'Space Grotesk',sans-serif;">Qualité pédagogique</h1>
+        </div>
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-light"><i class="bi bi-arrow-left me-2"></i>Dashboard</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="kpi"><small>Taux de réussite</small><strong>{{ taux_reussite }}%</strong></div></div>
+        <div class="col-md-4"><div class="kpi"><small>UE mesurées</small><strong>{{ moyennes_ues|length }}</strong></div></div>
+        <div class="col-md-4"><div class="kpi"><small>Niveaux actifs</small><strong>{{ inscriptions_par_niveau|length }}</strong></div></div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="panel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Moyennes par UE</h4>
+                    <small class="text-slate-400">Basées sur les notes publiées</small>
+                </div>
+                <canvas id="chartMoyennes" height="280"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="panel mb-4">
+                <h4 class="mb-3">Répartition des mentions</h4>
+                <canvas id="chartMentions" height="220"></canvas>
+            </div>
+            <div class="panel">
+                <h4 class="mb-3">Inscriptions par niveau</h4>
+                <canvas id="chartNiveaux" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel mt-4">
+        <h4 class="mb-3">Top UE · Détails</h4>
+        <div class="table-responsive">
+            <table class="table table-dark align-middle">
+                <thead>
+                    <tr>
+                        <th>UE</th>
+                        <th>Moyenne</th>
+                        <th>Nombre de notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ue, moyenne, nb in moyennes_ues %}
+                        <tr>
+                            <td>{{ ue }}</td>
+                            <td>{{ '{:.2f}'.format(moyenne) if moyenne is not none else '--' }}</td>
+                            <td>{{ nb }}</td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="3" class="text-center text-muted">Pas encore de notes.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block principale_extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const labelsUE = [{% for ue, moyenne, nb in moyennes_ues %}'{{ ue }}'{% if not loop.last %}, {% endif %}{% endfor %}];
+        const dataUE = [{% for ue, moyenne, nb in moyennes_ues %}{{ moyenne|round(2) if moyenne is not none else 0 }}{% if not loop.last %}, {% endif %}{% endfor %}];
+        const ctxUE = document.getElementById('chartMoyennes').getContext('2d');
+        new Chart(ctxUE, {
+            type: 'bar',
+            data: {labels: labelsUE, datasets:[{label:'Moyenne /20',data:dataUE,backgroundColor:'#38bdf8'}]},
+            options: {indexAxis:'y',responsive:true,scales:{x:{beginAtZero:true,max:20}}}
+        });
+
+        const labelsMentions = [{% for mention, count in mentions %}'{{ mention|replace('_',' ')|title }}'{% if not loop.last %}, {% endif %}{% endfor %}];
+        const dataMentions = [{% for mention, count in mentions %}{{ count }}{% if not loop.last %}, {% endif %}{% endfor %}];
+        new Chart(document.getElementById('chartMentions').getContext('2d'), {
+            type:'pie',
+            data:{labels:labelsMentions,datasets:[{data:dataMentions,backgroundColor:['#f97316','#22d3ee','#34d399','#c084fc','#f472b6']}]},
+            options:{responsive:true,plugins:{legend:{position:'bottom'}}}
+        });
+
+        const labelsNiveaux = [{% for niveau, count in inscriptions_par_niveau %}'{{ niveau }}'{% if not loop.last %}, {% endif %}{% endfor %}];
+        const dataNiveaux = [{% for niveau, count in inscriptions_par_niveau %}{{ count }}{% if not loop.last %}, {% endif %}{% endfor %}];
+        new Chart(document.getElementById('chartNiveaux').getContext('2d'), {
+            type:'radar',
+            data:{labels:labelsNiveaux,datasets:[{label:'Effectifs',data:dataNiveaux,backgroundColor:'rgba(59,130,246,0.3)',borderColor:'#3b82f6'}]},
+            options:{responsive:true,scales:{r:{angleLines:{color:'#1f2937'},grid:{color:'#1f2937'},suggestedMin:0}}}
+        });
+    });
+</script>
+{% endblock %}

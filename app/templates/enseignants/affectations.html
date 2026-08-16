@@ -1,0 +1,127 @@
+{% extends 'layouts/page_principale_base.html' %}
+{% block title %}Affectations · {{ enseignant.nom_complet }}{% endblock %}
+
+{% block principale_extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ body {background: #f5f7ff; font-family: 'Inter', sans-serif;}
+ .card-shadow {background:#fff; border-radius:20px; padding:2rem; box-shadow:0 15px 40px rgba(15,23,42,0.08);} 
+ .pill {padding:0.35rem 0.85rem; border-radius:999px; font-weight:600; font-size:0.8rem; background:rgba(99,102,241,0.15); color:#312e81;}
+</style>
+{% endblock %}
+
+{% block principale_content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Gestion des affectations</h1>
+            <p class="text-muted mb-0">{{ enseignant.nom_complet }} · {{ enseignant.specialite }}</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ url_for('enseignants.fiche_enseignant', id=enseignant.id) }}">Retour fiche</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card-shadow">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5>Affectations actives</h5>
+                    <span class="pill">{{ affectations_actives|length }} cours</span>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for affectation in affectations_actives %}
+                        <div class="list-group-item py-3">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>{{ affectation.unite_enseignement.intitule }}</strong>
+                                    <div class="text-muted small">{{ affectation.classe.nom }} • {{ affectation.type_intervention|upper }} • {{ affectation.volume_horaire }}h</div>
+                                </div>
+                                <form method="post" action="{{ url_for('enseignants.desactiver_affectation', aff_id=affectation.id) }}">
+                                    <button class="btn btn-sm btn-outline-danger">Désactiver</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Aucune affectation active.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card-shadow mt-4">
+                <h5>Historique récent</h5>
+                <ul class="list-group list-group-flush">
+                    {% for item in historique %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ item.unite_enseignement.intitule }}</strong>
+                                <div class="text-muted small">Fin: {{ item.date_fin or '—' }} | Semestre {{ item.semestre }}</div>
+                            </div>
+                            <span class="badge bg-light text-dark">{{ item.volume_horaire }}h</span>
+                        </li>
+                    {% else %}
+                        <li class="list-group-item text-muted">Pas d'historique récent.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card-shadow">
+                <h5 class="mb-3">Nouvelle affectation</h5>
+                <form method="post" action="{{ url_for('enseignants.affecter_cours', id=enseignant.id) }}">
+                    <div class="mb-3">
+                        <label class="form-label">Unité d'enseignement</label>
+                        <select class="form-select" name="ue_id" required>
+                            <option value="">Choisir</option>
+                            {% for ue in ues_disponibles %}
+                                <option value="{{ ue.id }}">{{ ue.code }} · {{ ue.intitule }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Classe</label>
+                        <select class="form-select" name="classe_id" required>
+                            <option value="">Choisir</option>
+                            {% for classe in classes_disponibles %}
+                                <option value="{{ classe.id }}">{{ classe.nom }} ({{ classe.niveau }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Année académique</label>
+                            <input type="text" class="form-control" name="annee_academique" value="{{ current_year }}" placeholder="2025-2026" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Semestre</label>
+                            <select class="form-select" name="semestre">
+                                <option value="1">Semestre 1</option>
+                                <option value="2">Semestre 2</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Type d'intervention</label>
+                            <select class="form-select" name="type_intervention">
+                                <option value="cm">Cours magistral</option>
+                                <option value="td">Travaux dirigés</option>
+                                <option value="tp">Travaux pratiques</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Volume horaire</label>
+                            <input type="number" class="form-control" name="volume_horaire" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date de début</label>
+                        <input type="date" class="form-control" name="date_debut" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Confirmer l'affectation</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

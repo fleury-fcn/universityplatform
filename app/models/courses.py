@@ -10,8 +10,8 @@ class Cours(db.Model):
     credits = db.Column(db.Integer)
     cycle = db.Column(db.String(20))  # 'bac' ou 'master'
     annee = db.Column(db.Integer)  # 1 à 5
-    departement = db.Column(db.String(50))  # actuariat, genie, probastate
-    parcours = db.Column(db.String(50))  # said, psm, af (pour master)
+    departement = db.Column(db.String(50))  # ACTU, GENSTAT, PROBA
+    parcours = db.Column(db.String(50))  # MACTU, MSAID, MMSP (pour master)
     semestre = db.Column(db.Integer)  # 1 ou 2
     specialisation = db.Column(db.String(50))
     horaire = db.Column(db.String(100))
@@ -51,8 +51,8 @@ class Cours(db.Model):
     credits = db.Column(db.Integer)
     cycle = db.Column(db.String(20))  # 'bac' ou 'master'
     annee = db.Column(db.Integer)  # 1 à 5
-    departement = db.Column(db.String(50))  # actuariat, genie, probastate
-    parcours = db.Column(db.String(50))  # said, psm, af (pour master)
+    departement = db.Column(db.String(50))  # ACTU, GENSTAT, PROBA
+    parcours = db.Column(db.String(50))  # MACTU, MSAID, MMSP (pour master)
     semestre = db.Column(db.Integer)  # 1 ou 2
     specialisation = db.Column(db.String(50))
     horaire = db.Column(db.String(100))

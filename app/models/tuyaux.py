@@ -9,7 +9,7 @@ class Tuyau(db.Model):
     matiere = db.Column(db.String(100), nullable=False)
     cycle = db.Column(db.String(20))  # 'bac' ou 'master'
     niveau = db.Column(db.Integer)  # 1 à 5
-    departement = db.Column(db.String(50))  # actuariat, genie, probastate
+    departement = db.Column(db.String(50))  # ACTU, GENSTAT, PROBA
     semestre = db.Column(db.Integer)  # 1 ou 2
     annee_academique = db.Column(db.String(20), nullable=False)  # Ex: "2022-2023"
     type_fichier = db.Column(db.String(20))  # pdf, docx, pptx
@@ -37,7 +37,7 @@ class Tuyau(db.Model):
     matiere = db.Column(db.String(100), nullable=False)
     cycle = db.Column(db.String(20))  # 'bac' ou 'master'
     niveau = db.Column(db.Integer)  # 1 à 5
-    departement = db.Column(db.String(50))  # actuariat, genie, probastate
+    departement = db.Column(db.String(50))  # ACTU, GENSTAT, PROBA
     semestre = db.Column(db.Integer)  # 1 ou 2
     annee_academique = db.Column(db.String(20), nullable=False)  # Ex: "2022-2023"
     type_fichier = db.Column(db.String(20))  # pdf, docx, pptx

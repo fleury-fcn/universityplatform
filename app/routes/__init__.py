@@ -14,6 +14,9 @@ from .admin import adminbp
 from .messagerie import messagerie_bp
 from .maintenance import maintenancebp
 from .actualites import actualites_bp
+from .enseignants import enseignants_bp
+from .academique import academique_bp
+from .dashboard import dashboard_bp
 
 
 all_blueprints = [
@@ -31,5 +34,8 @@ all_blueprints = [
     adminbp,
     messagerie_bp,
     maintenancebp,
-    actualites_bp
+    actualites_bp,
+    enseignants_bp,
+    academique_bp,
+    dashboard_bp
 ]

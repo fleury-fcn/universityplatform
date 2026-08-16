@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from ..models.tuyaux import Tuyau
 from ..models.Users import User  
+from app.utils.academique import normalize_department
 
 # Création du Blueprint
 tuyauxbp = Blueprint('tuyaux', __name__, url_prefix='/tuyaux')
@@ -84,7 +85,7 @@ def ajouter_tuyau():
             matiere = request.form['matiere']
             cycle = request.form['cycle']
             niveau = request.form['niveau']
-            departement = request.form['departement']
+            departement = normalize_department(request.form['departement'])
             semestre = request.form['semestre']
             annee_academique = request.form['annee_academique']
             
@@ -145,7 +146,7 @@ def modifier_tuyau(tuyau_id):
         tuyau.matiere = request.form['matiere']
         tuyau.cycle = request.form['cycle']
         tuyau.niveau = request.form['niveau']
-        tuyau.departement = request.form['departement']
+        tuyau.departement = normalize_department(request.form['departement'])
         tuyau.semestre = request.form['semestre']
         tuyau.annee_academique = request.form['annee_academique']
         

@@ -1,0 +1,108 @@
+{% extends 'layouts/page_principale_base.html' %}
+{% block title %}Rapports{% endblock %}
+{% block principale_extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ body {background:#f5f7fb;font-family:'Inter',sans-serif;}
+ .card {border:none;border-radius:26px;padding:2rem;box-shadow:0 30px 70px rgba(15,23,42,0.12);}
+ .timeline-item {border-left:3px solid #2563eb;padding-left:1rem;margin-bottom:1rem;}
+</style>
+{% endblock %}
+{% block principale_content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <p class="text-uppercase text-muted small mb-1">Analytique</p>
+            <h1 style="font-family:'Space Grotesk',sans-serif;">Génération de rapports</h1>
+        </div>
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Retour</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <h4 class="mb-3">Créer un rapport</h4>
+                <form id="rapport-form" method="post" action="{{ url_for('dashboard.generer_rapport') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Type de rapport</label>
+                        <select name="type_rapport" class="form-select" required>
+                            <option value="academique">Performances académiques</option>
+                            <option value="enseignants">Suivi enseignants</option>
+                            <option value="notifications">Notifications envoyées</option>
+                            <option value="inscriptions">Inscriptions & effectifs</option>
+                        </select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Date de début</label>
+                            <input type="date" name="date_debut" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date de fin</label>
+                            <input type="date" name="date_fin" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-check form-switch mt-4">
+                        <input class="form-check-input" type="checkbox" role="switch" id="formatPdf" checked>
+                        <label class="form-check-label" for="formatPdf">Inclure un export PDF</label>
+                    </div>
+                    <button class="btn btn-dark btn-lg mt-4" type="submit">Générer</button>
+                </form>
+                <div id="rapport-status" class="alert mt-4 d-none"></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card h-100">
+                <h4 class="mb-3">Historique / idées</h4>
+                <div class="timeline-item">
+                    <strong>Bulletin de notes global</strong>
+                    <p class="mb-0 text-muted">Synthèse par filière · PDF sécurisé · Signature numérique</p>
+                </div>
+                <div class="timeline-item">
+                    <strong>Rapport de présence enseignants</strong>
+                    <p class="mb-0 text-muted">Absences, justifications, alertes automatiques</p>
+                </div>
+                <div class="timeline-item">
+                    <strong>Suivi des évaluations</strong>
+                    <p class="mb-0 text-muted">Calendrier, statut de publication, temps moyen de saisie</p>
+                </div>
+                <div class="timeline-item">
+                    <strong>Export CSV temps réel</strong>
+                    <p class="mb-0 text-muted">Connectez la BI ou un tableur externe</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block principale_extra_js %}
+<script>
+    const form = document.getElementById('rapport-form');
+    const statusBox = document.getElementById('rapport-status');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        statusBox.classList.remove('d-none','alert-success','alert-danger');
+        statusBox.classList.add('alert','alert-info');
+        statusBox.textContent = 'Génération en cours...';
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {method:'POST', body:formData});
+            const data = await response.json();
+            statusBox.classList.remove('alert-info');
+            if (data.status === 'success') {
+                statusBox.classList.add('alert-success');
+                statusBox.textContent = data.message || 'Rapport lancé';
+            } else {
+                statusBox.classList.add('alert-danger');
+                statusBox.textContent = data.message || 'Erreur lors de la génération';
+            }
+        } catch (err) {
+            statusBox.classList.remove('alert-info');
+            statusBox.classList.add('alert-danger');
+            statusBox.textContent = 'Erreur réseau';
+        }
+    });
+</script>
+{% endblock %}

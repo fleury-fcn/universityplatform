@@ -1,0 +1,162 @@
+{% extends 'layouts/page_principale_base.html' %}
+{% block title %}Fiche enseignant{% endblock %}
+
+{% block principale_extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    body {background: #f7f8fc; font-family: 'Inter', sans-serif;}
+    .profile-banner {
+        background: linear-gradient(120deg, #0ea5e9, #6366f1);
+        border-radius: 28px;
+        padding: 2.5rem;
+        color: #fff;
+        box-shadow: 0 20px 60px rgba(79,70,229,0.35);
+    }
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 600;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+    .info-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 12px 30px rgba(15,23,42,0.08);
+        min-height: 100%;
+    }
+    .chip {padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600;}
+    .chip-success {background: rgba(16,185,129,0.15); color: #0f766e;}
+    .chip-warning {background: rgba(251,191,36,0.2); color: #92400e;}
+    .timeline {
+        border-left: 2px solid rgba(99,102,241,0.3);
+        padding-left: 1.5rem;
+    }
+    .timeline-item {position: relative; margin-bottom: 1.5rem;}
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -23px;
+        top: 0.2rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #6366f1;
+        border: 3px solid #fff;
+        box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+    }
+</style>
+{% endblock %}
+
+{% block principale_content %}
+<div class="container py-5">
+    <div class="profile-banner mb-4">
+        <div class="d-flex flex-wrap align-items-center gap-4">
+            <div class="avatar-circle">{{ enseignant.nom_complet[0:2]|upper }}</div>
+            <div>
+                <h1 class="h2 mb-1">{{ enseignant.nom_complet }}</h1>
+                <p class="mb-2">{{ enseignant.grade or 'Grade non renseigné' }} · {{ enseignant.specialite }}</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="chip chip-success">{{ enseignant.statut|capitalize }}</span>
+                    <span class="chip chip-warning">{{ enseignant.type_emploi|replace('_', ' ')|title if enseignant.type_emploi else 'Contrat non défini' }}</span>
+                    {% if enseignant.departement %}
+                        <span class="chip" style="background: rgba(14,165,233,0.2); color:#0369a1;">{{ enseignant.departement.nom }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="ms-auto text-end">
+                <h4 class="mb-1">Charge horaire</h4>
+                <div class="d-flex align-items-center" style="min-width: 280px;">
+                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                        <div class="progress-bar {% if enseignant.est_surcharge %}bg-danger{% else %}bg-light{% endif %}" style="width: {{ enseignant.charge_horaire_pourcent }}%"></div>
+                    </div>
+                    <span>{{ enseignant.charge_horaire_totale }}h / {{ enseignant.volume_horaire_annuel or '—' }}h</span>
+                </div>
+                {% if enseignant.est_surcharge %}
+                <small class="text-warning">Surcharge détectée • redistribuer les heures</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="info-card mb-4">
+                <h5>Coordonnées</h5>
+                <hr>
+                <p class="mb-2"><strong>Email pro:</strong><br>{{ enseignant.email_professionnel }}</p>
+                <p class="mb-2"><strong>Email perso:</strong><br>{{ enseignant.email_personnel or '—' }}</p>
+                <p class="mb-2"><strong>Téléphone:</strong><br>{{ enseignant.telephone_mobile or '—' }}</p>
+                <p class="mb-2"><strong>Disponibilité hebdo:</strong><br>{{ enseignant.heures_disponibles or '—' }} heures</p>
+                <p class="mb-0"><strong>Date recrutement:</strong><br>{{ enseignant.date_recrutement or '—' }}</p>
+            </div>
+            <div class="info-card">
+                <h5>Documents récents</h5>
+                <hr>
+                {% for document in documents %}
+                    <div class="mb-3">
+                        <strong>{{ document.titre }}</strong>
+                        <div class="text-muted small">{{ document.type_document|upper }} • {{ document.date_ajout.strftime('%d/%m/%Y') }}</div>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Aucun document ajouté.</p>
+                {% endfor %}
+                <a class="btn btn-sm btn-outline-primary mt-3" href="{{ url_for('enseignants.documents_enseignant', id=enseignant.id) }}">Gérer les documents</a>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="info-card mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Affectations en cours</h5>
+                    <a class="btn btn-sm btn-primary" href="{{ url_for('enseignants.affectations_enseignant', id=enseignant.id) }}">Modifier</a>
+                </div>
+                {% if affectations %}
+                    <div class="timeline">
+                        {% for affectation in affectations %}
+                            <div class="timeline-item">
+                                <h6 class="mb-1">{{ affectation.unite_enseignement.intitule }} · {{ affectation.classe.nom }}</h6>
+                                <p class="text-muted mb-1">{{ affectation.volume_horaire }}h — {{ affectation.type_intervention|upper }}</p>
+                                <small class="text-muted">{{ affectation.annee_academique }} · Semestre {{ affectation.semestre }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Aucune affectation active.</p>
+                {% endif %}
+            </div>
+            <div class="info-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5>Indicateurs</h5>
+                        <p class="text-muted mb-0">Synthèse des présences sur les 12 derniers mois</p>
+                    </div>
+                    <span class="badge bg-light text-dark">{{ taux_presence }}% de présence</span>
+                </div>
+                <div class="row text-center">
+                    <div class="col-md-4 border-end">
+                        <h3 class="mb-0">{{ enseignant.presences.filter_by(statut='present').count() }}</h3>
+                        <small class="text-muted">Présences</small>
+                    </div>
+                    <div class="col-md-4 border-end">
+                        <h3 class="mb-0 text-warning">{{ enseignant.presences.filter_by(statut='retard').count() }}</h3>
+                        <small class="text-muted">Retards</small>
+                    </div>
+                    <div class="col-md-4">
+                        <h3 class="mb-0 text-danger">{{ enseignant.presences.filter_by(statut='absent').count() }}</h3>
+                        <small class="text-muted">Absences</small>
+                    </div>
+                </div>
+                <a class="btn btn-outline-secondary mt-3" href="{{ url_for('enseignants.presences_enseignant', id=enseignant.id) }}">Voir les présences</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

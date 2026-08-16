@@ -10,6 +10,11 @@ from ..extensions import db
 from ..models.registration import InscriptionAcademique
 from ..models.Documents import DocumentInscription
 from flask_login import current_user, login_required
+from app.utils.academique import (
+    get_department_from_parcours,
+    normalize_department,
+    normalize_parcours,
+)
 import csv
 from io import StringIO
 from flask import Response
@@ -43,9 +48,16 @@ def inscription():
         email_institutionnel = request.form.get('email_institutionnel')
         annee_academique = request.form.get('annee_academique')
         niveau = request.form.get('niveau')
-        departement = request.form.get('departement') or 'N/A'
+        departement_raw = request.form.get('departement')
         specialisation = request.form.get('specialisation') or 'N/A'
-        parcours = request.form.get('parcours') or 'N/A'
+        parcours_raw = request.form.get('parcours')
+
+        departement = normalize_department(departement_raw)
+        parcours = normalize_parcours(parcours_raw)
+        if not departement and parcours:
+            departement = get_department_from_parcours(parcours)
+        departement = departement or 'N/A'
+        parcours = parcours or 'N/A'
 
         # Vérification des champs obligatoires
         required_fields = [nom, prenom, matricule, genre, date_naissance, email_institutionnel, annee_academique, niveau, parcours, departement]
@@ -68,11 +80,11 @@ def inscription():
 
         try:
             if not inscription:
-                inscription = create_new_inscription(date_naissance)
+                inscription = create_new_inscription(date_naissance, departement, specialisation, parcours)
                 action = "Création inscription"
             else:
                 anciennes_valeurs = get_anciennes_valeurs(inscription)
-                update_inscription(inscription, date_naissance)
+                update_inscription(inscription, date_naissance, departement, specialisation, parcours)
                 action = "Modification inscription"
 
             db.session.add(inscription)
@@ -87,7 +99,7 @@ def inscription():
 
     return render_inscription_template(inscription)
 
-def create_new_inscription(date_naissance):
+def create_new_inscription(date_naissance, departement_value, specialisation_value, parcours_value):
     """Crée une nouvelle inscription académique."""
     return InscriptionAcademique(
         nom=request.form['nom'],
@@ -99,9 +111,9 @@ def create_new_inscription(date_naissance):
         annee_academique=request.form['annee_academique'],
         niveau=request.form['niveau'],
         filiere=request.form.get('filiere'),
-        departement = request.form.get('departement') or 'N/A',
-        specialisation = request.form.get('specialisation') or 'N/A',
-        parcours = request.form.get('parcours') or 'N/A'
+        departement=departement_value,
+        specialisation=specialisation_value,
+        parcours=parcours_value
     )
 
 def get_anciennes_valeurs(inscription):
@@ -119,7 +131,7 @@ def get_anciennes_valeurs(inscription):
         'parcours':inscription.parcours
     }
 
-def update_inscription(inscription, date_naissance):
+def update_inscription(inscription, date_naissance, departement_value, specialisation_value, parcours_value):
     """Met à jour une inscription existante."""
     inscription.nom = request.form['nom']
     inscription.prenom = request.form['prenom']
@@ -129,9 +141,9 @@ def update_inscription(inscription, date_naissance):
     inscription.email_institutionnel = request.form['email_institutionnel']
     inscription.annee_academique = request.form['annee_academique']
     inscription.niveau = request.form['niveau']
-    inscription.departement = request.form['departement']
-    inscription.specialisation = request.form.get('specialisation')
-    inscription.parcours = request.form.get('parcours')
+    inscription.departement = departement_value
+    inscription.specialisation = specialisation_value
+    inscription.parcours = parcours_value
 
 def handle_documents(inscription):
     """Gère l'upload des documents."""

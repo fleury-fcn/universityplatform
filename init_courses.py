@@ -26,14 +26,14 @@ def init_courses():
                     'nom': 'KARIMUMURYANGO',
                     'prenom': 'Menedore',
                     'avatar': 'prof1.jpg'
-                },
                 {
-                    'nom': 'NIYONSABA',
-                    'prenom': 'Therence',
-                    'avatar': 'prof2.jpg'
-                },
-                {
-                    'nom': 'MVUYEKURE ',
+                    'code': 'ACTU101',
+                    'titre': "Introduction à l'Actuariat",
+                    'description': "Principes de base de l'actuariat et calcul des primes.",
+                    'credits': 4,
+                    'cycle': 'bac',
+                    'annee': 1,
+                    'departement': 'ACTU',
                     'prenom': 'Mathieu',
                     'avatar': 'prof3.jpg'
                 }
@@ -41,14 +41,17 @@ def init_courses():
 
             professeurs = {}
             for data in professeurs_data:
-                prof = Professeur.query.filter_by(nom=data['nom'], prenom=data['prenom']).first()
+                nom = data['nom'].strip()
+                prenom = data['prenom'].strip()
+                prof = Professeur.query.filter_by(nom=nom, prenom=prenom).first()
                 if not prof:
-                    prof = Professeur(**data)
+                    prof = Professeur(nom=nom, prenom=prenom, avatar=data['avatar'])
                     db.session.add(prof)
-                    logger.info(f"Professeur ajouté : {data['prenom']} {data['nom']}")
+                    logger.info(f"Professeur ajouté : {prenom} {nom}")
                 else:
-                    logger.info(f"Professeur existant : {data['prenom']} {data['nom']}")
-                professeurs[f"{data['prenom']} {data['nom']}"] = prof.id
+                    logger.info(f"Professeur existant : {prenom} {nom}")
+                # Utilise la clé "Nom Prenom" pour correspondre aux références ci-dessous
+                professeurs[f"{nom} {prenom}"] = prof.id
 
             db.session.commit()
 
@@ -61,7 +64,7 @@ def init_courses():
                     'credits': 4,
                     'cycle': 'bac',
                     'annee': 1,
-                    'departement': 'actuariat',
+                    'departement': 'ACTU',
                     'parcours': None,
                     'semestre': 1,
                     'specialisation': 'all',
@@ -74,11 +77,11 @@ def init_courses():
                 {
                     'code': 'DATA501',
                     'titre': 'Machine Learning Avancé',
-                    'description': 'Algorithmes avancés d\'apprentissage automatique et leurs applications.',
+                    'description': "Algorithmes avancés d'apprentissage automatique et leurs applications.",
                     'credits': 5,
                     'cycle': 'bac',
                     'annee': 1,
-                    'departement': 'genie',
+                    'departement': 'GENSTAT',
                     'parcours': None,
                     'semestre': 1,
                     'specialisation': 'data',
@@ -95,7 +98,7 @@ def init_courses():
                     'credits': 4,
                     'cycle': 'bac',
                     'annee': 3,
-                    'departement': 'probastate',
+                    'departement': 'PROBA',
                     'parcours': None,
                     'semestre': 2,
                     'specialisation': 'all',
@@ -113,7 +116,7 @@ def init_courses():
                     'cycle': 'master',
                     'annee': 4,
                     'departement': None,
-                    'parcours': 'said',
+                    'parcours': 'MSAID',
                     'semestre': 1,
                     'specialisation': 'all',
                     'horaire': 'Jeudi 13h-15h',

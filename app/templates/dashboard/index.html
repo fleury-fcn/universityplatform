@@ -1,0 +1,190 @@
+{% extends 'layouts/page_principale_base.html' %}
+{% block title %}Dashboard Administrateur{% endblock %}
+{% block principale_extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+ body {background:#050310;font-family:'Inter',sans-serif;color:#f8fafc;}
+ .grid {display:grid;gap:1.5rem;}
+ .grid-4 {grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
+ .kpi {background:rgba(255,255,255,0.04);border:1px solid rgba(148,163,184,0.25);border-radius:22px;padding:1.3rem;backdrop-filter:blur(10px);}
+ .kpi small {text-transform:uppercase;font-size:0.7rem;letter-spacing:0.08em;color:#94a3b8;}
+ .kpi strong {display:block;font-size:2rem;font-family:'Space Grotesk',sans-serif;}
+ .panel {background:rgba(2,6,23,0.9);border-radius:26px;padding:1.75rem;border:1px solid rgba(148,163,184,0.2);box-shadow:0 40px 80px rgba(0,0,0,0.4);}
+ .alert-card {border-left:4px solid #f97316;background:rgba(249,115,22,0.1);border-radius:18px;padding:1rem;}
+ .timeline-item {border-bottom:1px solid rgba(148,163,184,0.12);padding:0.9rem 0;}
+ .timeline-item:last-child {border-bottom:none;}
+ canvas {background:#0f172a;border-radius:16px;padding:1rem;}
+</style>
+{% endblock %}
+{% block principale_content %}
+<div class="container-fluid py-5 px-4 px-xl-5">
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-4 mb-5">
+        <div>
+            <p class="text-uppercase text-slate-400 small mb-2">Vue globale</p>
+            <h1 class="display-5" style="font-family:'Space Grotesk',sans-serif;">Pilotage académique</h1>
+            <p class="text-slate-300">Suivez l'utilisation de la plateforme, les évaluations en cours et les signaux faibles en un coup d'œil.</p>
+        </div>
+        <div class="text-end">
+            <small class="text-slate-400 d-block">Temps réel</small>
+            <div class="h4 mb-0" id="stat-live"></div>
+        </div>
+    </div>
+
+    <div class="grid grid-4 mb-4">
+        <div class="kpi">
+            <small>Utilisateurs actifs</small>
+            <strong>{{ stats.utilisateurs.total }}</strong>
+            <span class="text-slate-400">Étudiants {{ stats.utilisateurs.etudiants }} · Enseignants {{ stats.utilisateurs.enseignants }}</span>
+        </div>
+        <div class="kpi">
+            <small>Unités d'enseignement</small>
+            <strong>{{ stats.academique.ues }}</strong>
+            <span class="text-slate-400">Classes {{ stats.academique.classes }}</span>
+        </div>
+        <div class="kpi">
+            <small>Évaluations planifiées</small>
+            <strong>{{ stats.academique.evaluations }}</strong>
+            <span class="text-slate-400">Notes saisies {{ stats.academique.notes_saisies }}</span>
+        </div>
+        <div class="kpi">
+            <small>Notifications aujourd'hui</small>
+            <strong>{{ stats.notifications.total_aujourd_hui }}</strong>
+            <span class="text-slate-400">Non lues {{ stats.notifications.non_lues }}</span>
+        </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:2fr 1fr;gap:1.5rem;">
+        <div class="panel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">Alertes prioritaires</h4>
+                <span class="badge bg-warning text-dark">{{ alertes|length }} alertes</span>
+            </div>
+            {% if alertes %}
+                <div class="grid" style="gap:1rem;">
+                    {% for alerte in alertes %}
+                        <div class="alert-card">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ alerte.titre }}</strong>
+                                <span class="badge bg-light text-dark">{{ alerte.type|capitalize }}</span>
+                            </div>
+                            <p class="mb-2 text-slate-300">{{ alerte.message }}</p>
+                            <a href="{{ alerte.lien }}" class="text-decoration-none">Voir le détail →</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-slate-400 mb-0">Aucune alerte critique.</p>
+            {% endif %}
+        </div>
+        <div class="panel">
+            <h4>Activité temps réel</h4>
+            <div class="grid grid-4" id="live-cards" style="grid-template-columns:repeat(2,1fr);">
+                <div class="kpi"><small>Connexions</small><strong id="live-connexions">--</strong></div>
+                <div class="kpi"><small>Évaluations</small><strong id="live-evals">--</strong></div>
+                <div class="kpi"><small>Notifications</small><strong id="live-notifs">--</strong></div>
+                <div class="kpi"><small>Séances</small><strong id="live-seances">--</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid mt-4" style="grid-template-columns:2fr 1fr;gap:1.5rem;">
+        <div class="panel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">Charge horaire enseignants</h4>
+                <small class="text-slate-400">Source: Affectations actives</small>
+            </div>
+            <canvas id="chartCharge" height="160"></canvas>
+        </div>
+        <div class="panel">
+            <h4 class="mb-3">Dernières évaluations</h4>
+            <div>
+                {% for evaluation in activites.evaluations_recentes %}
+                    <div class="timeline-item">
+                        <strong>{{ evaluation.titre }}</strong>
+                        <div class="small text-slate-400">{{ evaluation.classe.nom }} · {{ evaluation.unite_enseignement.code }} · {{ evaluation.date_creation.strftime('%d/%m/%Y') }}</div>
+                    </div>
+                {% else %}
+                    <p class="text-slate-400">Aucune évaluation récente.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid mt-4" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;">
+        <div class="panel">
+            <h4 class="mb-3">Distribution des notes</h4>
+            <canvas id="chartNotes" height="180"></canvas>
+        </div>
+        <div class="panel">
+            <h4 class="mb-3">Présences mensuelles</h4>
+            <canvas id="chartPresences" height="180"></canvas>
+        </div>
+        <div class="panel">
+            <h4 class="mb-3">Nouveaux utilisateurs</h4>
+            {% for user in activites.nouveaux_utilisateurs %}
+                <div class="timeline-item">
+                    <strong>{{ user.nom }} {{ user.prenom }}</strong>
+                    <div class="small text-slate-400">{{ user.role|title }} · inscrit le {{ user.created_at.strftime('%d/%m/%Y') }}</div>
+                </div>
+            {% else %}
+                <p class="text-slate-400">Aucun nouvel utilisateur.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block principale_extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const fetchJSON = url => fetch(url).then(r => r.json());
+
+    async function initCharts() {
+        const chargeData = await fetchJSON('{{ url_for('dashboard.api_chart_charge_horaire') }}');
+        const ctxCharge = document.getElementById('chartCharge').getContext('2d');
+        new Chart(ctxCharge, {
+            type: 'bar',
+            data: chargeData,
+            options: {
+                responsive: true,
+                plugins: {legend: {display: true}},
+                scales: {y: {beginAtZero: true,max:150}}
+            }
+        });
+
+        const notesData = await fetchJSON('{{ url_for('dashboard.api_chart_notes_distribution') }}');
+        new Chart(document.getElementById('chartNotes').getContext('2d'), {
+            type: 'doughnut',
+            data: notesData,
+            options: {responsive:true,plugins:{legend:{position:'bottom'}}}
+        });
+
+        const presencesData = await fetchJSON('{{ url_for('dashboard.api_chart_presences_mensuelles') }}');
+        new Chart(document.getElementById('chartPresences').getContext('2d'), {
+            type: 'line',
+            data: presencesData,
+            options: {responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+        });
+    }
+
+    async function refreshLiveStats() {
+        try {
+            const data = await fetchJSON('{{ url_for('dashboard.api_stats_temps_reel') }}');
+            document.getElementById('live-connexions').textContent = data.connexions_aujourdhui;
+            document.getElementById('live-evals').textContent = data.evaluations_aujourdhui;
+            document.getElementById('live-notifs').textContent = data.notifications_envoyees;
+            document.getElementById('live-seances').textContent = data.seances_aujourdhui;
+            document.getElementById('stat-live').textContent = new Date().toLocaleTimeString();
+        } catch (err) {
+            console.error('Live stats', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        refreshLiveStats();
+        setInterval(refreshLiveStats, 60000);
+    });
+</script>
+{% endblock %}

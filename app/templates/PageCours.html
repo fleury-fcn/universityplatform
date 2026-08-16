@@ -637,9 +637,9 @@
                         <label class="filter-label">Département</label>
                         <select class="filter-select" id="department">
                             <option value="all">Tous départements</option>
-                            <option value="actuariat">Actuariat</option>
-                            <option value="genie">Génie Statistique</option>
-                            <option value="probastate">Probabilite et Statistique</option>
+                            <option value="ACTU">Actuariat</option>
+                            <option value="GENSTAT">Génie Statistique</option>
+                            <option value="PROBA">Probabilités &amp; Statistique</option>
                         </select>
                     </div>
 
@@ -647,9 +647,9 @@
                         <label class="filter-label">Parcours Master</label>
                         <select class="filter-select" id="parcours">
                             <option value="all">Tous Parcours</option>
-                            <option value="said">Statistique Appliquée et Informatique Decisionnelle </option>
-                            <option value="psm">Probabilité, Statistique et Modélisation</option>
-                            <option value="af">Actuariat et Finance</option>
+                            <option value="MSAID">Master Statistique Appliquée &amp; Informatique Décisionnelle</option>
+                            <option value="MMSP">Master Modélisation Statistique &amp; Probabilité</option>
+                            <option value="MACTU">Master Actuariat &amp; Finance</option>
                         </select>
                     </div>
                     
@@ -773,42 +773,62 @@
     <script>
         // Gestion des filtres
        document.addEventListener('DOMContentLoaded', function() {
-    // Gestion des spécialisations par département
+    const normalizeValue = (value) => (value || '').toString().trim().toUpperCase();
+    const normalizeDepartment = (value) => {
+        const slug = normalizeValue(value);
+        if (['ACTUARIAT', 'ACTU'].includes(slug)) return 'ACTU';
+        if (['GENIE', 'GENIE STATISTIQUE', 'GENSTAT'].includes(slug)) return 'GENSTAT';
+        if (
+            ['PROBA', 'PROBABILITE', 'PROBABILITES', 'PROBASTATE', 'PROBABILITE ET STATISTIQUE', 'PROBABILITES ET STATISTIQUE']
+                .includes(slug)
+        ) {
+            return 'PROBA';
+        }
+        return slug;
+    };
+    const normalizeParcours = (value) => {
+        const slug = normalizeValue(value);
+        if (['MSAID', 'SAID', 'STATISTIQUE APPLIQUEE ET INFORMATIQUE DECISIONNELLE'].includes(slug)) return 'MSAID';
+        if (['MMSP', 'PSM', 'PROBABILITE STATISTIQUE ET MODELISATION'].includes(slug)) return 'MMSP';
+        if (['MACTU', 'AF', 'ACTUARIAT ET FINANCE'].includes(slug)) return 'MACTU';
+        return slug;
+    };
+
     const departmentSelect = document.getElementById('department');
     const parcoursSelect = document.getElementById('parcours');
     const specializationSection = document.getElementById('specialization-section');
     const specializationBtns = document.getElementById('specialization-btns');
     
     departmentSelect.addEventListener('change', function() {
-        const department = this.value;
+        const department = normalizeDepartment(this.value);
         specializationSection.style.display = 'none';
         specializationBtns.innerHTML = '';
         
-        if (department === 'actuariat') {
+        if (department === 'ACTU') {
             specializationSection.style.display = 'block';
             specializationBtns.innerHTML = `
                 <button class="specialization-btn active" data-specialization="all">Toutes spécialités</button>
                 <button class="specialization-btn" data-specialization="risques">Analyse des Risques</button>
                 <button class="specialization-btn" data-specialization="predictive">Analyse Prédictive</button>
             `;
-        } else if (department === 'genie') {
+        } else if (department === 'GENSTAT') {
             specializationSection.style.display = 'block';
             specializationBtns.innerHTML = `
                 <button class="specialization-btn active" data-specialization="all">Toutes spécialités</button>
                 <button class="specialization-btn" data-specialization="data">Sciences des Données</button>
                 <button class="specialization-btn" data-specialization="eco">Sciences Économiques</button>
             `;
-        } else if (department === 'probastate') {
-            specializationSection.style.display = 'none';
         }
         
         filterCourses();
     });
     
     parcoursSelect.addEventListener('change', function() {
-        const parcours = this.value;
-        if (parcours === 'master') {
+        const hasSpecificParcours = this.value !== 'all';
+        if (hasSpecificParcours) {
             specializationSection.style.display = 'none';
+        } else if (departmentSelect.value && departmentSelect.value !== 'all') {
+            departmentSelect.dispatchEvent(new Event('change'));
         }
         filterCourses();
     });
@@ -828,8 +848,10 @@
             function filterCourses() {
                 const cycle = document.getElementById('academic-cycle').value;
                 const year = document.getElementById('academic-year').value;
-                const department = document.getElementById('department').value;
-                const parcours = document.getElementById('parcours').value;
+                const departmentRaw = document.getElementById('department').value;
+                const department = departmentRaw === 'all' ? 'all' : normalizeDepartment(departmentRaw);
+                const parcoursRaw = document.getElementById('parcours').value;
+                const parcours = parcoursRaw === 'all' ? 'all' : normalizeParcours(parcoursRaw);
                 const semester = document.getElementById('semester').value;
                 const activeSpecialization = document.querySelector('.specialization-btn.active');
                 const specialization = activeSpecialization ? activeSpecialization.dataset.specialization : 'all';
@@ -837,8 +859,8 @@
                 document.querySelectorAll('.course-card').forEach(card => {
                     const cardCycle = card.dataset.cycle;
                     const cardYear = card.dataset.year;
-                    const cardDept = card.dataset.department;
-                    const cardParc = card.dataset.parcours;
+                    const cardDept = normalizeDepartment(card.dataset.department);
+                    const cardParc = normalizeParcours(card.dataset.parcours);
                     const cardSemester = card.dataset.semester;
                     const cardSpecialization = card.dataset.specialization;
                     
