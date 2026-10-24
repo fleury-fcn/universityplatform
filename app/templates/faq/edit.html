@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ _("Question") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Modifier la question") if entry else _("Nouvelle question") }}</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.question) }}
+  {{ field(form.answer, rows=6) }}
+  <div class="grid-2">{{ field(form.category, hint=_("Ex. : Application, Inscription, Examens, Vie pratique")) }}{{ field(form.position) }}</div>
+  {{ field(form.keywords, hint=_("Synonymes que les étudiants pourraient utiliser, séparés par des espaces.")) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('faq.manage') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

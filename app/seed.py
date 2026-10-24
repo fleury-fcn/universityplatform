@@ -12,7 +12,7 @@ from decimal import Decimal
 
 from app.core.security import ROLE_ADMIN, ROLE_STUDENT, ROLE_TEACHER
 from app.extensions import db
-from app.models import Book, Club, Course, Tip, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
+from app.models import Book, Club, Course, FaqEntry, Tip, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
 
 DEMO_PASSWORD = "Demo-ISTA-2026"
 
@@ -269,6 +269,48 @@ def seed_tips():
                        published_at=utcnow(), is_demo=True)
 
 
+# Aide à l'utilisation de l'application (exacte, donc non marquée DEMO). Les questions sur la vie
+# à l'ISTA (inscriptions, frais, calendrier...) sont à rédiger par l'administration.
+APP_FAQ = [
+    ("J'ai oublié mon mot de passe. Que faire ?",
+     "Adressez-vous au secrétariat de l'ISTA : l'administration génère un mot de passe provisoire, que "
+     "vous devrez changer à la connexion suivante.", "mot de passe oublie perdu connexion compte"),
+    ("Comment installer l'application sur mon téléphone ?",
+     "Ouvrez l'application dans Chrome, puis choisissez « Ajouter à l'écran d'accueil » (ou « Installer "
+     "l'application ») dans le menu du navigateur. Elle s'ouvre ensuite comme une application.",
+     "installer android ecran accueil telephone"),
+    ("Puis-je consulter l'application sans connexion Internet ?",
+     "Oui pour les pages déjà consultées : emploi du temps de la semaine, actualités, plan du campus, liste "
+     "des cours et documents téléchargés. Un bandeau signale quand vous êtes hors ligne.",
+     "hors ligne internet reseau offline donnees"),
+    ("Comment réserver un livre à la bibliothèque ?",
+     "Ouvrez Bibliothèque, choisissez le livre puis « Réserver ce livre ». Vous recevez une notification "
+     "quand il est prêt à retirer. Trois réservations au maximum en même temps.",
+     "livre bibliotheque reserver emprunter pret"),
+    ("Mes notes n'apparaissent pas. Pourquoi ?",
+     "Les notes sont visibles une fois publiées par l'enseignant ; vous êtes alors prévenu par une "
+     "notification. La moyenne affichée est indicative : seul le relevé officiel fait foi.",
+     "notes resultats moyenne releve examen"),
+    ("Mon nom, mon matricule ou ma promotion sont faux.",
+     "Ces informations sont gérées par l'administration : signalez l'erreur au secrétariat (ou par la "
+     "messagerie). Vous pouvez modifier vous-même votre e-mail et la langue dans « Mon profil ».",
+     "profil matricule promotion erreur nom filiere"),
+    ("Comment partager un tuyau avec les autres étudiants ?",
+     "Ouvrez Tuyaux puis « Partager ». Votre conseil est publié après validation par l'administration. "
+     "Ne publiez ni données personnelles ni documents protégés.", "tuyau conseil partager astuce"),
+    ("Comment recevoir les notifications sur mon téléphone ?",
+     "Les notifications apparaissent dans l'application (cloche en haut de l'écran). Si l'institut a activé "
+     "les notifications push, un bouton sur la page Notifications permet de les recevoir même application "
+     "fermée.", "notification alerte push cloche"),
+]
+
+
+def seed_faq():
+    for position, (question, answer, keywords) in enumerate(APP_FAQ):
+        _get_or_create(FaqEntry, {"question": question}, answer=answer, keywords=keywords,
+                       category="Utiliser l'application", position=position)
+
+
 def run():
     seed_academic()
     seed_users()
@@ -279,6 +321,7 @@ def run():
     seed_books()
     seed_clubs()
     seed_tips()
+    seed_faq()
     db.session.commit()
 
 

@@ -27,6 +27,7 @@ hébergement à faible coût.
 | **Tuyaux** | partage de conseils (modérés), vote « utile » | publication directe | modération, signalements |
 | **Messagerie** | messages, pièces jointes | + envoi à une promotion | idem |
 | **Notifications** | dans l'application (+ push facultatif) | idem | idem |
+| **Questions fréquentes** | recherche en langage courant (« comment réserver un livre ? ») | idem | rédaction des questions |
 | **Mon profil** | matricule, filière, promotion, langue | | gestion des comptes, import CSV |
 
 **Pensé pour le Burundi**

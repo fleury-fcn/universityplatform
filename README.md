@@ -19,6 +19,7 @@ entry-level Android phones, slow or unstable connections, low-cost hosting.
 - **Library**: catalogue, availability, reservations, optional digital copies
 - **Campus**: places and rooms, uploaded campus maps, link to the phone's map app
 - **Clubs**, student **tips** ("tuyaux") with moderation, internal **messaging** with attachments
+- **FAQ assistant**: plain-language search over admin-written questions (accent- and typo-tolerant, works offline-friendly, no AI service)
 - **Offline-ready PWA**: weekly timetable, news, campus and courses are pre-cached; downloaded files stay available
 - **Lightweight**: no CDN, no web font, one stylesheet, one small script · light / dark theme
 - **Languages**: French by default, i18n ready for English and Kirundi

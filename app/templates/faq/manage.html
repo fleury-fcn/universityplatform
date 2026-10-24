@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty, demo_badge %}
+{% block title %}{{ _("Gérer la FAQ") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Gérer la FAQ") }}</h1>
+  <a class="btn btn-sm" href="{{ url_for('faq.edit') }}">{{ icon("plus") }} {{ _("Question") }}</a>
+</div>
+{% if entries %}
+<ul class="list">
+  {% for e in entries %}
+  <li class="list-item">
+    <span class="grow"><a class="title" href="{{ url_for('faq.edit', entry_id=e.id) }}">{{ e.question }}</a> {{ demo_badge(e) }}
+      <span class="meta">{{ e.category }}</span></span>
+    <form method="post" action="{{ url_for('faq.delete', entry_id=e.id) }}" data-confirm="{{ _('Supprimer cette question ?') }}">
+      {{ csrf_form.hidden_tag() }}<button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucune question.")) }}{% endif %}
+{% endblock %}

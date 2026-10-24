@@ -47,6 +47,10 @@ dans `instance/legacy_files/` sur la machine de développement).
 | Bibliothèque | 6 livres aux auteurs fictifs (repris de l'ancien `init_books.py`) | catalogue réel, cotes, nombre d'exemplaires |
 | Tuyaux | 3 conseils d'exemple | contributions des étudiants |
 
+La **FAQ** contient 8 questions d'aide à l'utilisation de l'application (exactes, non marquées DEMO).
+Les questions sur la vie à l'ISTA (inscriptions, frais, calendrier académique, horaires des
+services, logement, transport…) sont **à rédiger par l'administration** (FAQ → Gérer).
+
 ## 3. Règles à valider par l'ISTA
 
 Ces règles sont des choix par défaut, simples à modifier :
