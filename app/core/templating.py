@@ -37,6 +37,19 @@ def _visible(items):
     return [i for i in items if i["endpoint"] in views and (not i.get("roles") or role in i["roles"])]
 
 
+def file_url(stored):
+    from flask import url_for
+
+    return url_for("files.download", file_id=stored.id, name=stored.original_name)
+
+
+def human_size(n):
+    for unit in ("o", "Ko", "Mo"):
+        if n < 1024 or unit == "Mo":
+            return f"{n:.0f} {unit}" if unit == "o" else f"{n:.1f} {unit}".replace(".", ",")
+        n /= 1024
+
+
 def text_to_html(value):
     """Affiche un texte saisi par un utilisateur : échappé, paragraphes et retours à la ligne."""
     if not value:
@@ -51,7 +64,9 @@ def init_app(app):
         datetime=lambda v, fmt="short": format_datetime(v, fmt) if v else "",
         time=lambda v: v.strftime("%H:%M") if v else "",
         text=text_to_html,
+        filesize=human_size,
     )
+    app.jinja_env.globals["file_url"] = file_url
 
     @app.context_processor
     def inject_globals():

@@ -32,7 +32,7 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
 
     UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER") or str(INSTANCE_DIR / "uploads")
-    MAX_CONTENT_LENGTH = int(os.environ.get("MAX_UPLOAD_MB", "10")) * 1024 * 1024
+    MAX_CONTENT_LENGTH = int(os.environ.get("MAX_UPLOAD_MB", "20")) * 1024 * 1024
 
     # À incrémenter à chaque livraison pour invalider les caches (navigateur et hors ligne).
     ASSET_VERSION = "1"

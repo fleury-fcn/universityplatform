@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, field, empty, demo_badge %}
+{% block title %}{{ course.title }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('courses.index') }}">{{ icon("chevron-left") }} {{ _("Cours") }}</a></p>
+<section class="card">
+  <h1>{{ course.title }} {{ demo_badge(course) }}</h1>
+  <p class="muted">
+    {{ course.code }} · {{ course.promotion.name }} · {{ _("Semestre %(n)d", n=course.semester) }}
+    {% if course.credits %} · {{ _("%(n)d crédits", n=course.credits) }}{% endif %}
+  </p>
+  {% if course.teacher %}<p>{{ icon("user") }} {{ course.teacher.full_name }}</p>{% endif %}
+  {% if course.description %}<div class="prose">{{ course.description|text }}</div>{% endif %}
+  {% if current_user.is_admin %}<a class="btn btn-secondary btn-sm" href="{{ url_for('courses.edit', course_id=course.id) }}">{{ icon("edit") }} {{ _("Modifier le cours") }}</a>{% endif %}
+</section>
+
+{% for kind, resources in grouped %}
+  <h2 class="section-title">{{ kind_labels[kind] }}</h2>
+  <ul class="list">
+    {% for r in resources %}
+    <li class="list-item">
+      {{ icon("file") }}
+      <span class="grow">
+        <a class="title" href="{{ file_url(r.file) }}">{{ r.title }}</a>
+        <span class="meta">{{ r.file.extension|upper }} · {{ r.file.size|filesize }}{% if r.academic_year %} · {{ r.academic_year }}{% endif %} · {{ r.created_at|date }}</span>
+      </span>
+      <a class="btn btn-secondary btn-sm" href="{{ file_url(r.file) }}" download aria-label="{{ _('Télécharger') }}">{{ icon("download") }}</a>
+      {% if course.can_edit(current_user) %}
+      <form method="post" action="{{ url_for('courses.delete_resource', resource_id=r.id) }}" data-confirm="{{ _('Supprimer ce document ?') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+      </form>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  {{ empty(_("Aucun document pour ce cours pour le moment.")) }}
+{% endfor %}
+<p class="hint">{{ _("Les documents téléchargés restent disponibles hors connexion sur cet appareil.") }}</p>
+
+{% if form %}
+<section class="card">
+  <h2>{{ _("Ajouter un document") }}</h2>
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(form.title) }}
+    <div class="grid-2">{{ field(form.kind) }}{{ field(form.academic_year) }}</div>
+    {{ field(form.file, accept=accept, data_max_bytes=max_bytes, data_max_message=_("Fichier trop volumineux"),
+             hint=_("PDF, Word, PowerPoint, Excel, OpenDocument, CSV, texte ou image. %(n)d Mo maximum.", n=max_bytes // 1048576)) }}
+    <button type="submit" class="btn">{{ icon("upload") }} {{ _("Envoyer") }}</button>
+  </form>
+</section>
+{% endif %}
+{% endblock %}

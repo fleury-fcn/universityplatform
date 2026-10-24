@@ -11,7 +11,7 @@ from datetime import date, time
 
 from app.core.security import ROLE_ADMIN, ROLE_STUDENT, ROLE_TEACHER
 from app.extensions import db
-from app.models import Department, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
+from app.models import Course, Department, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
 
 DEMO_PASSWORD = "Demo-ISTA-2026"
 
@@ -153,9 +153,36 @@ def seed_rooms_and_schedule():
         )
 
 
+# UE reprises de l'ancien script init_base_data.py (crédits et semestres à confirmer),
+# plus deux cours de démonstration pour le Master SAID (cohérents avec l'emploi du temps).
+DEMO_COURSES = [
+    ("ARISK201", "Mathématiques de l'assurance", "BAC2-ARISK-A", 1, 6),
+    ("APRED301", "Apprentissage statistique", "BAC3-APRED-A", 1, 5),
+    ("SECO210", "Politiques macroéconomiques", "BAC2-SECO-A", 2, 4),
+    ("SDATA320", "Informatique décisionnelle", "BAC3-SDATA-A", 2, 5),
+    ("PROB330", "Processus aléatoires avancés", "BAC3-PROBA-A", 2, 6),
+    ("MACTU510", "Gestion actif-passif", "M1-ACTUFIN", 1, 6),
+    ("MSAID520", "Architecture BI & Big Data", "M1-SAID", 1, 5),
+    ("MMSP530", "Théorie avancée des probabilités", "M1-MSP", 1, 5),
+    ("SAID401", "Génie logiciel avancé", "M1-SAID", 1, 4),
+    ("SAID410", "Méthodologie de recherche", "M1-SAID", 1, 3),
+]
+
+
+def seed_courses():
+    teacher = User.query.filter_by(username="enseignant.demo").first()
+    for code, title, promotion_code, semester, credits in DEMO_COURSES:
+        promotion = Promotion.query.filter_by(code=promotion_code).first()
+        if promotion:
+            _get_or_create(Course, {"code": code, "promotion_id": promotion.id}, title=title, semester=semester,
+                           credits=credits, is_demo=True,
+                           teacher=teacher if promotion_code == "M1-SAID" else None)
+
+
 def run():
     seed_academic()
     seed_users()
     seed_news()
     seed_rooms_and_schedule()
+    seed_courses()
     db.session.commit()

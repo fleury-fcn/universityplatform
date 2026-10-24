@@ -17,6 +17,8 @@ BLUEPRINTS = [
     "app.notifications",
     "app.news",
     "app.schedule",
+    "app.files",
+    "app.courses",
 ]
 
 

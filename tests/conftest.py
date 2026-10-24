@@ -98,3 +98,17 @@ def promotions(db):
     db.session.add_all([dept, prog, p1, p2])
     db.session.commit()
     return p1, p2
+
+
+PDF_BYTES = b"%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n"
+
+
+@pytest.fixture
+def course(db, promotions, teacher):
+    from app.models import Course
+
+    c = Course(code="STA101", title="Statistique descriptive", promotion_id=promotions[0].id, semester=1,
+               teacher_id=teacher.id)
+    db.session.add(c)
+    db.session.commit()
+    return c
