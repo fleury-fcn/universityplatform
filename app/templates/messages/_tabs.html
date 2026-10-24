@@ -1,0 +1,9 @@
+{% from "_macros.html" import icon %}
+<div class="page-header">
+  <h1>{{ _("Messages") }}</h1>
+  <a class="btn btn-sm" href="{{ url_for('messages.compose') }}">{{ icon("edit") }} {{ _("Écrire") }}</a>
+</div>
+<nav class="chips" aria-label="{{ _('Dossiers') }}">
+  <a class="chip" href="{{ url_for('messages.inbox') }}"{% if box == "inbox" %} aria-current="page"{% endif %}>{{ _("Reçus") }}</a>
+  <a class="chip" href="{{ url_for('messages.sent') }}"{% if box == "sent" %} aria-current="page"{% endif %}>{{ _("Envoyés") }}</a>
+</nav>

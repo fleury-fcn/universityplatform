@@ -24,6 +24,7 @@ BLUEPRINTS = [
     "app.campus",
     "app.clubs",
     "app.tips",
+    "app.messages",
 ]
 
 

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}{{ message.subject }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('messages.inbox') }}">{{ icon("chevron-left") }} {{ _("Messages") }}</a></p>
+<article class="card">
+  <h1>{{ message.subject }}</h1>
+  <p class="muted small">
+    {{ _("De :") }} <strong>{{ message.sender.full_name }}</strong> · {{ message.created_at|datetime("medium") }}<br>
+    {{ _("À :") }} {% if message.promotion %}{{ _("promotion %(p)s", p=message.promotion.name) }}{% else %}{{ message.recipients|map(attribute="user.full_name")|join(", ") }}{% endif %}
+  </p>
+  <div class="prose message-body">{{ message.body|text }}</div>
+  {% if message.attachments %}
+  <ul class="attachments">
+    {% for f in message.attachments %}
+      <li>{{ icon("paperclip") }} <a href="{{ file_url(f) }}">{{ f.original_name }}</a> <span class="muted small">{{ f.size|filesize }}</span></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</article>
+<div class="row">
+  {% if message.sender_id != current_user.id %}
+    <a class="btn" href="{{ url_for('messages.compose', repondre=message.id) }}">{{ icon("send") }} {{ _("Répondre") }}</a>
+  {% endif %}
+  <form method="post" action="{{ url_for('messages.delete', message_id=message.id) }}" data-confirm="{{ _('Supprimer ce message ?') }}">
+    {{ csrf_form.hidden_tag() }}<button class="btn btn-danger">{{ icon("trash") }} {{ _("Supprimer") }}</button>
+  </form>
+</div>
+{% endblock %}

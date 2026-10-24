@@ -26,7 +26,7 @@ NAV = [
     {"endpoint": "main.home", "label": _l("Accueil"), "icon": "home"},
     {"endpoint": "schedule.index", "label": _l("Horaires"), "icon": "calendar"},
     {"endpoint": "courses.index", "label": _l("Cours"), "icon": "book"},
-    {"endpoint": "notifications.index", "label": _l("Alertes"), "icon": "bell"},
+    {"endpoint": "messages.inbox", "label": _l("Messages"), "icon": "mail"},
     {"endpoint": "profile.show", "label": _l("Profil"), "icon": "user"},
 ]
 

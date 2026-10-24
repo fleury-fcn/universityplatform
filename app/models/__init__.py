@@ -25,3 +25,4 @@ from .grades import Grade  # noqa: E402,F401
 from .library import Book, Reservation  # noqa: E402,F401
 from .clubs import Club, ClubAnnouncement, ClubMembership  # noqa: E402,F401
 from .tips import Tip, TipReport, TipVote  # noqa: E402,F401
+from .messages import Message, MessageRecipient  # noqa: E402,F401
