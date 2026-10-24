@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty, demo_badge %}
+{% block title %}{{ _("Gérer l'emploi du temps") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Gérer l'emploi du temps") }}</h1>
+  {% if promotion_id %}<a class="btn btn-sm" href="{{ url_for('schedule.edit', promotion=promotion_id) }}">{{ icon("plus") }} {{ _("Séance") }}</a>{% endif %}
+</div>
+{% if promotions %}
+<form method="get" class="row promo-picker">
+  <label class="visually-hidden" for="promotion">{{ _("Promotion") }}</label>
+  <select id="promotion" name="promotion" class="spacer" data-autosubmit>
+    {% for p in promotions %}<option value="{{ p.id }}" {{ "selected" if p.id == promotion_id }}>{{ p.name }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-secondary btn-sm">{{ _("Afficher") }}</button>
+</form>
+{% endif %}
+
+{% set weekdays = [_("Lundi"), _("Mardi"), _("Mercredi"), _("Jeudi"), _("Vendredi"), _("Samedi"), _("Dimanche")] %}
+<h2 class="section-title">{{ _("Séances hebdomadaires") }}</h2>
+{% if recurring %}
+<ul class="list">
+  {% for e in recurring %}
+  <li class="list-item">
+    <span class="grow">
+      <a class="title" href="{{ url_for('schedule.edit', entry_id=e.id) }}">{{ e.title }}</a> {{ demo_badge(e) }}
+      <span class="meta">{{ weekdays[e.weekday] }} {{ e.start_time|time }}–{{ e.end_time|time }} · {{ e.kind }}{% if e.room %} · {{ e.room.name }}{% endif %}{% if e.teacher_display %} · {{ e.teacher_display }}{% endif %}</span>
+      {% if e.valid_from or e.valid_until %}<span class="meta">{{ e.valid_from|date if e.valid_from else "…" }} → {{ e.valid_until|date if e.valid_until else "…" }}</span>{% endif %}
+    </span>
+    <form method="post" action="{{ url_for('schedule.delete', entry_id=e.id) }}" data-confirm="{{ _('Supprimer cette séance et ses modifications ponctuelles ?') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucune séance hebdomadaire.")) }}{% endif %}
+
+<h2 class="section-title">{{ _("Séances ponctuelles et modifications à venir") }}</h2>
+{% if upcoming %}
+<ul class="list">
+  {% for e in upcoming %}
+  <li class="list-item">
+    <span class="grow">
+      <a class="title" href="{{ url_for('schedule.edit', entry_id=e.id) }}">{{ e.title }}</a>
+      {% if e.is_cancelled %}<span class="badge badge-danger">{{ _("Annulé") }}</span>{% elif e.is_change %}<span class="badge badge-warning">{{ _("Modifié") }}</span>{% endif %}
+      <span class="meta">{{ e.date|date("full") }} {{ e.start_time|time }}–{{ e.end_time|time }}{% if e.room %} · {{ e.room.name }}{% endif %}</span>
+    </span>
+    {% if not e.is_change %}
+    <form method="post" action="{{ url_for('schedule.delete', entry_id=e.id) }}" data-confirm="{{ _('Supprimer cette séance ?') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+    </form>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Rien de prévu.")) }}{% endif %}
+<p class="hint">{{ _("Pour annuler ou déplacer une seule séance hebdomadaire, ouvrez l'emploi du temps au jour concerné et choisissez « Modifier ou annuler ce jour ».") }}</p>
+{% endblock %}

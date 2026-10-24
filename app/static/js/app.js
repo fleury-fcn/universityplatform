@@ -35,6 +35,11 @@
     if (msg && !window.confirm(msg)) event.preventDefault();
   });
 
+  // Sélecteur qui recharge la page dès qu'on change de valeur : <select data-autosubmit>
+  document.querySelectorAll("select[data-autosubmit]").forEach(function (select) {
+    select.addEventListener("change", function () { select.form.submit(); });
+  });
+
   // Vérification de la taille d'un fichier avant envoi : <input type="file" data-max-bytes="...">
   document.addEventListener("change", function (event) {
     var input = event.target;

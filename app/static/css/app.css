@@ -289,3 +289,7 @@ pre.code { background: var(--surface-2); padding: .75rem; border-radius: 8px; ov
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
 .section-head .section-title { margin-bottom: .75rem; }
 .excerpt { margin-top: .25rem; color: var(--text); opacity: .85; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.promo-picker { margin-bottom: 1rem; }
+.slot .title { font-weight: 600; margin: 0 0 .15rem; }
+.slot .meta { color: var(--muted); font-size: .85rem; margin: 0; }
+.slot .meta .icon { width: 1em; height: 1em; }

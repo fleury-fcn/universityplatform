@@ -1,0 +1,11 @@
+<section aria-labelledby="today-title">
+  <div class="section-head">
+    <h2 id="today-title" class="section-title">{{ _("Aujourd'hui") }} · {{ w.day|date("full") }}</h2>
+    <a href="{{ url_for('schedule.index') }}">{{ _("Semaine") }}</a>
+  </div>
+  {% if w.entries %}
+    <ul class="list">{% for e in w.entries %}{% include "schedule/_slot.html" %}{% endfor %}</ul>
+  {% else %}
+    <p class="empty">{{ _("Pas de cours aujourd'hui.") }}</p>
+  {% endif %}
+</section>

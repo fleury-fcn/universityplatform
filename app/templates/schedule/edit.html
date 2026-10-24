@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ _("Séance") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Modifier la séance") if entry else _("Nouvelle séance") }}</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.promotion_id) }}
+  {{ field(form.title) }}
+  <div class="grid-2">{{ field(form.kind) }}{{ field(form.room_id) }}</div>
+  <div class="grid-2">{{ field(form.teacher_id) }}{{ field(form.teacher_name, hint=form.teacher_name.description) }}</div>
+  {{ field(form.repeat) }}
+  <div class="grid-2">{{ field(form.weekday) }}{{ field(form.date) }}</div>
+  <div class="grid-2">{{ field(form.start_time) }}{{ field(form.end_time) }}</div>
+  <div class="grid-2">{{ field(form.valid_from) }}{{ field(form.valid_until) }}</div>
+  <p class="hint">{{ _("Pour une séance hebdomadaire, indiquez le jour et, si besoin, la période (semestre). Pour une séance unique, indiquez la date.") }}</p>
+  {{ field(form.note) }}
+  {{ field(form.notify) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('schedule.manage', promotion=entry.promotion_id if entry else None) }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

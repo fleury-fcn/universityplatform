@@ -7,11 +7,11 @@ Deux catégories :
 
 Le script est idempotent : il peut être relancé sans créer de doublons.
 """
-from datetime import date
+from datetime import date, time
 
 from app.core.security import ROLE_ADMIN, ROLE_STUDENT, ROLE_TEACHER
 from app.extensions import db
-from app.models import Department, News, NewsCategory, Program, Promotion, User, utcnow
+from app.models import Department, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
 
 DEMO_PASSWORD = "Demo-ISTA-2026"
 
@@ -120,8 +120,42 @@ def seed_news():
                        is_published=True, is_pinned=pinned, published_at=utcnow(), is_demo=True)
 
 
+DEMO_ROOMS = [
+    ("DEMO-AMPHI", "Amphithéâtre (DEMO)", "amphi", 150),
+    ("DEMO-S1", "Salle 1 (DEMO)", "salle", 45),
+    ("DEMO-LABO", "Laboratoire informatique (DEMO)", "labo", 30),
+    ("DEMO-BIB", "Bibliothèque (DEMO)", "bibliotheque", 60),
+]
+
+# Intitulés repris des UE de l'ancien code (Master SAID) ; horaires inventés.
+DEMO_SESSIONS = [
+    (0, time(8), time(10), "Génie logiciel avancé", "CM", "DEMO-S1"),
+    (1, time(10), time(12), "Architecture BI & Big Data", "CM", "DEMO-AMPHI"),
+    (2, time(14), time(16), "Architecture BI & Big Data", "TP", "DEMO-LABO"),
+    (3, time(8), time(10), "Génie logiciel avancé", "TD", "DEMO-S1"),
+    (4, time(10), time(12), "Méthodologie de recherche", "CM", "DEMO-AMPHI"),
+]
+
+
+def seed_rooms_and_schedule():
+    rooms = {
+        code: _get_or_create(Room, {"code": code}, name=name, kind=kind, capacity=capacity, is_demo=True)
+        for code, name, kind, capacity in DEMO_ROOMS
+    }
+    promotion = Promotion.query.filter_by(code="M1-SAID").first()
+    teacher = User.query.filter_by(username="enseignant.demo").first()
+    if promotion is None:
+        return
+    for weekday, start, end, title, kind, room in DEMO_SESSIONS:
+        _get_or_create(
+            ScheduleEntry, {"promotion_id": promotion.id, "weekday": weekday, "start_time": start},
+            end_time=end, title=title, kind=kind, room=rooms[room], teacher=teacher, is_demo=True,
+        )
+
+
 def run():
     seed_academic()
     seed_users()
     seed_news()
+    seed_rooms_and_schedule()
     db.session.commit()

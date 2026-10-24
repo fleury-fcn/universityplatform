@@ -60,4 +60,5 @@ def init_app(app):
             "nav_items": _visible(NAV),
             "languages": current_app.config["LANGUAGES"],
             "current_locale": str(get_locale()),
+            "has_view": lambda endpoint: endpoint in current_app.view_functions,
         }
