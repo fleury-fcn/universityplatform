@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ room.name if room else _("Nouveau lieu") }}{% endblock %}
+{% block content %}
+<h1>{{ room.name if room else _("Nouveau lieu") }}</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="grid-2">{{ field(form.code) }}{{ field(form.kind) }}</div>
+  {{ field(form.name) }}
+  <div class="grid-2">{{ field(form.building) }}{{ field(form.floor) }}</div>
+  {{ field(form.capacity) }}
+  {{ field(form.description, rows=4) }}
+  <div class="grid-2">{{ field(form.latitude, inputmode="decimal") }}{{ field(form.longitude, inputmode="decimal") }}</div>
+  <p class="hint">{{ _("Facultatif. Coordonnées relevées sur place (par exemple avec l'application de cartes du téléphone).") }}</p>
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('campus.manage') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

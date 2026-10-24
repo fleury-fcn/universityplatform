@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, demo_badge %}
+{% block title %}{{ room.name }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('campus.index') }}">{{ icon("chevron-left") }} {{ _("Campus") }}</a></p>
+<section class="card">
+  <h1>{{ room.name }} {{ demo_badge(room) }}</h1>
+  <dl class="details">
+    <div><dt>{{ _("Code") }}</dt><dd>{{ room.code }}</dd></div>
+    <div><dt>{{ _("Type") }}</dt><dd>{{ kinds.get(room.kind, room.kind) }}</dd></div>
+    {% if room.building %}<div><dt>{{ _("Bâtiment") }}</dt><dd>{{ room.building }}</dd></div>{% endif %}
+    {% if room.floor %}<div><dt>{{ _("Étage") }}</dt><dd>{{ room.floor }}</dd></div>{% endif %}
+    {% if room.capacity %}<div><dt>{{ _("Capacité") }}</dt><dd>{{ _("%(n)d places", n=room.capacity) }}</dd></div>{% endif %}
+  </dl>
+  {% if room.description %}<div class="prose">{{ room.description|text }}</div>{% endif %}
+  {% if room.latitude is not none and room.longitude is not none %}
+  <div class="row">
+    <a class="btn btn-secondary btn-sm" href="geo:{{ room.latitude }},{{ room.longitude }}?q={{ room.latitude }},{{ room.longitude }}({{ room.name|urlencode }})">{{ icon("map") }} {{ _("Ouvrir dans l'application de cartes") }}</a>
+    <a class="btn btn-secondary btn-sm" href="https://www.openstreetmap.org/?mlat={{ room.latitude }}&amp;mlon={{ room.longitude }}#map=19/{{ room.latitude }}/{{ room.longitude }}" rel="noopener" target="_blank">OpenStreetMap</a>
+  </div>
+  {% endif %}
+</section>
+
+<h2 class="section-title">{{ _("Séances aujourd'hui dans ce lieu") }}</h2>
+{% if sessions %}
+  {% set show_promotion = true %}
+  <ul class="list">{% for e in sessions %}{% include "schedule/_slot.html" %}{% endfor %}</ul>
+{% else %}
+  <p class="empty">{{ _("Aucune séance prévue aujourd'hui.") }}</p>
+{% endif %}
+{% if current_user.is_admin %}<a class="btn btn-secondary btn-sm" href="{{ url_for('campus.edit', room_id=room.id) }}">{{ icon("edit") }} {{ _("Modifier") }}</a>{% endif %}
+{% endblock %}

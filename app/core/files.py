@@ -79,6 +79,7 @@ CATEGORIES = {
     "message": (DOCUMENTS | IMAGES, 5 * MB),
     "tip": (DOCUMENTS | IMAGES, 10 * MB),
     "book": ({"pdf"}, 20 * MB),
+    "campus": (IMAGES, 5 * MB),
 }
 
 

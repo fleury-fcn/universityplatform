@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty, demo_badge %}
+{% block title %}{{ _("Campus") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Campus") }}</h1>
+  {% if current_user.is_admin %}<a class="btn btn-sm" href="{{ url_for('campus.manage') }}">{{ icon("settings") }} {{ _("Gérer") }}</a>{% endif %}
+</div>
+
+{% if maps %}
+<section aria-labelledby="maps-title">
+  <h2 id="maps-title" class="section-title">{{ _("Plans") }}</h2>
+  {% for m in maps %}
+  <figure class="card campus-map">
+    <a href="{{ file_url(m.file) }}"><img src="{{ file_url(m.file) }}" alt="{{ m.title }}" loading="lazy"></a>
+    <figcaption>{{ m.title }}</figcaption>
+  </figure>
+  {% endfor %}
+</section>
+{% endif %}
+
+<h2 class="section-title">{{ _("Lieux") }}</h2>
+<form method="get" class="search-form" role="search">
+  {% if kind %}<input type="hidden" name="type" value="{{ kind }}">{% endif %}
+  <label class="visually-hidden" for="q">{{ _("Rechercher une salle") }}</label>
+  <input type="search" id="q" name="q" value="{{ q }}" placeholder="{{ _('Salle, bâtiment, code…') }}">
+  <button class="btn btn-secondary" aria-label="{{ _('Rechercher') }}">{{ icon("search") }}</button>
+</form>
+<nav class="chips" aria-label="{{ _('Types de lieux') }}">
+  <a class="chip" href="{{ url_for('campus.index', q=q or None) }}"{% if not kind %} aria-current="true"{% endif %}>{{ _("Tous") }}</a>
+  {% for key, label in kinds.items() %}
+    <a class="chip" href="{{ url_for('campus.index', type=key, q=q or None) }}"{% if kind == key %} aria-current="true"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+{% if rooms %}
+<ul class="list">
+  {% for r in rooms %}
+  <li><a class="list-item" href="{{ url_for('campus.show', room_id=r.id) }}">
+    {{ icon("pin") }}
+    <span class="grow">
+      <span class="title">{{ r.name }} {{ demo_badge(r) }}</span>
+      <span class="meta">{{ kinds.get(r.kind, r.kind) }}{% if r.building %} · {{ r.building }}{% endif %}{% if r.floor %} · {{ r.floor }}{% endif %}{% if r.capacity %} · {{ _("%(n)d places", n=r.capacity) }}{% endif %}</span>
+    </span>
+    {{ icon("chevron-right") }}
+  </a></li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucun lieu trouvé.")) }}{% endif %}
+<p class="hint">{{ _("Le plan et la liste des lieux restent disponibles hors connexion une fois consultés.") }}</p>
+{% endblock %}

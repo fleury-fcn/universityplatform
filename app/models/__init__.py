@@ -17,7 +17,7 @@ from .academic import Department, Program, Promotion  # noqa: E402,F401
 from .user import User  # noqa: E402,F401
 from .news import News, NewsCategory  # noqa: E402,F401
 from .notification import Notification  # noqa: E402,F401
-from .campus import Room  # noqa: E402,F401
+from .campus import CampusMap, Room  # noqa: E402,F401
 from .schedule import ScheduleEntry  # noqa: E402,F401
 from .files import StoredFile  # noqa: E402,F401
 from .courses import Course, Resource  # noqa: E402,F401

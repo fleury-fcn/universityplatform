@@ -23,3 +23,16 @@ class Room(TimestampMixin, db.Model):
 
     def __str__(self):
         return self.name
+
+
+class CampusMap(TimestampMixin, db.Model):
+    """Plan du campus (image déposée par l'administration)."""
+
+    __tablename__ = "campus_maps"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    position = db.Column(db.Integer, nullable=False, default=0)
+    file_id = db.Column(db.Integer, db.ForeignKey("stored_files.id"), nullable=False)
+
+    file = db.relationship("StoredFile")

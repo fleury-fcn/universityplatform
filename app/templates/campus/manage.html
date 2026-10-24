@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, field, empty, demo_badge %}
+{% block title %}{{ _("Gérer le campus") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Gérer le campus") }}</h1>
+  <a class="btn btn-sm" href="{{ url_for('campus.edit') }}">{{ icon("plus") }} {{ _("Lieu") }}</a>
+</div>
+<h2 class="section-title">{{ _("Lieux") }}</h2>
+{% if rooms %}
+<ul class="list">
+  {% for r in rooms %}
+  <li class="list-item">
+    <span class="grow"><a class="title" href="{{ url_for('campus.edit', room_id=r.id) }}">{{ r.name }}</a> {{ demo_badge(r) }}
+      <span class="meta">{{ r.code }} · {{ kinds.get(r.kind, r.kind) }}</span></span>
+    <form method="post" action="{{ url_for('campus.delete', room_id=r.id) }}" data-confirm="{{ _('Supprimer ce lieu ?') }}">
+      {{ csrf_form.hidden_tag() }}
+      <button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucun lieu.")) }}{% endif %}
+
+<h2 class="section-title">{{ _("Plans du campus") }}</h2>
+{% for m in maps %}
+<div class="card row">
+  <img src="{{ file_url(m.file) }}" alt="" class="thumb">
+  <span class="spacer">{{ m.title }}</span>
+  <form method="post" action="{{ url_for('campus.delete_map', map_id=m.id) }}" data-confirm="{{ _('Supprimer ce plan ?') }}">
+    {{ csrf_form.hidden_tag() }}
+    <button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+  </form>
+</div>
+{% endfor %}
+<form method="post" enctype="multipart/form-data" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  <h3>{{ _("Ajouter un plan") }}</h3>
+  {{ field(form.title) }}
+  {{ field(form.image, accept=accept, hint=_("Astuce : une image de moins de 500 Ko se charge vite, même avec une connexion lente.")) }}
+  <button class="btn">{{ icon("upload") }} {{ _("Ajouter") }}</button>
+</form>
+{% endblock %}

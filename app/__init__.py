@@ -21,6 +21,7 @@ BLUEPRINTS = [
     "app.courses",
     "app.grades",
     "app.library",
+    "app.campus",
 ]
 
 
