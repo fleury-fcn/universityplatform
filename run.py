@@ -1,7 +1,34 @@
 """Point d'entrée : `python run.py` (développement) ou `gunicorn run:app` (production)."""
 import os
+import sys
+from pathlib import Path
 
-from app import create_app
+ROOT = Path(__file__).resolve().parent
+VENV = ROOT / ".venv"
+VENV_PYTHON = VENV / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+
+
+def _use_project_python():
+    """Lancé avec un Python sans les dépendances (bouton « Run » de l'éditeur, python3 du système) :
+    on relance automatiquement le script avec l'environnement du projet (.venv)."""
+    try:
+        import flask  # noqa: F401
+        return
+    except ModuleNotFoundError:
+        pass
+    if VENV_PYTHON.exists() and Path(sys.prefix).resolve() != VENV.resolve():
+        os.execv(str(VENV_PYTHON), [str(VENV_PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]])
+    sys.exit(
+        "Les dépendances ne sont pas installées pour ce Python.\n"
+        "Installez-les une fois avec :  make install\n"
+        "(ou : python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt)"
+    )
+
+
+if __name__ == "__main__":
+    _use_project_python()
+
+from app import create_app  # noqa: E402
 
 app = create_app()
 
