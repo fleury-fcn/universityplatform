@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty, demo_badge %}
+{% block title %}{{ _("Gérer les clubs") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Gérer les clubs") }}</h1>
+  <a class="btn btn-sm" href="{{ url_for('clubs.edit') }}">{{ icon("plus") }} {{ _("Nouveau club") }}</a>
+</div>
+{% if clubs %}
+<ul class="list">
+  {% for c in clubs %}
+  <li><a class="list-item" href="{{ url_for('clubs.show', club_id=c.id) }}">
+    <span class="grow"><span class="title">{{ c.name }} {{ demo_badge(c) }}</span>
+      <span class="meta">{{ categories.get(c.category, c.category) }} · {{ _("%(n)d membre(s)", n=c.memberships|length) }}</span></span>
+    {% if not c.is_active %}<span class="badge">{{ _("Inactif") }}</span>{% endif %}
+  </a></li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucun club.")) }}{% endif %}
+<p class="hint">{{ _("Ouvrez un club pour nommer ses responsables : ils pourront publier des annonces aux membres.") }}</p>
+{% endblock %}

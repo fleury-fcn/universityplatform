@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, field, demo_badge %}
+{% block title %}{{ club.name }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('clubs.index') }}">{{ icon("chevron-left") }} {{ _("Clubs") }}</a></p>
+<section class="card">
+  <h1>{{ club.name }} {{ demo_badge(club) }}</h1>
+  <p class="muted">{{ categories.get(club.category, club.category) }}{% if club.meeting_frequency %} · {{ club.meeting_frequency }}{% endif %} · {{ _("%(n)d membre(s)", n=club.memberships|length) }}</p>
+  <div class="prose">{{ club.description|text }}</div>
+  {% if club.tag_list %}<p>{% for t in club.tag_list %}<span class="badge badge-brand">{{ t }}</span> {% endfor %}</p>{% endif %}
+  {% if club.contact %}<p>{{ icon("mail") }} {{ club.contact }}</p>{% endif %}
+  {% if membership %}
+    <p><span class="badge badge-success">{{ _("Responsable") if membership.role == "responsable" else _("Vous êtes membre") }}</span></p>
+    <form method="post" action="{{ url_for('clubs.leave', club_id=club.id) }}" data-confirm="{{ _('Quitter ce club ?') }}">
+      {{ csrf_form.hidden_tag() }}<button class="btn btn-secondary btn-sm">{{ _("Quitter le club") }}</button>
+    </form>
+  {% elif club.is_active %}
+    <form method="post" action="{{ url_for('clubs.join', club_id=club.id) }}">
+      {{ csrf_form.hidden_tag() }}<button class="btn btn-block">{{ _("Rejoindre le club") }}</button>
+    </form>
+  {% endif %}
+</section>
+
+{% if form %}
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.body, rows=3) }}
+  <button class="btn">{{ icon("send") }} {{ _("Publier aux membres") }}</button>
+</form>
+{% endif %}
+
+<h2 class="section-title">{{ _("Annonces") }}</h2>
+{% if club.announcements %}
+<ul class="list">
+  {% for a in club.announcements[:20] %}
+  <li class="list-item">
+    <span class="grow">
+      <span class="meta">{{ a.author.full_name }} · {{ a.created_at|datetime }}</span>
+      <span class="prose">{{ a.body|text }}</span>
+    </span>
+    {% if is_leader %}
+    <form method="post" action="{{ url_for('clubs.delete_announcement', announcement_id=a.id) }}" data-confirm="{{ _('Supprimer cette annonce ?') }}">
+      {{ csrf_form.hidden_tag() }}<button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+    </form>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}<p class="empty">{{ _("Aucune annonce pour le moment.") }}</p>{% endif %}
+
+{% if is_leader %}
+<h2 class="section-title">{{ _("Membres") }}</h2>
+<ul class="list">
+  {% for m in members %}
+  <li class="list-item">
+    <span class="grow"><span class="title">{{ m.user.full_name }}</span><span class="meta">{{ m.user.promotion.name if m.user.promotion else "" }}</span></span>
+    {% if m.role == "responsable" %}<span class="badge badge-brand">{{ _("Responsable") }}</span>{% endif %}
+    {% if current_user.is_admin %}
+    <form method="post" action="{{ url_for('clubs.toggle_role', membership_id=m.id) }}">
+      {{ csrf_form.hidden_tag() }}<button class="btn btn-secondary btn-sm">{{ _("Retirer responsable") if m.role == "responsable" else _("Nommer responsable") }}</button>
+    </form>
+    {% endif %}
+  </li>
+  {% else %}<li class="list-item muted">{{ _("Aucun membre.") }}</li>{% endfor %}
+</ul>
+{% endif %}
+
+{% if leader_form %}
+<form method="post" action="{{ url_for('clubs.set_leader', club_id=club.id) }}" class="card" novalidate>
+  {{ leader_form.hidden_tag() }}
+  {{ field(leader_form.identifier) }}
+  <button class="btn btn-secondary">{{ _("Nommer responsable") }}</button>
+</form>
+<a class="btn btn-secondary btn-sm" href="{{ url_for('clubs.edit', club_id=club.id) }}">{{ icon("edit") }} {{ _("Modifier le club") }}</a>
+{% endif %}
+{% endblock %}

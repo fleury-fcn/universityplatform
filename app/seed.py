@@ -12,7 +12,7 @@ from decimal import Decimal
 
 from app.core.security import ROLE_ADMIN, ROLE_STUDENT, ROLE_TEACHER
 from app.extensions import db
-from app.models import Book, Course, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
+from app.models import Book, Club, Course, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
 
 DEMO_PASSWORD = "Demo-ISTA-2026"
 
@@ -214,6 +214,39 @@ def seed_books():
                        copies_total=copies, is_demo=True)
 
 
+# Repris de l'ancien init_clubs.py (orthographe corrigée). Existence et contacts à confirmer.
+CLUBS = [
+    ("Club Informatique Décisionnelle", "technologie", "Réunion hebdomadaire",
+     "Le club Informatique Décisionnelle de l'ISTA : nous explorons les dernières innovations du monde "
+     "informatique et organisons des séances de formation pour préparer les génies de l'informatique et de "
+     "la statistique de demain.",
+     "Intelligence artificielle,Programmation en Python,Développement d'applications web et mobiles"),
+    ("Actuariat Club", "science", "3 fois par semaine",
+     "Le voyage dans le monde de l'assurance et de la finance se passe ici. Ouvert à toutes celles et ceux "
+     "qui veulent une tête bien faite et bien pleine en sciences actuarielles.",
+     "Tarification en assurance IARD,Gestion des risques financiers"),
+    ("Club d'Actualité Économique", "social", "2 fois par mois",
+     "Pour les passionnés de l'actualité économique, cet espace est le vôtre.",
+     "Taux d'inflation,Crise économique,Banques des jeunes"),
+    ("Génies en Herbe", "culture", "1 fois par semaine",
+     "Pour devenir un intellectuel bien informé et cultivé, voici l'endroit qui te convient.",
+     "Questions-réponses,Histoire"),
+    ("English Club ISTA", "social", "Variable",
+     "You dream to improve your English level and become fluent like a native speaker? We are here for you.",
+     "English for beginners,Advanced English"),
+    ("ISTA Entrepreneurs", "entrepreneuriat", "1 fois par semaine",
+     "Pour les futurs entrepreneurs : ateliers de création d'entreprise, rencontres avec des startups et "
+     "préparation au monde professionnel.",
+     "Entrepreneuriat,Startup,Business"),
+]
+
+
+def seed_clubs():
+    for name, category, frequency, description, tags in CLUBS:
+        _get_or_create(Club, {"name": name}, category=category, meeting_frequency=frequency,
+                       description=description, tags=tags)
+
+
 def run():
     seed_academic()
     seed_users()
@@ -222,4 +255,5 @@ def run():
     seed_courses()
     seed_grades()
     seed_books()
+    seed_clubs()
     db.session.commit()

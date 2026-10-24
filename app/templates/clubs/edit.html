@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ club.name if club else _("Nouveau club") }}{% endblock %}
+{% block content %}
+<h1>{{ club.name if club else _("Nouveau club") }}</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.name) }}
+  <div class="grid-2">{{ field(form.category) }}{{ field(form.meeting_frequency) }}</div>
+  {{ field(form.description, rows=6) }}
+  {{ field(form.tags) }}
+  {{ field(form.contact, hint=_("Par exemple : bureau du club, jour de permanence. Évitez les numéros personnels sans accord.")) }}
+  {{ field(form.is_active) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('clubs.manage') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}
