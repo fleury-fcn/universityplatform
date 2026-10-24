@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ _("Mes réservations") }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('library.index') }}">{{ icon("chevron-left") }} {{ _("Bibliothèque") }}</a></p>
+<h1>{{ _("Mes réservations") }}</h1>
+{% if reservations %}
+<ul class="list">
+  {% for r in reservations %}
+  <li class="list-item">
+    <span class="grow">
+      <a class="title" href="{{ url_for('library.show', book_id=r.book_id) }}">{{ r.book.title }}</a>
+      <span class="meta">
+        {{ reservation_label(r.status) }} · {{ r.created_at|date }}
+        {% if r.status == "empruntee" and r.due_date %} · {{ _("à rendre le %(d)s", d=r.due_date|date) }}
+          {% if r.due_date < today %}<span class="badge badge-danger">{{ _("En retard") }}</span>{% endif %}
+        {% endif %}
+      </span>
+    </span>
+    {% if r.status == "prete" %}<span class="badge badge-success">{{ _("À retirer") }}</span>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucune réservation.")) }}{% endif %}
+{% endblock %}

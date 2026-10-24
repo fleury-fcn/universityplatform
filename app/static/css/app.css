@@ -300,3 +300,4 @@ pre.code { background: var(--surface-2); padding: .75rem; border-radius: 8px; ov
 .ko { color: var(--danger-text); }
 input.invalid { border-color: var(--danger-text); }
 td input[type="text"] { width: 5.5rem; min-width: 0; }
+.actions { margin-top: .5rem; }

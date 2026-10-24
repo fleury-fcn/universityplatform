@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, pagination, empty, demo_badge %}
+{% block title %}{{ _("Bibliothèque") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Bibliothèque") }}</h1>
+  <div class="row">
+    <a class="btn btn-secondary btn-sm" href="{{ url_for('library.my_reservations') }}">{{ _("Mes réservations") }}</a>
+    {% if current_user.is_admin %}<a class="btn btn-sm" href="{{ url_for('library.reservations') }}">{{ icon("settings") }} {{ _("Gérer") }}</a>{% endif %}
+  </div>
+</div>
+<form method="get" class="search-form" role="search">
+  {% if category %}<input type="hidden" name="categorie" value="{{ category }}">{% endif %}
+  <label class="visually-hidden" for="q">{{ _("Titre, auteur ou ISBN") }}</label>
+  <input type="search" id="q" name="q" value="{{ q }}" placeholder="{{ _('Titre, auteur ou ISBN') }}">
+  <button class="btn btn-secondary" aria-label="{{ _('Rechercher') }}">{{ icon("search") }}</button>
+</form>
+<nav class="chips" aria-label="{{ _('Catégories') }}">
+  <a class="chip" href="{{ url_for('library.index', q=q or None) }}"{% if not category %} aria-current="true"{% endif %}>{{ _("Tout") }}</a>
+  {% for key, label in categories.items() %}
+    <a class="chip" href="{{ url_for('library.index', categorie=key, q=q or None) }}"{% if category == key %} aria-current="true"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+{% if page.items %}
+<ul class="list">
+  {% for b in page.items %}
+    {% set available = [b.copies_total - held.get(b.id, 0), 0]|max %}
+    <li><a class="list-item" href="{{ url_for('library.show', book_id=b.id) }}">
+      {{ icon("book") }}
+      <span class="grow">
+        <span class="title">{{ b.title }} {{ demo_badge(b) }}</span>
+        <span class="meta">{{ b.author }}{% if b.year %} · {{ b.year }}{% endif %} · {{ categories.get(b.category, b.category) }}</span>
+      </span>
+      {% if b.copies_total == 0 %}<span class="badge badge-info">{{ _("Numérique") }}</span>
+      {% elif available %}<span class="badge badge-success">{{ _("Disponible") }}</span>
+      {% else %}<span class="badge badge-warning">{{ _("Emprunté") }}</span>{% endif %}
+    </a></li>
+  {% endfor %}
+</ul>
+{{ pagination(page, "library.index", q=q or None, categorie=category or None) }}
+{% else %}
+{{ empty(_("Aucun livre trouvé.")) }}
+{% endif %}
+{% endblock %}

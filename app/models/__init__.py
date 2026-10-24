@@ -22,3 +22,4 @@ from .schedule import ScheduleEntry  # noqa: E402,F401
 from .files import StoredFile  # noqa: E402,F401
 from .courses import Course, Resource  # noqa: E402,F401
 from .grades import Grade  # noqa: E402,F401
+from .library import Book, Reservation  # noqa: E402,F401

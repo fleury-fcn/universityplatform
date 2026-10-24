@@ -78,6 +78,7 @@ CATEGORIES = {
     "resource": (DOCUMENTS | IMAGES, 20 * MB),
     "message": (DOCUMENTS | IMAGES, 5 * MB),
     "tip": (DOCUMENTS | IMAGES, 10 * MB),
+    "book": ({"pdf"}, 20 * MB),
 }
 
 

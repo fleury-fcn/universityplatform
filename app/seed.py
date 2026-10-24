@@ -12,7 +12,7 @@ from decimal import Decimal
 
 from app.core.security import ROLE_ADMIN, ROLE_STUDENT, ROLE_TEACHER
 from app.extensions import db
-from app.models import Course, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
+from app.models import Book, Course, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
 
 DEMO_PASSWORD = "Demo-ISTA-2026"
 
@@ -197,6 +197,23 @@ def seed_grades():
                                value=Decimal(value), published_at=utcnow())
 
 
+# Repris de l'ancien init_books.py ; titres et auteurs fictifs (DEMO).
+DEMO_BOOKS = [
+    ("Statistique Descriptive Appliquée", "Jean Dupont", "statistique", "fr", 3),
+    ("Théorie des Probabilités", "Marie Lambert", "probabilite", "fr", 2),
+    ("Actuarial Mathematics", "Robert Brown", "actuariat", "en", 1),
+    ("Data Science with Python", "Ahmed Benali", "data-science", "en", 2),
+    ("Algorithmique et Programmation", "Sophie Martin", "informatique", "fr", 1),
+    ("Méthodologie de Recherche", "Institut Statistique", "divers", "fr", 4),
+]
+
+
+def seed_books():
+    for title, author, category, language, copies in DEMO_BOOKS:
+        _get_or_create(Book, {"title": title}, author=author, category=category, language=language,
+                       copies_total=copies, is_demo=True)
+
+
 def run():
     seed_academic()
     seed_users()
@@ -204,4 +221,5 @@ def run():
     seed_rooms_and_schedule()
     seed_courses()
     seed_grades()
+    seed_books()
     db.session.commit()
