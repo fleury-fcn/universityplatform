@@ -11,6 +11,17 @@
   </form>
   {% endif %}
 </div>
+{% if config.VAPID_PUBLIC_KEY and config.VAPID_PRIVATE_KEY %}
+<section class="card push-box" data-push hidden
+         data-vapid-key="{{ config.VAPID_PUBLIC_KEY }}"
+         data-subscribe-url="{{ url_for('notifications.push_subscribe') }}"
+         data-unsubscribe-url="{{ url_for('notifications.push_unsubscribe') }}">
+  <p class="small">{{ _("Recevez les alertes sur ce téléphone, même application fermée.") }}</p>
+  <button type="button" class="btn btn-secondary btn-sm" data-push-toggle
+          data-label-on="{{ _('Activer les notifications sur cet appareil') }}"
+          data-label-off="{{ _('Désactiver les notifications sur cet appareil') }}">{{ _("Activer les notifications sur cet appareil") }}</button>
+</section>
+{% endif %}
 {% if page.items %}
 <ul class="list">
   {% for n in page.items %}

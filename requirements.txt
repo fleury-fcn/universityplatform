@@ -9,3 +9,4 @@ python-dotenv==1.2.4
 gunicorn==26.2.0
 psycopg[binary]==3.3.6
 tzdata==2026.1
+pywebpush==2.5.0

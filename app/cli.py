@@ -45,6 +45,24 @@ def register_cli(app):
         db.session.commit()
         click.echo(f"Administrateur « {username} » créé.")
 
+    @app.cli.command("push-keys")
+    def push_keys():
+        """Génère une paire de clés VAPID pour les notifications push."""
+        import base64
+
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ec
+
+        def b64(data):
+            return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+        key = ec.generate_private_key(ec.SECP256R1())
+        public = key.public_key().public_bytes(serialization.Encoding.X962,
+                                               serialization.PublicFormat.UncompressedPoint)
+        click.echo("Ajoutez ces lignes à votre fichier .env (ne les publiez jamais) :")
+        click.echo(f"VAPID_PUBLIC_KEY={b64(public)}")
+        click.echo(f"VAPID_PRIVATE_KEY={b64(key.private_numbers().private_value.to_bytes(32, 'big'))}")
+
     @app.cli.group()
     def translate():
         """Gestion des traductions (fr par défaut, en, rn)."""

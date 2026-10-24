@@ -35,7 +35,7 @@ class Config:
     MAX_CONTENT_LENGTH = int(os.environ.get("MAX_UPLOAD_MB", "20")) * 1024 * 1024
 
     # À incrémenter à chaque livraison pour invalider les caches (navigateur et hors ligne).
-    ASSET_VERSION = "1"
+    ASSET_VERSION = "2"
 
     LANGUAGES = {"fr": "Français", "en": "English", "rn": "Ikirundi"}
     BABEL_DEFAULT_LOCALE = "fr"
@@ -51,6 +51,11 @@ class Config:
     WTF_CSRF_TIME_LIMIT = None
 
     PASSWORD_HASH_METHOD = "scrypt"
+
+    # Notifications push (facultatives) : clés générées avec `flask push-keys`.
+    VAPID_PUBLIC_KEY = os.environ.get("VAPID_PUBLIC_KEY") or None
+    VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY") or None
+    VAPID_CONTACT = os.environ.get("VAPID_CONTACT", "mailto:admin@example.invalid")
 
     ALLOW_SELF_REGISTRATION = _bool("ALLOW_SELF_REGISTRATION", False)
     # Note minimale (sur 20) pour valider un cours. À confirmer par l'ISTA.

@@ -71,6 +71,10 @@ def create_app(config_name=None):
     security.init_app(app)
     templating.init_app(app)
 
+    from .services import push
+
+    push.init_app(app)
+
     for path in BLUEPRINTS:
         app.register_blueprint(import_module(path).bp)
 

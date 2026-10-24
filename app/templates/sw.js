@@ -22,9 +22,24 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+async function warm(urls) {
+  const cache = await caches.open(PAGES);
+  for (const url of urls) {
+    try {
+      const request = new Request(url, { credentials: "same-origin", headers: { Accept: "text/html" } });
+      const response = await fetch(request);
+      if (cacheable(response)) await cache.put(request, response);
+    } catch (err) { /* hors ligne : on réessaiera plus tard */ }
+  }
+}
+
 self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "clear") {
+  const data = event.data || {};
+  if (data.type === "clear") {
     event.waitUntil(Promise.all([caches.delete(PAGES), caches.delete(FILES)]));
+  } else if (data.type === "warm" && Array.isArray(data.urls)) {
+    const sameOrigin = data.urls.filter((u) => new URL(u, self.location.origin).origin === self.location.origin);
+    event.waitUntil(warm(sameOrigin.slice(0, 10)));
   }
 });
 
@@ -80,4 +95,30 @@ self.addEventListener("fetch", (event) => {
   } else if (request.mode === "navigate" || (request.headers.get("Accept") || "").includes("text/html")) {
     event.respondWith(networkFirst(request));
   }
+});
+
+// Notifications push (si activées par l'administration)
+self.addEventListener("push", (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch (err) { data = { title: event.data && event.data.text() }; }
+  event.waitUntil(self.registration.showNotification(data.title || "ISTA", {
+    body: data.body || "",
+    icon: "{{ url_for('static', filename='img/icon-192.png') }}",
+    badge: "{{ url_for('static', filename='img/icon-192.png') }}",
+    data: { url: data.url || "/" },
+  }));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(event.notification.data.url || "/", self.location.origin);
+  if (target.origin !== self.location.origin) return;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+      for (const w of windows) {
+        if ("focus" in w) { w.navigate(target.href); return w.focus(); }
+      }
+      return self.clients.openWindow(target.href);
+    })
+  );
 });

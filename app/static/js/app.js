@@ -58,15 +58,79 @@
   // Déconnexion : vide le cache hors ligne (appareils partagés)
   document.querySelectorAll("[data-clear-offline]").forEach(function (form) {
     form.addEventListener("submit", function () {
+      try { localStorage.removeItem("offline-warm"); } catch (e) { /* ignoré */ }
       if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({ type: "clear" });
       }
     });
   });
 
+  // Préchargement pour la consultation hors ligne (au plus toutes les 6 heures, jamais en mode
+  // « économie de données »).
+  function warmOfflinePages(registration) {
+    var urls = (document.body.getAttribute("data-offline-urls") || "").split(" ").filter(Boolean);
+    var saveData = navigator.connection && navigator.connection.saveData;
+    if (!urls.length || saveData || !navigator.onLine || !registration.active) return;
+    var last = 0;
+    try { last = parseInt(localStorage.getItem("offline-warm") || "0", 10); } catch (e) { /* ignoré */ }
+    if (Date.now() - last < 6 * 3600 * 1000) return;
+    registration.active.postMessage({ type: "warm", urls: urls });
+    try { localStorage.setItem("offline-warm", String(Date.now())); } catch (e) { /* ignoré */ }
+  }
+
+  // Notifications push : bouton sur la page Notifications
+  function base64ToBytes(value) {
+    var padded = (value + "===".slice((value.length + 3) % 4)).replace(/-/g, "+").replace(/_/g, "/");
+    var raw = atob(padded), bytes = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+    return bytes;
+  }
+
+  function postJSON(url, body) {
+    var token = document.querySelector('meta[name="csrf-token"]');
+    return fetch(url, {
+      method: "POST", credentials: "same-origin",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": token ? token.content : "" },
+      body: JSON.stringify(body),
+    });
+  }
+
+  function setupPush(registration) {
+    var box = document.querySelector("[data-push]");
+    if (!box || !("PushManager" in window) || !("Notification" in window)) return;
+    var button = box.querySelector("[data-push-toggle]");
+    function render(subscription) {
+      button.textContent = subscription ? button.dataset.labelOff : button.dataset.labelOn;
+      box.hidden = false;
+    }
+    registration.pushManager.getSubscription().then(render);
+    button.addEventListener("click", function () {
+      button.disabled = true;
+      registration.pushManager.getSubscription().then(function (existing) {
+        if (existing) {
+          return postJSON(box.dataset.unsubscribeUrl, { endpoint: existing.endpoint })
+            .then(function () { return existing.unsubscribe(); })
+            .then(function () { render(null); });
+        }
+        return Notification.requestPermission().then(function (permission) {
+          if (permission !== "granted") return;
+          return registration.pushManager.subscribe({
+            userVisibleOnly: true, applicationServerKey: base64ToBytes(box.dataset.vapidKey),
+          }).then(function (subscription) {
+            return postJSON(box.dataset.subscribeUrl, subscription.toJSON()).then(function () { render(subscription); });
+          });
+        });
+      }).catch(function () { /* refus ou réseau : on laisse le bouton tel quel */ })
+        .then(function () { button.disabled = false; });
+    });
+  }
+
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
-      navigator.serviceWorker.register("/sw.js").catch(function () { /* non bloquant */ });
+      navigator.serviceWorker.register("/sw.js")
+        .then(function () { return navigator.serviceWorker.ready; })
+        .then(function (registration) { warmOfflinePages(registration); setupPush(registration); })
+        .catch(function () { /* non bloquant */ });
     });
   }
 })();

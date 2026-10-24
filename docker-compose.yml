@@ -26,6 +26,9 @@ services:
       COOKIE_SECURE: ${COOKIE_SECURE:-true}
       SEED_DEMO: ${SEED_DEMO:-false}
       ALLOW_SELF_REGISTRATION: ${ALLOW_SELF_REGISTRATION:-false}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_CONTACT: ${VAPID_CONTACT:-}
     ports:
       - "8000:8000"
     volumes:

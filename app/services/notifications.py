@@ -25,6 +25,9 @@ def notify(user_ids, kind, title, url=None, exclude=None):
     ]
     if rows:
         db.session.execute(insert(Notification), rows)
+        from .push import queue_push
+
+        queue_push([row["user_id"] for row in rows], title, url)
     return len(rows)
 
 

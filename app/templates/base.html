@@ -6,13 +6,20 @@
   <title>{% block title %}{{ _("Accueil") }}{% endblock %} · ISTA</title>
   <meta name="description" content="{{ _("L'application étudiante de l'Institut de Statistique Appliquée") }}">
   <meta name="theme-color" content="#17663a">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="manifest" href="{{ url_for('main.manifest') }}">
   <link rel="icon" href="{{ url_for('static', filename='img/icon-192.png') }}">
   <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/icon-192.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v=config.ASSET_VERSION) }}">
   <script nonce="{{ csp_nonce() }}">try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 </head>
-<body>
+{% set offline_urls = [] %}
+{% if current_user.is_authenticated %}
+  {% for endpoint, args in [("schedule.index", {"vue": "semaine"}), ("news.index", {}), ("campus.index", {}), ("courses.index", {})] %}
+    {% if has_view(endpoint) and offline_urls.append(url_for(endpoint, **args)) %}{% endif %}
+  {% endfor %}
+{% endif %}
+<body{% if offline_urls %} data-offline-urls="{{ offline_urls|join(' ') }}"{% endif %}>
   {% from "_macros.html" import icon %}
   <a class="skip-link" href="#contenu">{{ _("Aller au contenu") }}</a>
   <header class="topbar">
