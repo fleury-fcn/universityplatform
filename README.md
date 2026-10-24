@@ -29,7 +29,7 @@ entry-level Android phones, slow or unstable connections, low-cost hosting.
 ```bash
 git clone https://github.com/fleury-fcn/universityplatform.git
 cd universityplatform
-make dev          # venv + dependencies + SQLite + demo data + server on http://127.0.0.1:5000
+make dev          # venv + dependencies + SQLite + demo data + server on http://127.0.0.1:5001
 make test         # test suite
 ```
 

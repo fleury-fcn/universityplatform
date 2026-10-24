@@ -3,7 +3,7 @@ VENV ?= .venv
 PY := $(VENV)/bin/python
 export FLASK_APP := run.py
 HOST ?= 127.0.0.1
-PORT ?= 5000
+PORT ?= 5001
 
 .PHONY: dev install db seed run test translations clean
 

@@ -52,7 +52,7 @@ make dev
 
 `make dev` crée l'environnement Python, installe les dépendances, crée la base SQLite
 (`instance/ista.sqlite`), charge les données de démonstration et lance le serveur sur
-<http://127.0.0.1:5000>.
+<http://127.0.0.1:5001>.
 
 <details>
 <summary>Sous Windows (sans <code>make</code>)</summary>
@@ -69,7 +69,7 @@ flask run
 </details>
 
 Pour tester sur un téléphone du même réseau Wi-Fi : `HOST=0.0.0.0 FLASK_DEBUG=false make run`, puis
-ouvrir `http://<adresse-ip-de-l-ordinateur>:5000` (sans HTTPS, l'installation PWA et le hors-ligne
+ouvrir `http://<adresse-ip-de-l-ordinateur>:5001` (sans HTTPS, l'installation PWA et le hors-ligne
 ne sont disponibles que sur `localhost`).
 
 ### Comptes de démonstration
