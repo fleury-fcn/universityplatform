@@ -122,7 +122,7 @@ def import_users_csv(raw_bytes):
     return created, []
 
 
-def _csv_safe(value):
+def csv_safe(value):
     """Neutralise les formules (=, +, -, @) à l'ouverture dans un tableur."""
     return "'" + value if value[:1] in ("=", "+", "-", "@") else value
 
@@ -132,6 +132,6 @@ def credentials_csv(created):
     writer = csv.writer(out, delimiter=";")
     writer.writerow(["identifiant", "matricule", "prenom", "nom", "mot_de_passe_provisoire"])
     for user, password in created:
-        writer.writerow([_csv_safe(v) for v in (user.username, user.matricule or "", user.first_name,
+        writer.writerow([csv_safe(v) for v in (user.username, user.matricule or "", user.first_name,
                                                user.last_name, password)])
     return "﻿" + out.getvalue()

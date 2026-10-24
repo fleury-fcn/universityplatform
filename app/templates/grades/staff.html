@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ _("Saisie des notes") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Saisie des notes") }}</h1>
+{% if promotions %}
+<form method="get" class="row promo-picker">
+  <label class="visually-hidden" for="promotion">{{ _("Promotion") }}</label>
+  <select id="promotion" name="promotion" class="spacer" data-autosubmit>
+    <option value="">{{ _("Toutes les promotions") }}</option>
+    {% for p in promotions %}<option value="{{ p.id }}" {{ "selected" if p.id == promotion_id }}>{{ p.name }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-secondary btn-sm">{{ _("Afficher") }}</button>
+</form>
+{% endif %}
+{% if courses %}
+<ul class="list">
+  {% for c in courses %}
+  <li><a class="list-item" href="{{ url_for('grades.sheet', course_id=c.id) }}">
+    <span class="grow"><span class="title">{{ c.title }}</span><span class="meta">{{ c.code }} · {{ c.promotion.name }} · S{{ c.semester }}</span></span>
+    {{ icon("chevron-right") }}
+  </a></li>
+  {% endfor %}
+</ul>
+{% else %}
+  {{ empty(_("Aucun cours ne vous est attribué. L'administration associe les enseignants aux cours.") if current_user.is_teacher else _("Aucun cours.")) }}
+{% endif %}
+{% endblock %}

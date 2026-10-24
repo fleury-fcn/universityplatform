@@ -151,11 +151,10 @@ def edit(course_id):
 def delete(course_id):
     course = db.get_or_404(Course, course_id)
     promotion_id = course.promotion_id
-    for resource in list(course.resources):
-        stored = resource.file
-        db.session.delete(resource)
+    files = [resource.file for resource in course.resources]
+    db.session.delete(course)  # supprime aussi ressources et notes (cascade)
+    for stored in files:
         delete_stored(stored)
-    db.session.delete(course)
     db.session.commit()
     flash(_("Cours supprimé."), "success")
     return redirect(url_for("courses.manage", promotion=promotion_id))

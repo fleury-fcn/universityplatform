@@ -8,10 +8,11 @@ Deux catégories :
 Le script est idempotent : il peut être relancé sans créer de doublons.
 """
 from datetime import date, time
+from decimal import Decimal
 
 from app.core.security import ROLE_ADMIN, ROLE_STUDENT, ROLE_TEACHER
 from app.extensions import db
-from app.models import Course, Department, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
+from app.models import Course, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
 
 DEMO_PASSWORD = "Demo-ISTA-2026"
 
@@ -179,10 +180,28 @@ def seed_courses():
                            teacher=teacher if promotion_code == "M1-SAID" else None)
 
 
+# Notes fictives des comptes de démonstration uniquement (aucune note réelle dans le dépôt).
+DEMO_GRADES = {"etudiant.demo": {"SAID401": "14.50", "MSAID520": "11.00", "SAID410": "8.75"},
+               "etudiante.demo": {"SAID401": "16.00", "MSAID520": "13.25", "SAID410": "12.00"}}
+
+
+def seed_grades():
+    for username, grades in DEMO_GRADES.items():
+        student = User.query.filter_by(username=username).first()
+        if student is None or student.promotion_id is None:
+            continue
+        for code, value in grades.items():
+            course = Course.query.filter_by(code=code, promotion_id=student.promotion_id).first()
+            if course:
+                _get_or_create(Grade, {"student_id": student.id, "course_id": course.id, "session": "normale"},
+                               value=Decimal(value), published_at=utcnow())
+
+
 def run():
     seed_academic()
     seed_users()
     seed_news()
     seed_rooms_and_schedule()
     seed_courses()
+    seed_grades()
     db.session.commit()
