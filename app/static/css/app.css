@@ -307,3 +307,6 @@ td input[type="text"] { width: 5.5rem; min-width: 0; }
 .campus-map img { display: block; width: 100%; border-radius: 8px; }
 .campus-map figcaption { padding: .5rem .25rem 0; font-weight: 600; }
 .thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 6px; }
+details.card summary { cursor: pointer; font-weight: 600; }
+details.card[open] summary { margin-bottom: .75rem; }
+button[disabled] { opacity: .6; cursor: not-allowed; }

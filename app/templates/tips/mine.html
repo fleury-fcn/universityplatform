@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ _("Mes tuyaux") }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('tips.index') }}">{{ icon("chevron-left") }} {{ _("Tuyaux") }}</a></p>
+<h1>{{ _("Mes tuyaux") }}</h1>
+{% if tips %}
+<ul class="list">
+  {% for t in tips %}
+  <li><a class="list-item" href="{{ url_for('tips.show', tip_id=t.id) }}">
+    <span class="grow"><span class="title">{{ t.title }}</span><span class="meta">{{ t.created_at|date }}</span></span>
+    {% if t.status == "publie" %}<span class="badge badge-success">{{ _("Publié") }}</span>
+    {% elif t.status == "refuse" %}<span class="badge badge-danger">{{ _("Refusé") }}</span>
+    {% else %}<span class="badge badge-warning">{{ _("En attente") }}</span>{% endif %}
+  </a></li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Vous n'avez encore rien partagé.")) }}{% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ _("Modération des tuyaux") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Modération des tuyaux") }}</h1>
+<h2 class="section-title">{{ _("En attente (%(n)d)", n=pending|length) }}</h2>
+{% if pending %}
+<ul class="list">
+  {% for t in pending %}
+  <li><a class="list-item" href="{{ url_for('tips.show', tip_id=t.id) }}">
+    <span class="grow"><span class="title">{{ t.title }}</span><span class="meta">{{ t.author.full_name }} · {{ t.created_at|datetime }} · {{ categories.get(t.category, t.category) }}</span></span>
+    {{ icon("chevron-right") }}
+  </a></li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Rien à valider.")) }}{% endif %}
+<h2 class="section-title">{{ _("Signalés") }}</h2>
+{% if reported %}
+<ul class="list">
+  {% for t in reported %}
+  <li><a class="list-item" href="{{ url_for('tips.show', tip_id=t.id) }}">
+    <span class="grow"><span class="title">{{ t.title }}</span><span class="meta">{{ _("%(n)d signalement(s)", n=t.reports|length) }}</span></span>
+    {{ icon("chevron-right") }}
+  </a></li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucun signalement.")) }}{% endif %}
+{% endblock %}

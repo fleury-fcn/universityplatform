@@ -12,7 +12,7 @@ from decimal import Decimal
 
 from app.core.security import ROLE_ADMIN, ROLE_STUDENT, ROLE_TEACHER
 from app.extensions import db
-from app.models import Book, Club, Course, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
+from app.models import Book, Club, Course, Tip, Department, Grade, News, NewsCategory, Program, Promotion, Room, ScheduleEntry, User, utcnow
 
 DEMO_PASSWORD = "Demo-ISTA-2026"
 
@@ -247,6 +247,28 @@ def seed_clubs():
                        description=description, tags=tags)
 
 
+# Inspirés des titres de l'ancien init_tuyaux.py ; contenus de démonstration.
+DEMO_TIPS = [
+    ("examens", "Astuces pour l'examen de statistique descriptive",
+     "Exemple de tuyau : refaites les exercices des TD sans regarder la correction, puis comparez. "
+     "Préparez une fiche avec les formules (moyenne, variance, quantiles) et leurs conditions d'utilisation."),
+    ("cours", "Guide de révision des probabilités",
+     "Exemple de tuyau : commencez par les lois usuelles, puis entraînez-vous sur les anciens sujets "
+     "disponibles dans la rubrique Cours."),
+    ("demarches", "Exemple : bien préparer son inscription",
+     "Exemple de tuyau à remplacer par un vrai conseil : liste des pièces à préparer et bureau à contacter."),
+]
+
+
+def seed_tips():
+    author = User.query.filter_by(username="etudiante.demo").first()
+    if author is None:
+        return
+    for category, title, body in DEMO_TIPS:
+        _get_or_create(Tip, {"title": title}, body=body, category=category, author=author, status="publie",
+                       published_at=utcnow(), is_demo=True)
+
+
 def run():
     seed_academic()
     seed_users()
@@ -256,4 +278,5 @@ def run():
     seed_grades()
     seed_books()
     seed_clubs()
+    seed_tips()
     db.session.commit()

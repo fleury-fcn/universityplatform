@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, pagination, empty, demo_badge %}
+{% block title %}{{ _("Tuyaux") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Tuyaux") }}</h1>
+  <a class="btn btn-sm" href="{{ url_for('tips.new') }}">{{ icon("plus") }} {{ _("Partager") }}</a>
+</div>
+<p class="muted">{{ _("Bons plans et conseils entre étudiants, vérifiés par l'administration.") }}</p>
+<div class="row small">
+  <a href="{{ url_for('tips.mine') }}">{{ _("Mes tuyaux") }}{% if mine_pending %} ({{ _("%(n)d en attente", n=mine_pending) }}){% endif %}</a>
+  {% if current_user.is_admin %}· <a href="{{ url_for('tips.moderate') }}">{{ _("Modération") }}</a>{% endif %}
+</div>
+<nav class="chips" aria-label="{{ _('Catégories') }}">
+  <a class="chip" href="{{ url_for('tips.index', tri=order) }}"{% if not category %} aria-current="true"{% endif %}>{{ _("Tout") }}</a>
+  {% for key, label in categories.items() %}
+    <a class="chip" href="{{ url_for('tips.index', categorie=key, tri=order) }}"{% if category == key %} aria-current="true"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+<nav class="chips" aria-label="{{ _('Tri') }}">
+  <a class="chip" href="{{ url_for('tips.index', categorie=category or None, tri='recents') }}"{% if order != "utiles" %} aria-current="true"{% endif %}>{{ _("Plus récents") }}</a>
+  <a class="chip" href="{{ url_for('tips.index', categorie=category or None, tri='utiles') }}"{% if order == "utiles" %} aria-current="true"{% endif %}>{{ _("Plus utiles") }}</a>
+</nav>
+{% if page.items %}
+<ul class="list">
+  {% for tip, votes in page.items %}
+  <li><a class="list-item" href="{{ url_for('tips.show', tip_id=tip.id) }}">
+    {{ icon("bulb") }}
+    <span class="grow">
+      <span class="title">{{ tip.title }} {{ demo_badge(tip) }}</span>
+      <span class="meta">{{ categories.get(tip.category, tip.category) }}{% if tip.course %} · {{ tip.course.title }}{% endif %} · {{ tip.published_at|date }}{% if tip.file %} · {{ icon("paperclip") }}{% endif %}</span>
+    </span>
+    {% if votes %}<span class="badge badge-brand">{{ icon("star") }} {{ votes }}</span>{% endif %}
+  </a></li>
+  {% endfor %}
+</ul>
+{{ pagination(page, "tips.index", categorie=category or None, tri=order) }}
+{% else %}{{ empty(_("Aucun tuyau pour le moment. Soyez le premier à partager !")) }}{% endif %}
+{% endblock %}
