@@ -85,3 +85,16 @@ def teacher(make_user):
 @pytest.fixture
 def admin(make_user):
     return make_user("admin")
+
+
+@pytest.fixture
+def promotions(db):
+    from app.models import Department, Program, Promotion
+
+    dept = Department(code="D", name="Département")
+    prog = Program(code="P", name="Filière", department=dept)
+    p1 = Promotion(code="P1", name="Promo 1", level="BAC1", academic_year="2026-2027", program=prog)
+    p2 = Promotion(code="P2", name="Promo 2", level="BAC2", academic_year="2026-2027", program=prog)
+    db.session.add_all([dept, prog, p1, p2])
+    db.session.commit()
+    return p1, p2

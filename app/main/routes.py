@@ -1,5 +1,5 @@
 from flask import abort, current_app, jsonify, make_response, redirect, render_template, request, send_from_directory, url_for
-from flask_login import login_required
+from flask_login import current_user, login_required
 from sqlalchemy import text
 
 from app.core.security import is_safe_redirect
@@ -11,7 +11,9 @@ from . import bp
 @bp.route("/")
 @login_required
 def home():
-    return render_template("main/home.html")
+    from .widgets import collect
+
+    return render_template("main/home.html", widgets=collect(current_user))
 
 
 @bp.route("/langue/<code>")

@@ -10,7 +10,9 @@
   <p>{{ _("Tout l'institut dans votre poche.") }}</p>
 </section>
 
-{% block today %}{% endblock %}
+{% for template, ctx in widgets %}
+  {% with w = ctx %}{% include template %}{% endwith %}
+{% endfor %}
 
 {% if features %}
 <section aria-labelledby="services-title">

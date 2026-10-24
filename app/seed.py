@@ -11,7 +11,7 @@ from datetime import date
 
 from app.core.security import ROLE_ADMIN, ROLE_STUDENT, ROLE_TEACHER
 from app.extensions import db
-from app.models import Department, Program, Promotion, User
+from app.models import Department, News, NewsCategory, Program, Promotion, User, utcnow
 
 DEMO_PASSWORD = "Demo-ISTA-2026"
 
@@ -94,7 +94,34 @@ def seed_users():
     db.session.flush()
 
 
+NEWS_CATEGORIES = ["Annonces", "Examens", "Vie étudiante", "Événements"]
+
+DEMO_NEWS = [
+    ("Annonces", True, "Bienvenue sur l'application de l'ISTA",
+     "Cette application regroupe les actualités, l'emploi du temps, les cours, la bibliothèque, "
+     "les clubs et la messagerie de l'institut.\n\nCette actualité est une donnée de démonstration : "
+     "l'administration la remplacera par les vraies annonces."),
+    ("Examens", False, "Exemple : calendrier des examens du semestre",
+     "Exemple d'annonce d'examens. Les dates réelles seront publiées par l'administration."),
+    ("Vie étudiante", False, "Exemple : réunion des délégués de promotion",
+     "Exemple d'annonce de vie étudiante, à remplacer."),
+]
+
+
+def seed_news():
+    categories = {}
+    for position, name in enumerate(NEWS_CATEGORIES):
+        categories[name] = _get_or_create(NewsCategory, {"name": name}, position=position)
+    author = User.query.filter_by(username="admin.demo").first()
+    if author is None:
+        return
+    for category, pinned, title, body in DEMO_NEWS:
+        _get_or_create(News, {"title": title}, body=body, category=categories[category], author=author,
+                       is_published=True, is_pinned=pinned, published_at=utcnow(), is_demo=True)
+
+
 def run():
     seed_academic()
     seed_users()
+    seed_news()
     db.session.commit()

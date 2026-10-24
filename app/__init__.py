@@ -14,6 +14,8 @@ BLUEPRINTS = [
     "app.auth",
     "app.profile",
     "app.admin",
+    "app.notifications",
+    "app.news",
 ]
 
 

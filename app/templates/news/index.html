@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, pagination, empty %}
+{% block title %}{{ _("Actualités") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Actualités") }}</h1>
+  {% if current_user.is_admin %}<a class="btn btn-sm" href="{{ url_for('news.manage') }}">{{ icon("settings") }} {{ _("Gérer") }}</a>{% endif %}
+</div>
+{% if categories %}
+<nav class="chips" aria-label="{{ _('Catégories') }}">
+  <a class="chip" href="{{ url_for('news.index') }}"{% if not category_id %} aria-current="true"{% endif %}>{{ _("Toutes") }}</a>
+  {% for c in categories %}
+    <a class="chip" href="{{ url_for('news.index', categorie=c.id) }}"{% if category_id == c.id %} aria-current="true"{% endif %}>{{ c.name }}</a>
+  {% endfor %}
+</nav>
+{% endif %}
+{% if page.items %}
+<ul class="list">
+  {% for item in page.items %}<li>{% include "news/_item.html" %}</li>{% endfor %}
+</ul>
+{{ pagination(page, "news.index", categorie=category_id) }}
+{% else %}
+{{ empty(_("Aucune actualité pour le moment.")) }}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ _("Modifier l'actualité") if item else _("Nouvelle actualité") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Modifier l'actualité") if item else _("Nouvelle actualité") }}</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.title) }}
+  <div class="grid-2">
+    {{ field(form.category_id) }}
+    {{ field(form.promotion_id) }}
+  </div>
+  {{ field(form.body, rows=12, hint=form.body.description) }}
+  {{ field(form.is_pinned) }}
+  {{ field(form.is_published) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('news.manage') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, pagination, empty %}
+{% block title %}{{ _("Notifications") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Notifications") }}</h1>
+  {% if unread_notifications %}
+  <form method="post" action="{{ url_for('notifications.read_all') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-secondary btn-sm">{{ icon("check") }} {{ _("Tout marquer comme lu") }}</button>
+  </form>
+  {% endif %}
+</div>
+{% if page.items %}
+<ul class="list">
+  {% for n in page.items %}
+  <li>
+    <a class="list-item{% if not n.read_at %} unread{% endif %}" href="{{ url_for('notifications.open_notification', notification_id=n.id) }}">
+      <span class="grow">
+        <span class="title">{{ n.title }}</span>
+        <span class="meta">{{ n.created_at|datetime }}</span>
+      </span>
+      {{ icon("chevron-right") }}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{{ pagination(page, "notifications.index") }}
+{% else %}
+{{ empty(_("Aucune notification pour le moment.")) }}
+{% endif %}
+{% endblock %}
