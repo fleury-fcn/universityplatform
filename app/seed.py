@@ -280,3 +280,40 @@ def run():
     seed_clubs()
     seed_tips()
     db.session.commit()
+
+
+def purge_demo():
+    """Supprime les contenus marqués DEMO et désactive les comptes de démonstration.
+
+    Les données reprises de l'ancien code (départements, filières, promotions, clubs) ne sont pas
+    touchées : elles sont à vérifier et corriger depuis l'administration.
+    Retourne un dictionnaire {type: nombre}.
+    """
+    from app.core.files import delete_stored
+
+    counts = {}
+    for model in (Tip, News, ScheduleEntry, Book, Course):
+        items = model.query.filter_by(is_demo=True).all()
+        for item in items:
+            stored = getattr(item, "file", None)
+            if model is Course:
+                files = [r.file for r in item.resources]
+            else:
+                files = [stored] if stored else []
+            db.session.delete(item)
+            db.session.flush()
+            for f in files:
+                delete_stored(f)
+        counts[model.__tablename__] = len(items)
+    rooms = Room.query.filter_by(is_demo=True).all()
+    for room in rooms:
+        ScheduleEntry.query.filter_by(room_id=room.id).update({"room_id": None})
+        db.session.delete(room)
+    counts["rooms"] = len(rooms)
+    users = User.query.filter_by(is_demo=True, is_active=True).all()
+    for user in users:
+        user.is_active = False
+        user.session_version += 1
+    counts["comptes désactivés"] = len(users)
+    db.session.commit()
+    return counts

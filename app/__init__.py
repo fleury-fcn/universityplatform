@@ -48,6 +48,12 @@ def create_app(config_name=None):
     app.config.from_object(cfg)
     cfg.init_app(app)
 
+    if app.config["TRUST_PROXY"]:
+        from werkzeug.middleware.proxy_fix import ProxyFix
+
+        n = app.config["TRUST_PROXY"]
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=n, x_proto=n, x_host=n)
+
     os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 

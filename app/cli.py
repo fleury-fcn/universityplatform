@@ -23,6 +23,15 @@ def register_cli(app):
         run()
         click.echo("Données de démonstration chargées.")
 
+    @app.cli.command("purge-demo")
+    @click.confirmation_option(prompt="Supprimer toutes les données DEMO et désactiver les comptes de démonstration ?")
+    def purge_demo_command():
+        """Retire les données de démonstration avant la mise en service."""
+        from .seed import purge_demo
+
+        for name, count in purge_demo().items():
+            click.echo(f"{name} : {count}")
+
     @app.cli.command("create-admin")
     @click.option("--username", prompt="Identifiant")
     @click.option("--first-name", prompt="Prénom")
@@ -70,8 +79,12 @@ def register_cli(app):
     @translate.command()
     def update():
         """Extrait les textes et met à jour les catalogues .po."""
-        root = Path(__file__).parent.parent
-        _pybabel("extract", "-F", str(root / "babel.cfg"), "-k", "_l", "-o", str(POT), str(root / "app"))
+        import os
+
+        # Chemins relatifs : les fichiers .pot/.po ne doivent pas contenir de chemin propre à une machine.
+        os.chdir(Path(__file__).parent.parent)
+        _pybabel("extract", "-F", "babel.cfg", "-k", "_l", "--project", "ISTA", "-o", str(POT.relative_to(Path.cwd())),
+                 "app")
         for lang in app.config["LANGUAGES"]:
             if lang == app.config["BABEL_DEFAULT_LOCALE"]:
                 continue

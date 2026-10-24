@@ -16,8 +16,8 @@ def _bool(name, default=False):
     return os.environ.get(name, str(default)).strip().lower() in {"1", "true", "yes", "oui"}
 
 
-def _database_url():
-    url = os.environ.get("DATABASE_URL") or f"sqlite:///{(INSTANCE_DIR / 'ista.sqlite').as_posix()}"
+def _database_url(variable="DATABASE_URL", default=None):
+    url = os.environ.get(variable) or default or f"sqlite:///{(INSTANCE_DIR / 'ista.sqlite').as_posix()}"
     # Les hébergeurs (Render, Heroku...) fournissent souvent "postgres://".
     if url.startswith("postgres://"):
         url = "postgresql+psycopg://" + url[len("postgres://"):]
@@ -57,6 +57,9 @@ class Config:
     VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY") or None
     VAPID_CONTACT = os.environ.get("VAPID_CONTACT", "mailto:admin@example.invalid")
 
+    # Nombre de proxys inverses de confiance devant l'application (Caddy, Nginx, PaaS). 0 = aucun.
+    TRUST_PROXY = int(os.environ.get("TRUST_PROXY", "0"))
+
     ALLOW_SELF_REGISTRATION = _bool("ALLOW_SELF_REGISTRATION", False)
     # Note minimale (sur 20) pour valider un cours. À confirmer par l'ISTA.
     PASS_MARK = float(os.environ.get("PASS_MARK", "10"))
@@ -79,7 +82,8 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SECRET_KEY = "cle-de-test-uniquement"
-    SQLALCHEMY_DATABASE_URI = "sqlite://"
+    # Par défaut SQLite en mémoire ; TEST_DATABASE_URL permet de lancer les tests sur PostgreSQL.
+    SQLALCHEMY_DATABASE_URI = _database_url("TEST_DATABASE_URL", "sqlite://")
     WTF_CSRF_ENABLED = False
     PASSWORD_HASH_METHOD = "pbkdf2:sha256:1000"  # rapide, pour les tests uniquement
 

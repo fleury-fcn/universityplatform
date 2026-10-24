@@ -76,3 +76,24 @@ def test_production_requires_secret_key(monkeypatch):
     monkeypatch.setattr(ProductionConfig, "SECRET_KEY", None)
     with pytest.raises(RuntimeError):
         create_app("production")
+
+
+def test_seed_is_idempotent_and_purge_removes_demo(app, db):
+    from app.models import Book, Club, Course, News, Promotion, User
+    from app.seed import purge_demo, run
+
+    run()
+    run()
+    assert User.query.filter_by(username="etudiant.demo").count() == 1
+    assert Course.query.filter_by(is_demo=True).count() > 0
+    promotions = Promotion.query.count()
+
+    counts = purge_demo()
+    assert counts["courses"] > 0
+    assert Course.query.filter_by(is_demo=True).count() == 0
+    assert News.query.filter_by(is_demo=True).count() == 0
+    assert Book.query.filter_by(is_demo=True).count() == 0
+    assert User.query.filter_by(is_demo=True, is_active=True).count() == 0
+    # Les données reprises de l'ancien code restent, à confirmer par l'administration.
+    assert Promotion.query.count() == promotions
+    assert Club.query.count() == 6

@@ -24,6 +24,7 @@ services:
       SECRET_KEY: ${SECRET_KEY:?Définir SECRET_KEY dans .env}
       DATABASE_URL: postgresql://ista:${POSTGRES_PASSWORD}@db:5432/ista
       COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      TRUST_PROXY: ${TRUST_PROXY:-1}
       SEED_DEMO: ${SEED_DEMO:-false}
       ALLOW_SELF_REGISTRATION: ${ALLOW_SELF_REGISTRATION:-false}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
