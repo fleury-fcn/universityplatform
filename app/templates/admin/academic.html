@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ _("Filières et promotions") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Filières et promotions") }}</h1>
+</div>
+<div class="row">
+  <a class="btn btn-sm" href="{{ url_for('admin.academic_edit', kind='departement') }}">{{ icon("plus") }} {{ _("Département") }}</a>
+  <a class="btn btn-sm btn-secondary" href="{{ url_for('admin.academic_edit', kind='filiere') }}">{{ icon("plus") }} {{ _("Filière") }}</a>
+  <a class="btn btn-sm btn-secondary" href="{{ url_for('admin.academic_edit', kind='promotion') }}">{{ icon("plus") }} {{ _("Promotion") }}</a>
+</div>
+<p class="hint">{{ _("Les informations reprises de l'ancienne plateforme sont à confirmer par l'ISTA (voir DONNEES_A_COMPLETER.md).") }}</p>
+
+{% for d in departments %}
+<section class="card">
+  <h2><a href="{{ url_for('admin.academic_edit', kind='departement', obj_id=d.id) }}">{{ d.name }}</a> <span class="badge">{{ d.code }}</span></h2>
+  {% for p in d.programs %}
+    <h3 class="program-title">
+      <a href="{{ url_for('admin.academic_edit', kind='filiere', obj_id=p.id) }}">{{ p.name }}</a>
+      <span class="badge badge-brand">{{ p.cycle|capitalize }}</span>
+    </h3>
+    {% if p.promotions %}
+    <ul class="list">
+      {% for promo in p.promotions %}
+      <li><a class="list-item" href="{{ url_for('admin.academic_edit', kind='promotion', obj_id=promo.id) }}">
+        <span class="grow">
+          <span class="title">{{ promo.name }}</span>
+          <span class="meta">{{ promo.code }} · {{ promo.academic_year }} · {{ _("%(n)d étudiant(s)", n=promo.students|length) }}</span>
+        </span>
+        {% if not promo.is_active %}<span class="badge">{{ _("Archivée") }}</span>{% endif %}
+      </a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      <p class="muted small">{{ _("Aucune promotion.") }}</p>
+    {% endif %}
+  {% else %}
+    <p class="muted small">{{ _("Aucune filière.") }}</p>
+  {% endfor %}
+</section>
+{% else %}
+{{ empty(_("Aucun département. Commencez par en créer un.")) }}
+{% endfor %}
+{% endblock %}
