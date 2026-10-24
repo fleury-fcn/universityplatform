@@ -1,157 +1,93 @@
-
-'''import os
-from dotenv import load_dotenv
-
-# Charger les variables d'environnement depuis .env
-load_dotenv()
-
-class Config:
-    # Configuration de base
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'votre-cle-secure-par-defaut-123!'
-    
-    # Configuration de la base de données
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'mysql+pymysql://fleury:NouveauMotDePasse123!@127.0.0.1/OpenIsta?charset=utf8mb4'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,
-        'pool_recycle': 3600
-    }
-
-
-    # Configuration Flask-Mail (pour la réinitialisation de mot de passe)
-    MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
-    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() == 'true'
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or 'votre.email@openista.com'
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'votre-mot-de-passe-email'
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or 'no-reply@openista.com'
-
-    # Configuration des tokens
-    SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT') or 'un-sel-securise-pour-les-tokens'
-
-    # Configuration des sessions
-    PERMANENT_SESSION_LIFETIME = 3600  # 1 heure en secondes
-
-    # Mode debug
-    DEBUG = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
-
-
-class DevelopmentConfig(Config):
-    DEBUG = True
-    SQLALCHEMY_ECHO = True  # Affiche les requêtes SQL dans la console
-
-
-class TestingConfig(Config):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
-    WTF_CSRF_ENABLED = False
-
-
-class ProductionConfig(Config):
-    # Désactive le mode debug pour la production
-    DEBUG = False
-    
-    # Configuration plus stricte pour la production
-    SESSION_COOKIE_SECURE = True
-    REMEMBER_COOKIE_SECURE = True
-    SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = 'Lax'
-
-
-# Configuration par défaut
-config = {
-    'development': DevelopmentConfig,
-    'testing': TestingConfig,
-    'production': ProductionConfig,
-    'default': DevelopmentConfig
-}
-
-
-'''
+"""Configuration de l'application, lue uniquement depuis l'environnement."""
 import os
+import secrets
+from datetime import timedelta
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-# Charger les variables d'environnement depuis .env
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent.parent
+INSTANCE_DIR = BASE_DIR / "instance"
+
+load_dotenv(BASE_DIR / ".env")
+
+
+def _bool(name, default=False):
+    return os.environ.get(name, str(default)).strip().lower() in {"1", "true", "yes", "oui"}
+
+
+def _database_url():
+    url = os.environ.get("DATABASE_URL") or f"sqlite:///{(INSTANCE_DIR / 'ista.sqlite').as_posix()}"
+    # Les hébergeurs (Render, Heroku...) fournissent souvent "postgres://".
+    if url.startswith("postgres://"):
+        url = "postgresql+psycopg://" + url[len("postgres://"):]
+    elif url.startswith("postgresql://"):
+        url = "postgresql+psycopg://" + url[len("postgresql://"):]
+    return url
+
 
 class Config:
-    # Configuration de base
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'votre-cle-secure-par-defaut-123!'
-    
-    # Configuration PostgreSQL (migration depuis MySQL)
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'postgresql://fleury:NouveauMotDePasse123@127.0.0.1:5432/openista'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,
-        'pool_recycle': 3600,
-        'pool_size': 10,
-        'max_overflow': 20,
-        'echo': False,
-        'pool_timeout': 30,
-        'pool_reset_on_return': 'commit'
-    }
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SQLALCHEMY_DATABASE_URI = _database_url()
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
 
-    # Configuration Flask-Mail
-    MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
-    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() == 'true'
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER') or 'no-reply@openista.com'
+    UPLOAD_FOLDER = os.environ.get("UPLOAD_FOLDER") or str(INSTANCE_DIR / "uploads")
+    MAX_CONTENT_LENGTH = int(os.environ.get("MAX_UPLOAD_MB", "10")) * 1024 * 1024
 
-    # Configuration sécurité
-    SECURITY_PASSWORD_SALT = os.environ.get('SECURITY_PASSWORD_SALT') or 'un-sel-securise-pour-les-tokens'
-    PERMANENT_SESSION_LIFETIME = 3600  # 1 heure
-    DEBUG = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    # À incrémenter à chaque livraison pour invalider les caches (navigateur et hors ligne).
+    ASSET_VERSION = "1"
 
-    # Configuration spécifique PostgreSQL
-    SQLALCHEMY_BINDS = {}
-    SQLALCHEMY_RECORD_QUERIES = False
-    SQLALCHEMY_DATABASE_URI_OPTIONS = {
-        'sslmode': 'prefer',
-        'connect_timeout': 10
-    }
+    LANGUAGES = {"fr": "Français", "en": "English", "rn": "Ikirundi"}
+    BABEL_DEFAULT_LOCALE = "fr"
+    BABEL_DEFAULT_TIMEZONE = os.environ.get("APP_TIMEZONE", "Africa/Bujumbura")
+
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    REMEMBER_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_SAMESITE = "Lax"
+    # Les étudiants utilisent surtout leur téléphone : session longue si "se souvenir de moi".
+    REMEMBER_COOKIE_DURATION = timedelta(days=30)
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=12)
+    WTF_CSRF_TIME_LIMIT = None
+
+    ALLOW_SELF_REGISTRATION = _bool("ALLOW_SELF_REGISTRATION", False)
+    # Note minimale (sur 20) pour valider un cours. À confirmer par l'ISTA.
+    PASS_MARK = float(os.environ.get("PASS_MARK", "10"))
+
+    @classmethod
+    def init_app(cls, app):
+        pass
 
 
 class DevelopmentConfig(Config):
-    DEBUG = True
-    SQLALCHEMY_ECHO = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'postgresql://fleury:NouveauMotDePasse123@localhost:5432/openista_dev'
-    SQLALCHEMY_RECORD_QUERIES = True
+    DEBUG = _bool("FLASK_DEBUG", True)
+
+    @classmethod
+    def init_app(cls, app):
+        if not app.config.get("SECRET_KEY"):
+            app.config["SECRET_KEY"] = secrets.token_hex(32)
+            app.logger.warning("SECRET_KEY absente : clé temporaire générée (développement uniquement).")
 
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-        'postgresql://fleury:NouveauMotDePasse123@localhost:5432/openista_test'
+    SECRET_KEY = "cle-de-test-uniquement"
+    SQLALCHEMY_DATABASE_URI = "sqlite://"
     WTF_CSRF_ENABLED = False
-    SQLALCHEMY_ECHO = False
 
 
 class ProductionConfig(Config):
-    DEBUG = False
-    SESSION_COOKIE_SECURE = True
-    REMEMBER_COOKIE_SECURE = True
-    SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = 'Lax'
-    
-    # Configuration optimisée pour la production
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,
-        'pool_recycle': 1800,
-        'pool_size': 20,
-        'max_overflow': 30,
-        'pool_timeout': 30,
-        'pool_reset_on_return': 'commit'
-    }
+    SESSION_COOKIE_SECURE = _bool("COOKIE_SECURE", True)
+    REMEMBER_COOKIE_SECURE = SESSION_COOKIE_SECURE
+
+    @classmethod
+    def init_app(cls, app):
+        if not app.config.get("SECRET_KEY"):
+            raise RuntimeError("SECRET_KEY doit être définie en production.")
 
 
-config = {
-    'development': DevelopmentConfig,
-    'testing': TestingConfig,
-    'production': ProductionConfig,
-    'default': DevelopmentConfig
+config_by_name = {
+    "development": DevelopmentConfig,
+    "testing": TestingConfig,
+    "production": ProductionConfig,
 }

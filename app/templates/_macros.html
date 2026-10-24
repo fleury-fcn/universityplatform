@@ -1,0 +1,36 @@
+{% macro icon(name, label=None) -%}
+<svg class="icon"{% if label %} role="img" aria-label="{{ label }}"{% else %} aria-hidden="true"{% endif %}><use href="{{ url_for('static', filename='img/icons.svg', v=config.ASSET_VERSION) }}#{{ name }}"></use></svg>
+{%- endmacro %}
+
+{% macro field(f, hint=None) -%}
+<div class="field{% if f.errors %} has-error{% endif %}">
+  {% if f.type == "BooleanField" %}
+    <label class="check">{{ f(**kwargs) }} {{ f.label.text }}</label>
+  {% else %}
+    {{ f.label }}
+    {% set describedby = (f.id ~ "-hint ") if hint else "" %}
+    {% if f.errors %}{% set describedby = describedby ~ f.id ~ "-error" %}{% endif %}
+    {{ f(aria_describedby=describedby or None, aria_invalid="true" if f.errors else None, **kwargs) }}
+  {% endif %}
+  {% if hint %}<p class="hint" id="{{ f.id }}-hint">{{ hint }}</p>{% endif %}
+  {% if f.errors %}<p class="error" id="{{ f.id }}-error">{{ f.errors|join(" ") }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro demo_badge(item) -%}
+{% if item.is_demo %}<span class="badge badge-demo" title="{{ _('Donnée de démonstration à remplacer') }}">DEMO</span>{% endif %}
+{%- endmacro %}
+
+{% macro pagination(page, endpoint) -%}
+{% if page.pages > 1 %}
+<nav class="pagination" aria-label="{{ _('Pagination') }}">
+  {% if page.has_prev %}<a class="btn btn-secondary btn-sm" href="{{ url_for(endpoint, page=page.prev_num, **kwargs) }}">{{ _("Précédent") }}</a>{% endif %}
+  <span>{{ _("Page %(n)s sur %(total)s", n=page.page, total=page.pages) }}</span>
+  {% if page.has_next %}<a class="btn btn-secondary btn-sm" href="{{ url_for(endpoint, page=page.next_num, **kwargs) }}">{{ _("Suivant") }}</a>{% endif %}
+</nav>
+{% endif %}
+{%- endmacro %}
+
+{% macro empty(message) -%}
+<p class="empty">{{ message }}</p>
+{%- endmacro %}

@@ -1,0 +1,36 @@
+# Production simple : `docker compose up -d --build`
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ista
+      POSTGRES_USER: ista
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Définir POSTGRES_PASSWORD dans .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ista -d ista"]
+      interval: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SECRET_KEY: ${SECRET_KEY:?Définir SECRET_KEY dans .env}
+      DATABASE_URL: postgresql://ista:${POSTGRES_PASSWORD}@db:5432/ista
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      SEED_DEMO: ${SEED_DEMO:-false}
+      ALLOW_SELF_REGISTRATION: ${ALLOW_SELF_REGISTRATION:-false}
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads:/data/uploads
+
+volumes:
+  pgdata:
+  uploads:

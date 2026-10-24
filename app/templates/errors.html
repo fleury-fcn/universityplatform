@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% set titles = {
+  400: _("Requête invalide"),
+  403: _("Accès refusé"),
+  404: _("Page introuvable"),
+  413: _("Fichier trop volumineux"),
+  500: _("Erreur du serveur"),
+} %}
+{% set details = {
+  400: _("La demande n'a pas pu être traitée. Si vous envoyiez un formulaire, rechargez la page et réessayez."),
+  403: _("Vous n'avez pas les droits nécessaires pour accéder à cette page."),
+  404: _("Cette page n'existe pas ou a été déplacée."),
+  413: _("Le fichier dépasse la taille autorisée."),
+  500: _("Un problème est survenu. Réessayez dans quelques instants."),
+} %}
+{% block title %}{{ titles[code] }}{% endblock %}
+{% block content %}
+<section class="card error-page">
+  <p class="error-code">{{ code }}</p>
+  <h1>{{ titles[code] }}</h1>
+  <p>{{ details[code] }}</p>
+  <a class="btn" href="{{ url_for('main.home') }}">{{ _("Retour à l'accueil") }}</a>
+</section>
+{% endblock %}

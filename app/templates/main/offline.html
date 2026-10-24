@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Hors ligne") }}{% endblock %}
+{% block content %}
+<section class="card error-page">
+  <h1>{{ _("Pas de connexion") }}</h1>
+  <p>{{ _("Cette page n'a pas encore été enregistrée sur votre téléphone. Elle sera disponible dès le retour de la connexion.") }}</p>
+  <p>{{ _("Les pages déjà consultées (emploi du temps, actualités, plan du campus, cours téléchargés) restent accessibles.") }}</p>
+  <a class="btn" href="{{ url_for('main.home') }}">{{ _("Retour à l'accueil") }}</a>
+</section>
+{% endblock %}

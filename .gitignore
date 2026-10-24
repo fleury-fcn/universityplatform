@@ -26,3 +26,4 @@ work/
 *.sqlite
 # Fichiers déposés par les utilisateurs (servis par l'application, jamais par git)
 instance/
+*.mo
