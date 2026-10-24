@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, pagination, empty %}
+{% block title %}{{ _("Messages") }}{% endblock %}
+{% block content %}
+{% include "messages/_tabs.html" %}
+{% if page.items %}
+<ul class="list">
+  {% for entry in page.items %}{% set m = entry.message %}
+  <li><a class="list-item{% if not entry.read_at %} unread{% endif %}" href="{{ url_for('messages.show', message_id=m.id) }}">
+    <span class="grow">
+      <span class="title">{{ m.subject }}</span>
+      <span class="meta">{{ m.sender.full_name }}{% if m.promotion %} · {{ m.promotion.name }}{% endif %} · {{ m.created_at|datetime }}{% if m.attachments %} · {{ icon("paperclip") }}{% endif %}</span>
+    </span>
+  </a></li>
+  {% endfor %}
+</ul>
+{{ pagination(page, "messages.inbox") }}
+{% else %}{{ empty(_("Aucun message reçu.")) }}{% endif %}
+{% endblock %}

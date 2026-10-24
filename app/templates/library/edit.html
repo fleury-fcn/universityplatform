@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ book.title if book else _("Nouveau livre") }}{% endblock %}
+{% block content %}
+<h1>{{ book.title if book else _("Nouveau livre") }}</h1>
+<form method="post" enctype="multipart/form-data" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.title) }}
+  {{ field(form.author) }}
+  <div class="grid-2">{{ field(form.category) }}{{ field(form.language) }}</div>
+  <div class="grid-2">{{ field(form.isbn) }}{{ field(form.year) }}</div>
+  <div class="grid-2">{{ field(form.publisher) }}{{ field(form.call_number) }}</div>
+  {{ field(form.copies_total, hint=_("0 pour un livre uniquement numérique.")) }}
+  {{ field(form.description, rows=5) }}
+  {{ field(form.pdf, accept=accept, hint=_("Uniquement des ouvrages dont la diffusion est autorisée.")) }}
+  {% if book and book.file %}{{ field(form.remove_pdf) }}{% endif %}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('library.show', book_id=book.id) if book else url_for('library.index') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

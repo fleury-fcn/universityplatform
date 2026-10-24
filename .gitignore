@@ -7,6 +7,8 @@ env/
 venv/
 .venv/
 .env
+.env.*
+!.env.example
 instance/
 .pytest_cache/
 .mypy_cache/
@@ -20,3 +22,8 @@ build/
 *.egg-info/
 .coverage
 htmlcov/
+work/
+*.sqlite
+# Fichiers déposés par les utilisateurs (servis par l'application, jamais par git)
+instance/
+*.mo

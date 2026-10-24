@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, demo_badge %}
+{% block title %}{{ item.title }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('news.index') }}">{{ icon("chevron-left") }} {{ _("Actualités") }}</a></p>
+<article class="card">
+  <h1>{{ item.title }} {{ demo_badge(item) }}</h1>
+  <p class="meta muted small">
+    {{ item.published_at|datetime("medium") }}
+    {% if item.category %} · {{ item.category.name }}{% endif %}
+    {% if item.promotion %} · {{ _("Pour %(promo)s", promo=item.promotion.name) }}{% endif %}
+  </p>
+  <div class="prose">{{ item.body|text }}</div>
+</article>
+{% if current_user.is_admin %}
+  <a class="btn btn-secondary btn-sm" href="{{ url_for('news.edit', news_id=item.id) }}">{{ icon("edit") }} {{ _("Modifier") }}</a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ _("Modifier mon profil") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Modifier mon profil") }}</h1>
+<p class="muted">{{ _("Le nom, le matricule et la promotion sont gérés par l'administration. Signalez-lui toute erreur.") }}</p>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.email, autocomplete="email") }}
+  {{ field(form.locale) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('profile.show') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

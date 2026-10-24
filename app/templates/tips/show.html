@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, field, demo_badge %}
+{% block title %}{{ tip.title }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('tips.index') }}">{{ icon("chevron-left") }} {{ _("Tuyaux") }}</a></p>
+{% if tip.status == "en_attente" %}<div class="flash flash-warning">{{ _("En attente de validation par l'administration.") }}</div>
+{% elif tip.status == "refuse" %}<div class="flash flash-danger">{{ _("Ce tuyau n'a pas été publié.") }}{% if tip.moderation_note %} {{ _("Motif :") }} {{ tip.moderation_note }}{% endif %}</div>{% endif %}
+<article class="card">
+  <h1>{{ tip.title }} {{ demo_badge(tip) }}</h1>
+  <p class="muted small">{{ categories.get(tip.category, tip.category) }}{% if tip.course %} · {{ tip.course.title }}{% endif %} · {{ _("par %(a)s", a=tip.author.full_name) }} · {{ (tip.published_at or tip.created_at)|date }}</p>
+  <div class="prose">{{ tip.body|text }}</div>
+  {% if tip.file %}
+    <a class="btn btn-secondary btn-sm" href="{{ file_url(tip.file) }}">{{ icon("paperclip") }} {{ tip.file.original_name }} ({{ tip.file.size|filesize }})</a>
+  {% endif %}
+</article>
+
+{% if tip.status == "publie" %}
+<div class="row">
+  <form method="post" action="{{ url_for('tips.vote', tip_id=tip.id) }}">
+    {{ csrf_form.hidden_tag() }}
+    <button class="btn {{ 'btn' if voted else 'btn-secondary' }} btn-sm" {% if tip.author_id == current_user.id %}disabled{% endif %} aria-pressed="{{ 'true' if voted else 'false' }}">
+      {{ icon("star") }} {{ _("Utile") }} ({{ votes }})
+    </button>
+  </form>
+</div>
+{% endif %}
+
+{% if tip.author_id == current_user.id or current_user.is_admin %}
+<form method="post" action="{{ url_for('tips.delete', tip_id=tip.id) }}" data-confirm="{{ _('Supprimer ce tuyau ?') }}">
+  {{ csrf_form.hidden_tag() }}<button class="btn btn-danger btn-sm">{{ icon("trash") }} {{ _("Supprimer") }}</button>
+</form>
+{% endif %}
+
+{% if moderation_form %}
+<section class="card">
+  <h2>{{ _("Modération") }}</h2>
+  {% if tip.reports %}
+    <p>{{ _("Signalements :") }}</p>
+    <ul>{% for r in tip.reports %}<li>{{ r.reason }} <span class="muted small">({{ r.user.full_name }})</span></li>{% endfor %}</ul>
+  {% endif %}
+  <form method="post" novalidate>
+    {{ moderation_form.hidden_tag() }}
+    {{ field(moderation_form.note) }}
+    <div class="form-actions">
+      <button class="btn" formaction="{{ url_for('tips.decide', tip_id=tip.id, decision='publier') }}">{{ _("Publier") }}</button>
+      <button class="btn btn-danger" formaction="{{ url_for('tips.decide', tip_id=tip.id, decision='refuser') }}">{{ _("Refuser / retirer") }}</button>
+    </div>
+  </form>
+</section>
+{% elif tip.status == "publie" and tip.author_id != current_user.id %}
+<details class="card">
+  <summary>{{ _("Signaler un contenu inapproprié") }}</summary>
+  <form method="post" action="{{ url_for('tips.report', tip_id=tip.id) }}" novalidate>
+    {{ report_form.hidden_tag() }}
+    {{ field(report_form.reason) }}
+    <button class="btn btn-secondary btn-sm">{{ _("Signaler") }}</button>
+  </form>
+</details>
+{% endif %}
+{% endblock %}

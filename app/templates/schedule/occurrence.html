@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ base.title }}{% endblock %}
+{% block content %}
+<h1>{{ base.title }}</h1>
+<p class="muted">{{ day|date("full") }} · {{ _("séance habituelle %(start)s–%(end)s", start=base.start_time|time, end=base.end_time|time) }}</p>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.is_cancelled) }}
+  <div class="grid-2">{{ field(form.start_time) }}{{ field(form.end_time) }}</div>
+  {{ field(form.room_id) }}
+  {{ field(form.note) }}
+  {{ field(form.notify) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer pour ce jour") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('schedule.index', date=day.isoformat(), promotion=base.promotion_id) }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% if change %}
+<form method="post" action="{{ url_for('schedule.occurrence_reset', entry_id=base.id, day=day.isoformat()) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="btn btn-secondary">{{ _("Rétablir la séance habituelle") }}</button>
+</form>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_macros.html" import empty %}
+{% block title %}{{ _("Mes notes") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Mes notes") }}</h1>
+{% if not current_user.promotion_id %}
+  {{ empty(_("Votre compte n'est rattaché à aucune promotion. Contactez l'administration.")) }}
+{% endif %}
+{% for s in results %}
+<section class="card">
+  <div class="section-head">
+    <h2>{{ _("Semestre %(n)d", n=s.semester) }}</h2>
+    {% if s.average is not none %}
+      <span class="badge {{ 'badge-success' if s.average >= pass_mark else 'badge-danger' }} average">{{ "%.2f"|format(s.average)|replace(".", ",") }} / 20</span>
+    {% endif %}
+  </div>
+  <p class="muted small">
+    {{ _("Crédits validés : %(e)d / %(t)d", e=s.credits_earned, t=s.credits_total) }}
+    {% if not s.complete %} · {{ _("résultats incomplets") }}{% endif %}
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th scope="col">{{ _("Cours") }}</th><th scope="col" class="num">{{ _("Crédits") }}</th><th scope="col" class="num">{{ _("Note") }}</th></tr></thead>
+      <tbody>
+        {% for r in s.rows %}
+        <tr>
+          <td>{{ r.course.title }}{% if r.rattrapage %} <span class="badge badge-info">{{ _("rattrapage") }}</span>{% endif %}</td>
+          <td class="num">{{ r.course.credits or "—" }}</td>
+          <td class="num">
+            {% if r.absent %}<span class="badge badge-danger">{{ _("Absent") }}</span>
+            {% elif r.value is not none %}<strong class="{{ 'ok' if r.validated else 'ko' }}">{{ "%.2f"|format(r.value)|replace(".", ",") }}</strong>
+            {% else %}<span class="muted">{{ _("—") }}</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% else %}
+  {% if current_user.promotion_id %}{{ empty(_("Aucune note publiée pour le moment.")) }}{% endif %}
+{% endfor %}
+<p class="hint">{{ _("Moyennes calculées à titre indicatif (pondération par crédits, note de validation %(m)s/20). Seul le relevé officiel délivré par l'ISTA fait foi.", m=("%g"|format(pass_mark))|replace(".", ",")) }}</p>
+{% endblock %}

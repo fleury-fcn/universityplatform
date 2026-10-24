@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ _("Partager un tuyau") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Partager un tuyau") }}</h1>
+<div class="card prose small">
+  <p>{{ _("Partagez un conseil utile : méthode de révision, bon plan logement ou transport, démarche administrative… Restez bienveillant, ne publiez ni données personnelles ni documents protégés.") }}</p>
+  {% if current_user.is_student %}<p>{{ _("Votre tuyau sera publié après validation par l'administration.") }}</p>{% endif %}
+</div>
+<form method="post" enctype="multipart/form-data" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.title) }}
+  <div class="grid-2">{{ field(form.category) }}{{ field(form.course_id) }}</div>
+  {{ field(form.body, rows=8) }}
+  {{ field(form.attachment, accept=accept, data_max_bytes=max_bytes, hint=_("%(n)d Mo maximum.", n=max_bytes // 1048576)) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Envoyer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('tips.index') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

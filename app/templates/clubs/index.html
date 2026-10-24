@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty, demo_badge %}
+{% block title %}{{ _("Clubs") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Clubs et associations") }}</h1>
+  {% if current_user.is_admin %}<a class="btn btn-sm" href="{{ url_for('clubs.manage') }}">{{ icon("settings") }} {{ _("Gérer") }}</a>{% endif %}
+</div>
+<nav class="chips" aria-label="{{ _('Catégories') }}">
+  <a class="chip" href="{{ url_for('clubs.index') }}"{% if not category %} aria-current="true"{% endif %}>{{ _("Tous") }}</a>
+  {% for key, label in categories.items() %}
+    <a class="chip" href="{{ url_for('clubs.index', categorie=key) }}"{% if category == key %} aria-current="true"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</nav>
+{% if clubs %}
+<ul class="list">
+  {% for c in clubs %}
+  <li><a class="list-item" href="{{ url_for('clubs.show', club_id=c.id) }}">
+    {{ icon("users") }}
+    <span class="grow">
+      <span class="title">{{ c.name }} {{ demo_badge(c) }}</span>
+      <span class="meta">{{ categories.get(c.category, c.category) }}{% if c.meeting_frequency %} · {{ c.meeting_frequency }}{% endif %} · {{ _("%(n)d membre(s)", n=c.memberships|length) }}</span>
+    </span>
+    {% if c.id in my_clubs %}<span class="badge badge-success">{{ _("Membre") }}</span>{% endif %}
+  </a></li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucun club dans cette catégorie.")) }}{% endif %}
+{% endblock %}

@@ -1,118 +1,45 @@
-🇬🇧🇺🇸 English version · 🇫🇷 [Version française](README.fr.md)
+🇬🇧🇺🇸 English version · 🇫🇷 [Version française](README.fr.md) (full documentation)
 
-# 🎓 OpenISTA – University Campus Management Platform
+# 🎓 ISTA — the student app of the Institute of Applied Statistics
 
-**OpenISTA** is a full-featured web platform for university campus management, developed for the **Institute of Applied Statistics (ISTA)**, Center of Excellence at the **University of Burundi**, as the capstone project for a **Master 1 in Applied Statistics and Decision-Making Computer Science**.
+A mobile-first web app that puts the whole **Institute of Applied Statistics (ISTA)**, University of
+Burundi, in students' pockets. Inspired by *Lilu* (University of Lille), adapted to ISTA's reality:
+entry-level Android phones, slow or unstable connections, low-cost hosting.
 
-The goal: design and build, end-to-end, a system capable of managing the full range of administrative and academic services of a university campus — students, faculty, courses, library, student life, and internal communication.
+> ⚠️ Shipped data is **demo data** (shown with a "DEMO" badge). See
+> [DONNEES_A_COMPLETER.md](DONNEES_A_COMPLETER.md) (in French) before going live.
 
----
+## Features
 
-## 📌 Academic context
+- **Roles**: student, teacher, administration — access control on every route
+- **News** with categories and promotion targeting · **in-app notifications** (+ optional web push)
+- **Timetable** per promotion (day / week views), weekly sessions with one-off cancellations or moves
+- **Courses & resources**: lecture notes, tutorials, past exams (secure upload / download)
+- **Grades** per semester (entered and published by teachers, indicative weighted average)
+- **Library**: catalogue, availability, reservations, optional digital copies
+- **Campus**: places and rooms, uploaded campus maps, link to the phone's map app
+- **Clubs**, student **tips** ("tuyaux") with moderation, internal **messaging** with attachments
+- **FAQ assistant**: plain-language search over admin-written questions (accent- and typo-tolerant, works offline-friendly, no AI service)
+- **Offline-ready PWA**: weekly timetable, news, campus and courses are pre-cached; downloaded files stay available
+- **Lightweight**: no CDN, no web font, one stylesheet, one small script · light / dark theme
+- **Languages**: French by default, i18n ready for English and Kirundi
 
-This project was developed individually to apply skills learned across several courses of the Master's program:
-
-- **Databases** – relational design, modeling, migrations
-- **Advanced Programming (Python / Flask)** – back-end architecture, business logic
-- **Software Engineering** – code structuring, project management, best practices
-- Other courses from the decision-making computer science core curriculum
-
----
-
-## ✨ Key features
-
-The platform covers the full lifecycle of university campus operations:
-
-### 👨‍🎓 Academic management
-- Student record management
-- Faculty management and assignments
-- Course and program management
-
-### 📚 Library
-- Catalog and management of available books
-- Loan tracking (seeded via `init_books.py`)
-
-### 🏛️ Campus life
-- Management of student clubs and associations (`init_clubs.py`)
-- Space for students to share tips/resources with each other
-
-### 💬 Communication
-- Internal messaging system with attachment support
-- User-to-user notifications
-
----
-
-## 🛠️ Tech stack
-
-| Component | Technology |
-|---|---|
-| Back-end | Python / Flask |
-| Database | PostgreSQL |
-| Migrations | Flask-Migrate / Alembic |
-| Front-end | HTML, CSS, Jinja2 |
-| Dependency management | pip / requirements.txt |
-
----
-
-## 📁 Project structure
-
-```
-universityplatform/
-├── app/                        # Core application (routes, models, business logic)
-├── migrations/                 # Database migration history
-├── static/uploads/messages/    # Internal messaging attachments
-├── work/                       # Additional modules
-├── init_books.py               # Initial seed data – library
-├── init_clubs.py                # Initial seed data – clubs
-├── init_courses.py             # Initial seed data – courses
-├── init_tuyaux.py              # Initial seed data – student resources
-├── run.py                      # Application entry point
-└── requirements.txt             # Python dependencies
-```
-
----
-
-## 🚀 Local installation and setup
+## Quick start
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/fleury-fcn/universityplatform.git
 cd universityplatform
-
-# 2. Create a virtual environment
-python -m venv venv
-source venv/bin/activate      # on Windows: venv\Scripts\activate
-
-# 3. Install dependencies
-pip install -r requirements.txt
-
-# 4. Configure environment variables
-cp .env.example .env          # then fill in your own PostgreSQL credentials
-
-# 5. Initialize the database
-flask db upgrade
-
-# 6. (Optional) Seed the database with demo data
-python init_books.py
-python init_clubs.py
-python init_courses.py
-python init_tuyaux.py
-
-# 7. Run the application
-python run.py
+make dev          # venv + dependencies + SQLite + demo data + server on http://127.0.0.1:5001
+make test         # test suite
 ```
 
----
+Demo accounts (password `Demo-ISTA-2026`): `admin.demo`, `enseignant.demo`, `etudiant.demo`, `etudiante.demo`.
 
-## 🎯 Skills demonstrated
+Production: `docker compose up -d --build` (PostgreSQL + gunicorn) behind an HTTPS proxy — see the
+French README for configuration, deployment and backups.
 
-- Relational database design and modeling
-- Back-end development with Flask (routing, ORM, authentication)
-- Database schema migration management
-- Modular software architecture
-- Independent project management, from requirements to delivery
-
----
+**Stack**: Python 3.11+, Flask 3, SQLAlchemy 2, Alembic, Flask-Login, Flask-WTF, Flask-Babel,
+PostgreSQL (SQLite in development), vanilla CSS/JS, service worker.
 
 ## 👤 Author
 

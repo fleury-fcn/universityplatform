@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ course.title if course else _("Nouveau cours") }}{% endblock %}
+{% block content %}
+<h1>{{ course.title if course else _("Nouveau cours") }}</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="grid-2">{{ field(form.code) }}{{ field(form.credits) }}</div>
+  {{ field(form.title) }}
+  <div class="grid-2">{{ field(form.promotion_id) }}{{ field(form.semester) }}</div>
+  {{ field(form.teacher_id, hint=_("L'enseignant responsable peut déposer des documents et saisir les notes.")) }}
+  {{ field(form.description, rows=5) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('courses.manage') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

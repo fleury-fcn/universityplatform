@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty, demo_badge %}
+{% block title %}{{ _("Gérer les cours") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Gérer les cours") }}</h1>
+  <a class="btn btn-sm" href="{{ url_for('courses.edit', promotion=promotion_id) }}">{{ icon("plus") }} {{ _("Nouveau cours") }}</a>
+</div>
+<form method="get" class="row promo-picker">
+  <label class="visually-hidden" for="promotion">{{ _("Promotion") }}</label>
+  <select id="promotion" name="promotion" class="spacer" data-autosubmit>
+    <option value="">{{ _("Toutes les promotions") }}</option>
+    {% for p in promotions %}<option value="{{ p.id }}" {{ "selected" if p.id == promotion_id }}>{{ p.name }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-secondary btn-sm">{{ _("Afficher") }}</button>
+</form>
+{% if courses %}
+<ul class="list">
+  {% for c in courses %}
+  <li class="list-item">
+    <span class="grow">
+      <a class="title" href="{{ url_for('courses.edit', course_id=c.id) }}">{{ c.title }}</a> {{ demo_badge(c) }}
+      <span class="meta">{{ c.code }} · {{ c.promotion.name }} · S{{ c.semester }}{% if c.teacher %} · {{ c.teacher.full_name }}{% endif %}</span>
+    </span>
+    <a class="btn btn-secondary btn-sm" href="{{ url_for('courses.show', course_id=c.id) }}">{{ _("Documents") }}</a>
+    <form method="post" action="{{ url_for('courses.delete', course_id=c.id) }}" data-confirm="{{ _('Supprimer ce cours et tous ses documents ?') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}{{ empty(_("Aucun cours.")) }}{% endif %}
+{% endblock %}

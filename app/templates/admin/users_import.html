@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ _("Importer des comptes") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Importer des comptes") }}</h1>
+<section class="card prose">
+  <p>{{ _("Fichier CSV (séparateur point-virgule ou virgule) avec une ligne d'en-tête :") }}</p>
+  <pre class="code">matricule;prenom;nom;email;promotion;role</pre>
+  <p class="small muted">{{ _("« promotion » est le code de la promotion (ex. BAC2-ARISK-A). « role » vaut etudiant, enseignant ou admin (etudiant par défaut). L'e-mail est facultatif.") }}</p>
+  <p class="small muted">{{ _("Si une ligne contient une erreur, rien n'est importé. Sinon, un fichier avec les mots de passe provisoires est téléchargé : conservez-le en lieu sûr et supprimez-le après distribution.") }}</p>
+</section>
+{% if errors %}
+<div class="flash flash-danger" role="alert">
+  <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+<form method="post" enctype="multipart/form-data" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.file, accept=".csv,text/csv") }}
+  <button type="submit" class="btn">{{ _("Importer") }}</button>
+</form>
+{% endblock %}

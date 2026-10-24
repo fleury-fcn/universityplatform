@@ -1,0 +1,9 @@
+<section aria-labelledby="news-widget-title">
+  <div class="section-head">
+    <h2 id="news-widget-title" class="section-title">{{ _("Dernières actualités") }}</h2>
+    <a href="{{ url_for('news.index') }}">{{ _("Tout voir") }}</a>
+  </div>
+  <ul class="list">
+    {% for item in w["items"] %}<li>{% include "news/_item.html" %}</li>{% endfor %}
+  </ul>
+</section>

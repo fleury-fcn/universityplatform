@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ _("Emploi du temps") }}{% endblock %}
+{% block content %}
+{% set args = {"promotion": promotion_id} if promotions and promotion_id else {} %}
+<div class="page-header">
+  <h1>{{ _("Emploi du temps") }}</h1>
+  {% if current_user.is_admin %}<a class="btn btn-sm" href="{{ url_for('schedule.manage', promotion=promotion_id) }}">{{ icon("settings") }} {{ _("Gérer") }}</a>{% endif %}
+</div>
+
+{% if promotions %}
+<form method="get" class="row promo-picker">
+  <input type="hidden" name="vue" value="{{ view }}">
+  <input type="hidden" name="date" value="{{ day.isoformat() }}">
+  <label class="visually-hidden" for="promotion">{{ _("Promotion") }}</label>
+  <select id="promotion" name="promotion" class="spacer" data-autosubmit>
+    {% if current_user.is_teacher %}<option value="">{{ _("Mes séances") }}</option>{% endif %}
+    {% for p in promotions %}<option value="{{ p.id }}" {{ "selected" if p.id == promotion_id }}>{{ p.name }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-secondary btn-sm">{{ _("Afficher") }}</button>
+</form>
+{% endif %}
+
+<nav class="chips" aria-label="{{ _('Affichage') }}">
+  <a class="chip" href="{{ url_for('schedule.index', vue='jour', date=day.isoformat(), **args) }}"{% if view == "jour" %} aria-current="true"{% endif %}>{{ _("Jour") }}</a>
+  <a class="chip" href="{{ url_for('schedule.index', vue='semaine', date=day.isoformat(), **args) }}"{% if view == "semaine" %} aria-current="true"{% endif %}>{{ _("Semaine") }}</a>
+  {% if day != today %}<a class="chip" href="{{ url_for('schedule.index', vue=view, **args) }}">{{ _("Aujourd'hui") }}</a>{% endif %}
+</nav>
+
+<div class="day-nav">
+  <a class="btn btn-secondary btn-sm" href="{{ url_for('schedule.index', vue=view, date=prev_day.isoformat(), **args) }}" aria-label="{{ _('Précédent') }}">{{ icon("chevron-left") }}</a>
+  <strong>
+    {% if view == "semaine" %}{{ _("Semaine du %(d)s", d=days[0][0]|date("long")) if days else "" }}
+    {% else %}{{ day|date("full") }}{% endif %}
+  </strong>
+  <a class="btn btn-secondary btn-sm" href="{{ url_for('schedule.index', vue=view, date=next_day.isoformat(), **args) }}" aria-label="{{ _('Suivant') }}">{{ icon("chevron-right") }}</a>
+</div>
+
+{% if current_user.is_student and not current_user.promotion_id %}
+  {{ empty(_("Votre compte n'est rattaché à aucune promotion. Contactez l'administration.")) }}
+{% elif not days %}
+  {{ empty(_("Aucune promotion à afficher.")) }}
+{% else %}
+  {% set show_promotion = teacher_id is not none %}
+  {% for d, entries in days %}
+    {% set day = d %}
+    <section class="week-day">
+      {% if view == "semaine" %}<h2 class="section-title">{{ d|date("EEEE d MMMM") }}{% if d == today %} · {{ _("aujourd'hui") }}{% endif %}</h2>{% endif %}
+      {% if entries %}
+        <ul class="list">{% for e in entries %}{% include "schedule/_slot.html" %}{% endfor %}</ul>
+      {% else %}
+        <p class="empty">{{ _("Pas de cours.") }}</p>
+      {% endif %}
+    </section>
+  {% endfor %}
+{% endif %}
+<p class="hint">{{ _("Les emplois du temps consultés restent disponibles hors connexion.") }}</p>
+{% endblock %}

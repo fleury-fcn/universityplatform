@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block content %}
+<section class="hero">
+  {% if current_user.is_authenticated %}
+    <h1>{{ _("Bonjour %(name)s", name=current_user.first_name) }}</h1>
+  {% else %}
+    <h1>{{ _("Bienvenue à l'ISTA") }}</h1>
+  {% endif %}
+  <p>{{ _("Tout l'institut dans votre poche.") }}</p>
+</section>
+
+{% for template, ctx in widgets %}
+  {% with w = ctx %}{% include template %}{% endwith %}
+{% endfor %}
+
+{% if features %}
+<section aria-labelledby="services-title">
+  <h2 id="services-title" class="section-title">{{ _("Services") }}</h2>
+  <ul class="tiles">
+    {% for f in features %}
+      <li><a class="tile" href="{{ url_for(f.endpoint) }}">{{ icon(f.icon) }}<span>{{ f.label }}</span></a></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

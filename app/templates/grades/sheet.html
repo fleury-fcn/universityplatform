@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ _("Notes") }} · {{ course.title }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('grades.index') }}">{{ icon("chevron-left") }} {{ _("Saisie des notes") }}</a></p>
+<h1>{{ course.title }}</h1>
+<p class="muted">{{ course.code }} · {{ course.promotion.name }} · {{ _("Semestre %(n)d", n=course.semester) }}</p>
+<nav class="chips" aria-label="{{ _('Session') }}">
+  {% for s in sessions %}
+    <a class="chip" href="{{ url_for('grades.sheet', course_id=course.id, session=s) }}"{% if s == session %} aria-current="true"{% endif %}>{{ _("Session normale") if s == "normale" else _("Rattrapage") }}</a>
+  {% endfor %}
+</nav>
+
+{% if students %}
+<form method="post" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th scope="col">{{ _("Étudiant") }}</th><th scope="col">{{ _("Note /20") }}</th><th scope="col">{{ _("Absent") }}</th></tr></thead>
+      <tbody>
+      {% for s in students %}
+        {% set g = grades.get(s.id) %}
+        <tr>
+          <td><label for="note-{{ s.id }}">{{ s.last_name }} {{ s.first_name }}</label><br><span class="muted small">{{ s.matricule }}</span>
+            {% if g and g.published_at %}<span class="badge badge-success">{{ _("publiée") }}</span>{% endif %}</td>
+          <td>
+            <input type="text" inputmode="decimal" id="note-{{ s.id }}" name="note-{{ s.id }}" size="5"
+                   value="{{ errors[s.id] if s.id in errors else ('' if not g or g.value is none else g.value|string|replace('.', ',')) }}"
+                   {% if s.id in errors %}aria-invalid="true" class="invalid"{% endif %} autocomplete="off">
+          </td>
+          <td><input type="checkbox" name="absent-{{ s.id }}" value="1" aria-label="{{ _('Absent') }}" {{ "checked" if g and g.is_absent }}></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('grades.export', course_id=course.id, session=session) }}">{{ icon("download") }} {{ _("Exporter (CSV)") }}</a>
+  </div>
+</form>
+
+<section class="card publish-box">
+  <h2>{{ _("Publication") }}</h2>
+  {% if pending %}
+    <p>{{ _("%(n)d note(s) enregistrée(s) mais non visibles par les étudiants.", n=pending) }}</p>
+    <form method="post" action="{{ url_for('grades.publish', course_id=course.id) }}" data-confirm="{{ _('Publier ces notes ? Les étudiants seront prévenus.') }}">
+      {{ form.hidden_tag() }}
+      <input type="hidden" name="session" value="{{ session }}">
+      <button class="btn">{{ _("Publier les notes") }}</button>
+    </form>
+  {% elif published %}
+    <p class="muted">{{ _("Toutes les notes de cette session sont publiées. Une modification est visible immédiatement.") }}</p>
+  {% else %}
+    <p class="muted">{{ _("Aucune note enregistrée pour cette session.") }}</p>
+  {% endif %}
+</section>
+{% else %}
+  {{ empty(_("Aucun étudiant actif dans cette promotion.")) }}
+{% endif %}
+{% endblock %}

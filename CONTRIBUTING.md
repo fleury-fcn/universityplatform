@@ -15,16 +15,17 @@ You don't need to be an expert developer to help. Here are several ways to get i
 - **💻 Write code** — Fix bugs, build features, improve performance. See [Good first issues](#-good-first-issues) below.
 - **📝 Improve documentation** — Clearer setup instructions, better code comments, or corrections to this file are all welcome.
 - **🎨 Improve the UI** — The frontend is built with HTML/Jinja2 templates and could benefit from design polish.
-- **🧪 Add tests** — The project currently has limited automated test coverage — contributions here are especially valuable.
+- **🧪 Add tests** — Every feature has tests under `tests/`; new behaviour should come with new tests.
 
 ---
 
 ## 🛠️ Setting up your development environment
 
 ### Prerequisites
-- Python 3.10+
-- PostgreSQL
+- Python 3.11+
 - Git
+- `make` (macOS / Linux) — Windows commands are in the [French README](README.fr.md)
+- PostgreSQL is optional (SQLite is used by default in development)
 
 ### Steps
 
@@ -36,30 +37,16 @@ cd universityplatform
 # 2. Add the original repository as an upstream remote
 git remote add upstream https://github.com/fleury-fcn/universityplatform.git
 
-# 3. Create a virtual environment
-python -m venv venv
-source venv/bin/activate      # on Windows: venv\Scripts\activate
+# 3. Install, create the SQLite database, load demo data and run
+make dev
 
-# 4. Install dependencies
-pip install -r requirements.txt
-
-# 5. Configure environment variables
-cp .env.example .env
-# Edit .env with your own PostgreSQL credentials
-
-# 6. Initialize the database
-flask db upgrade
-
-# 7. (Optional) Seed the database with demo data
-python init_books.py
-python init_clubs.py
-python init_courses.py
-python init_tuyaux.py
-python init_base_data.py
-
-# 8. Run the application
-python run.py
+# 4. Run the tests (please add tests with every change)
+make test
 ```
+
+After changing a model: `flask --app run.py db migrate -m "short description"` then
+`flask --app run.py db upgrade`, and commit the generated migration. User-facing text is written in
+French and wrapped in `_()` so it can be translated (`make translations`).
 
 You now have a working local copy of the platform. 🎉
 
@@ -105,7 +92,7 @@ Don't see one that fits? Feel free to open an issue proposing a small improvemen
 
 ## 🧭 Project structure
 
-For an overview of how the codebase is organized (academic management, teachers, library, clubs, messaging), see the [README](README.md#-project-structure).
+For an overview of how the codebase is organized (one module per feature under `app/`), see the [French README](README.fr.md#-architecture).
 
 ---
 

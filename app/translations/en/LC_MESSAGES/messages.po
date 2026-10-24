@@ -1,0 +1,2695 @@
+# English translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-24 23:21+0200\n"
+"PO-Revision-Date: 2026-10-24 22:20+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app/admin/academic.py:21
+msgid "Lettres, chiffres, +, - et _ uniquement."
+msgstr ""
+
+#: app/admin/academic.py:30 app/admin/academic.py:36 app/admin/academic.py:44
+#: app/campus/forms.py:21 app/courses/forms.py:20
+#: app/templates/campus/show.html:9
+msgid "Code"
+msgstr ""
+
+#: app/admin/academic.py:31 app/admin/academic.py:37 app/admin/academic.py:45
+#: app/admin/forms.py:24 app/auth/forms.py:29 app/campus/forms.py:23
+#: app/clubs/forms.py:20 app/templates/admin/password_issued.html:7
+msgid "Nom"
+msgstr ""
+
+#: app/admin/academic.py:32 app/admin/academic.py:40 app/courses/forms.py:27
+msgid "Description"
+msgstr ""
+
+#: app/admin/academic.py:38
+msgid "Cycle"
+msgstr ""
+
+#: app/admin/academic.py:38
+msgid "Licence (BAC)"
+msgstr ""
+
+#: app/admin/academic.py:38
+msgid "Master"
+msgstr ""
+
+#: app/admin/academic.py:39 app/admin/academic.py:64
+#: app/templates/admin/academic.html:9 app/templates/profile/show.html:23
+msgid "Département"
+msgstr ""
+
+#: app/admin/academic.py:46
+msgid "Niveau"
+msgstr ""
+
+#: app/admin/academic.py:47
+msgid "Ex. BAC1, BAC2, BAC3, M1, M2"
+msgstr ""
+
+#: app/admin/academic.py:49
+msgid "Année académique"
+msgstr ""
+
+#: app/admin/academic.py:50
+msgid "Format attendu : 2026-2027"
+msgstr ""
+
+#: app/admin/academic.py:53 app/admin/academic.py:65
+#: app/templates/admin/academic.html:10 app/templates/profile/show.html:22
+msgid "Filière"
+msgstr ""
+
+#: app/admin/academic.py:54
+msgid "Promotion en cours"
+msgstr ""
+
+#: app/admin/academic.py:60
+msgid "La seconde année doit suivre la première."
+msgstr ""
+
+#: app/admin/academic.py:66 app/admin/forms.py:29 app/auth/forms.py:31
+#: app/courses/forms.py:23 app/schedule/forms.py:24
+#: app/templates/admin/academic.html:11 app/templates/courses/manage.html:10
+#: app/templates/grades/staff.html:8 app/templates/profile/show.html:21
+#: app/templates/schedule/index.html:15 app/templates/schedule/manage.html:11
+msgid "Promotion"
+msgstr ""
+
+#: app/admin/academic.py:99 app/campus/routes.py:93
+msgid "Ce code est déjà utilisé."
+msgstr ""
+
+#: app/admin/academic.py:106
+msgid "Enregistré."
+msgstr ""
+
+#: app/admin/forms.py:15 app/templates/admin/users.html:46
+#: app/templates/messages/directory.html:21 app/templates/profile/show.html:14
+msgid "Étudiant·e"
+msgstr ""
+
+#: app/admin/forms.py:16 app/templates/admin/users.html:46
+#: app/templates/messages/directory.html:21 app/templates/profile/show.html:14
+msgid "Enseignant·e"
+msgstr ""
+
+#: app/admin/forms.py:17 app/core/templating.py:22
+#: app/templates/admin/index.html:3 app/templates/admin/index.html:5
+#: app/templates/admin/users.html:23 app/templates/admin/users.html:46
+#: app/templates/messages/directory.html:21 app/templates/profile/show.html:14
+msgid "Administration"
+msgstr ""
+
+#: app/admin/forms.py:22 app/templates/admin/users.html:18
+msgid "Rôle"
+msgstr ""
+
+#: app/admin/forms.py:23 app/auth/forms.py:28
+msgid "Prénom"
+msgstr ""
+
+#: app/admin/forms.py:26
+msgid "Identifiant de connexion"
+msgstr ""
+
+#: app/admin/forms.py:27 app/auth/forms.py:27
+#: app/templates/profile/show.html:19
+msgid "Matricule"
+msgstr ""
+
+#: app/admin/forms.py:28 app/profile/forms.py:10
+#: app/templates/profile/show.html:26
+msgid "E-mail"
+msgstr ""
+
+#: app/admin/forms.py:30
+msgid "Compte actif"
+msgstr ""
+
+#: app/admin/forms.py:34
+msgid "Le matricule est obligatoire pour un étudiant."
+msgstr ""
+
+#: app/admin/forms.py:39
+msgid "Indiquez un identifiant ou un matricule."
+msgstr ""
+
+#: app/admin/forms.py:41
+msgid "Au moins 3 caractères : lettres, chiffres, point, tiret ou tiret bas."
+msgstr ""
+
+#: app/admin/forms.py:46
+msgid "Fichier CSV"
+msgstr ""
+
+#: app/admin/forms.py:47
+msgid "Fichier CSV uniquement."
+msgstr ""
+
+#: app/admin/routes.py:24 app/templates/admin/users.html:3
+#: app/templates/admin/users.html:6
+msgid "Utilisateurs"
+msgstr ""
+
+#: app/admin/routes.py:25 app/templates/admin/academic.html:3
+#: app/templates/admin/academic.html:6
+msgid "Filières et promotions"
+msgstr ""
+
+#: app/admin/routes.py:26 app/core/templating.py:12
+#: app/templates/news/index.html:3 app/templates/news/index.html:6
+#: app/templates/news/show.html:5
+msgid "Actualités"
+msgstr ""
+
+#: app/admin/routes.py:27 app/core/templating.py:13
+#: app/templates/schedule/index.html:3 app/templates/schedule/index.html:7
+msgid "Emploi du temps"
+msgstr ""
+
+#: app/admin/routes.py:28 app/core/templating.py:14 app/core/templating.py:28
+#: app/templates/courses/index.html:3 app/templates/courses/index.html:6
+#: app/templates/courses/show.html:5 app/templates/grades/student.html:23
+msgid "Cours"
+msgstr ""
+
+#: app/admin/routes.py:29 app/campus/forms.py:13 app/core/templating.py:16
+#: app/templates/library/index.html:3 app/templates/library/index.html:6
+#: app/templates/library/mine.html:5 app/templates/library/show.html:5
+msgid "Bibliothèque"
+msgstr ""
+
+#: app/admin/routes.py:30
+msgid "Campus et salles"
+msgstr ""
+
+#: app/admin/routes.py:31 app/core/templating.py:18
+#: app/templates/clubs/index.html:3 app/templates/clubs/show.html:5
+msgid "Clubs"
+msgstr ""
+
+#: app/admin/routes.py:32 app/templates/tips/moderate.html:3
+#: app/templates/tips/moderate.html:5
+msgid "Modération des tuyaux"
+msgstr ""
+
+#: app/admin/routes.py:33 app/core/templating.py:21
+msgid "Questions fréquentes"
+msgstr ""
+
+#: app/admin/routes.py:113
+msgid "Vous ne pouvez pas retirer vos propres droits d'administration."
+msgstr ""
+
+#: app/admin/routes.py:123
+msgid "Compte mis à jour."
+msgstr ""
+
+#: app/admin/routes.py:149
+#, python-format
+msgid "Compte de %(name)s activé."
+msgstr ""
+
+#: app/admin/routes.py:162
+msgid "Fichier trop volumineux (1 Mo maximum)."
+msgstr ""
+
+#: app/admin/routes.py:175
+msgid "Aucune ligne à importer."
+msgstr ""
+
+#: app/auth/forms.py:11
+msgid "Matricule, identifiant ou e-mail"
+msgstr ""
+
+#: app/auth/forms.py:13 app/auth/forms.py:32
+msgid "Mot de passe"
+msgstr ""
+
+#: app/auth/forms.py:14
+msgid "Rester connecté sur cet appareil"
+msgstr ""
+
+#: app/auth/forms.py:18
+msgid "Mot de passe actuel"
+msgstr ""
+
+#: app/auth/forms.py:19
+msgid "Nouveau mot de passe"
+msgstr ""
+
+#: app/auth/forms.py:21
+msgid "Confirmer le nouveau mot de passe"
+msgstr ""
+
+#: app/auth/forms.py:22 app/auth/forms.py:35
+msgid "Les mots de passe ne correspondent pas."
+msgstr ""
+
+#: app/auth/forms.py:30
+msgid "E-mail (facultatif)"
+msgstr ""
+
+#: app/auth/forms.py:34
+msgid "Confirmer le mot de passe"
+msgstr ""
+
+#: app/auth/routes.py:38
+msgid "Trop de tentatives. Réessayez dans quelques minutes."
+msgstr ""
+
+#: app/auth/routes.py:42
+msgid "Votre compte n'est pas encore activé par l'administration."
+msgstr ""
+
+#: app/auth/routes.py:52
+msgid "Identifiant ou mot de passe incorrect."
+msgstr ""
+
+#: app/auth/routes.py:59
+msgid "Vous êtes déconnecté."
+msgstr ""
+
+#: app/auth/routes.py:70
+msgid "Mot de passe actuel incorrect."
+msgstr ""
+
+#: app/auth/routes.py:72
+msgid "Choisissez un mot de passe différent de l'actuel."
+msgstr ""
+
+#: app/auth/routes.py:74 app/core/forms.py:23
+msgid "Le mot de passe doit être différent de l'identifiant."
+msgstr ""
+
+#: app/auth/routes.py:81
+msgid "Mot de passe modifié."
+msgstr ""
+
+#: app/auth/routes.py:100
+msgid "Ce matricule est déjà enregistré."
+msgstr ""
+
+#: app/auth/routes.py:102 app/profile/routes.py:29
+msgid "Cet e-mail est déjà utilisé."
+msgstr ""
+
+#: app/auth/routes.py:117
+msgid ""
+"Demande envoyée. Vous pourrez vous connecter dès que l'administration "
+"aura validé votre compte."
+msgstr ""
+
+#: app/campus/forms.py:10
+msgid "Amphithéâtre"
+msgstr ""
+
+#: app/campus/forms.py:11
+msgid "Salle de cours"
+msgstr ""
+
+#: app/campus/forms.py:12
+msgid "Laboratoire"
+msgstr ""
+
+#: app/campus/forms.py:14
+msgid "Bureau"
+msgstr ""
+
+#: app/campus/forms.py:15
+msgid "Service"
+msgstr ""
+
+#: app/campus/forms.py:16 app/clubs/forms.py:15 app/schedule/forms.py:14
+#: app/tips/forms.py:17
+msgid "Autre"
+msgstr ""
+
+#: app/campus/forms.py:24 app/courses/forms.py:32 app/schedule/forms.py:26
+#: app/templates/campus/show.html:10
+msgid "Type"
+msgstr ""
+
+#: app/campus/forms.py:25 app/templates/campus/show.html:11
+msgid "Bâtiment"
+msgstr ""
+
+#: app/campus/forms.py:26 app/templates/campus/show.html:12
+msgid "Étage"
+msgstr ""
+
+#: app/campus/forms.py:27
+msgid "Capacité (places)"
+msgstr ""
+
+#: app/campus/forms.py:28
+msgid "Comment s'y rendre, équipements..."
+msgstr ""
+
+#: app/campus/forms.py:29
+msgid "Latitude"
+msgstr ""
+
+#: app/campus/forms.py:30
+msgid "Longitude"
+msgstr ""
+
+#: app/campus/forms.py:34
+msgid "Titre du plan"
+msgstr ""
+
+#: app/campus/forms.py:35
+msgid "Image (PNG ou JPEG, 5 Mo maximum)"
+msgstr ""
+
+#: app/campus/routes.py:62
+msgid "Plan ajouté."
+msgstr ""
+
+#: app/campus/routes.py:78
+msgid "Plan supprimé."
+msgstr ""
+
+#: app/campus/routes.py:95
+msgid "Renseignez la latitude et la longitude, ou aucune des deux."
+msgstr ""
+
+#: app/campus/routes.py:102
+msgid "Lieu enregistré."
+msgstr ""
+
+#: app/campus/routes.py:114
+msgid "Lieu supprimé. Les séances qui l'utilisaient n'ont plus de salle."
+msgstr ""
+
+#: app/clubs/forms.py:9
+msgid "Sciences"
+msgstr ""
+
+#: app/clubs/forms.py:10
+msgid "Technologie"
+msgstr ""
+
+#: app/clubs/forms.py:11
+msgid "Société et langues"
+msgstr ""
+
+#: app/clubs/forms.py:12
+msgid "Culture"
+msgstr ""
+
+#: app/clubs/forms.py:13
+msgid "Entrepreneuriat"
+msgstr ""
+
+#: app/clubs/forms.py:14
+msgid "Sport"
+msgstr ""
+
+#: app/clubs/forms.py:21 app/library/forms.py:24 app/news/forms.py:11
+#: app/templates/library/show.html:10 app/tips/forms.py:23
+msgid "Catégorie"
+msgstr ""
+
+#: app/clubs/forms.py:22
+msgid "Présentation"
+msgstr ""
+
+#: app/clubs/forms.py:23
+msgid "Fréquence des réunions"
+msgstr ""
+
+#: app/clubs/forms.py:25
+msgid "Thèmes (séparés par des virgules)"
+msgstr ""
+
+#: app/clubs/forms.py:27
+msgid "Contact"
+msgstr ""
+
+#: app/clubs/forms.py:28
+msgid "Club actif"
+msgstr ""
+
+#: app/clubs/forms.py:32
+msgid "Annonce aux membres"
+msgstr ""
+
+#: app/clubs/forms.py:36
+msgid "Matricule ou identifiant du responsable"
+msgstr ""
+
+#: app/clubs/routes.py:39
+#, python-format
+msgid "%(club)s : nouvelle annonce"
+msgstr ""
+
+#: app/clubs/routes.py:42
+msgid "Annonce publiée et envoyée aux membres."
+msgstr ""
+
+#: app/clubs/routes.py:59
+#, python-format
+msgid "Bienvenue au club %(club)s !"
+msgstr ""
+
+#: app/clubs/routes.py:73
+msgid "Vous avez quitté le club."
+msgstr ""
+
+#: app/clubs/routes.py:109
+msgid "Un club porte déjà ce nom."
+msgstr ""
+
+#: app/clubs/routes.py:116
+msgid "Club enregistré."
+msgstr ""
+
+#: app/clubs/routes.py:129
+msgid "Aucun compte ne correspond à cet identifiant."
+msgstr ""
+
+#: app/clubs/routes.py:137
+#, python-format
+msgid "%(name)s est responsable du club."
+msgstr ""
+
+#: app/core/files.py:116
+#, python-format
+msgid "Type de fichier non autorisé (%(ext)s)."
+msgstr ""
+
+#: app/core/files.py:131
+#, python-format
+msgid "Fichier trop volumineux (%(n)d Mo maximum)."
+msgstr ""
+
+#: app/core/files.py:133
+msgid "Le fichier est vide."
+msgstr ""
+
+#: app/core/files.py:141
+#, python-format
+msgid "Le contenu du fichier ne correspond pas à son extension (%(ext)s)."
+msgstr ""
+
+#: app/core/forms.py:17
+#, python-format
+msgid "Au moins %(n)d caractères."
+msgstr ""
+
+#: app/core/forms.py:19
+msgid "Le mot de passe ne doit pas contenir uniquement des chiffres."
+msgstr ""
+
+#: app/core/templating.py:15 app/templates/grades/sheet.html:3
+msgid "Notes"
+msgstr ""
+
+#: app/core/templating.py:17 app/templates/campus/index.html:3
+#: app/templates/campus/index.html:6 app/templates/campus/show.html:5
+msgid "Campus"
+msgstr ""
+
+#: app/core/templating.py:19 app/templates/tips/index.html:3
+#: app/templates/tips/index.html:6 app/templates/tips/mine.html:5
+#: app/templates/tips/show.html:5
+msgid "Tuyaux"
+msgstr ""
+
+#: app/core/templating.py:20 app/core/templating.py:29
+#: app/templates/messages/_tabs.html:3 app/templates/messages/inbox.html:3
+#: app/templates/messages/show.html:5
+msgid "Messages"
+msgstr ""
+
+#: app/core/templating.py:26 app/templates/base.html:6
+msgid "Accueil"
+msgstr ""
+
+#: app/core/templating.py:27
+msgid "Horaires"
+msgstr ""
+
+#: app/core/templating.py:30
+msgid "Profil"
+msgstr ""
+
+#: app/courses/forms.py:10
+msgid "Supports de cours"
+msgstr ""
+
+#: app/courses/forms.py:11 app/schedule/forms.py:13
+msgid "Travaux dirigés"
+msgstr ""
+
+#: app/courses/forms.py:12 app/schedule/forms.py:13
+msgid "Travaux pratiques"
+msgstr ""
+
+#: app/courses/forms.py:13
+msgid "Anciens sujets d'examen"
+msgstr ""
+
+#: app/courses/forms.py:14
+msgid "Corrigés"
+msgstr ""
+
+#: app/courses/forms.py:15
+msgid "Autres documents"
+msgstr ""
+
+#: app/courses/forms.py:22 app/schedule/forms.py:25
+msgid "Intitulé"
+msgstr ""
+
+#: app/courses/forms.py:24
+msgid "Semestre"
+msgstr ""
+
+#: app/courses/forms.py:24
+msgid "Semestre 1"
+msgstr ""
+
+#: app/courses/forms.py:24
+msgid "Semestre 2"
+msgstr ""
+
+#: app/courses/forms.py:25 app/templates/grades/student.html:23
+msgid "Crédits"
+msgstr ""
+
+#: app/courses/forms.py:26
+msgid "Enseignant responsable"
+msgstr ""
+
+#: app/courses/forms.py:31 app/library/forms.py:22 app/news/forms.py:10
+#: app/tips/forms.py:22
+msgid "Titre"
+msgstr ""
+
+#: app/courses/forms.py:34
+msgid "Année académique (facultatif)"
+msgstr ""
+
+#: app/courses/forms.py:35
+msgid "Format attendu : 2025-2026"
+msgstr ""
+
+#: app/courses/forms.py:38
+msgid "Fichier"
+msgstr ""
+
+#: app/courses/routes.py:76
+#, python-format
+msgid "Nouveau document en %(course)s : %(title)s"
+msgstr ""
+
+#: app/courses/routes.py:79
+msgid "Document ajouté."
+msgstr ""
+
+#: app/courses/routes.py:99
+msgid "Document supprimé."
+msgstr ""
+
+#: app/courses/routes.py:136
+msgid "Ce code existe déjà pour cette promotion."
+msgstr ""
+
+#: app/courses/routes.py:144
+msgid "Cours enregistré."
+msgstr ""
+
+#: app/courses/routes.py:159
+msgid "Cours supprimé."
+msgstr ""
+
+#: app/grades/routes.py:87
+msgid ""
+"Certaines notes sont invalides (nombre entre 0 et 20 attendu). Rien n'a "
+"été enregistré."
+msgstr ""
+
+#: app/grades/routes.py:102
+msgid "Notes enregistrées."
+msgstr ""
+
+#: app/grades/routes.py:123
+#, python-format
+msgid "Note publiée : %(course)s (session %(session)s)"
+msgstr ""
+
+#: app/grades/routes.py:126
+#, python-format
+msgid "%(n)d note(s) publiée(s). Les étudiants ont été prévenus."
+msgstr ""
+
+#: app/library/forms.py:10
+msgid "Statistique"
+msgstr ""
+
+#: app/library/forms.py:11
+msgid "Probabilités"
+msgstr ""
+
+#: app/library/forms.py:12
+msgid "Actuariat"
+msgstr ""
+
+#: app/library/forms.py:13
+msgid "Économie"
+msgstr ""
+
+#: app/library/forms.py:14
+msgid "Science des données"
+msgstr ""
+
+#: app/library/forms.py:15
+msgid "Informatique"
+msgstr ""
+
+#: app/library/forms.py:16
+msgid "Mathématiques"
+msgstr ""
+
+#: app/library/forms.py:17
+msgid "Divers"
+msgstr ""
+
+#: app/library/forms.py:23
+msgid "Auteur(s)"
+msgstr ""
+
+#: app/library/forms.py:25 app/templates/base.html:57
+#: app/templates/profile/show.html:27
+msgid "Langue"
+msgstr ""
+
+#: app/library/forms.py:27
+msgid "ISBN"
+msgstr ""
+
+#: app/library/forms.py:28 app/templates/library/show.html:12
+msgid "Éditeur"
+msgstr ""
+
+#: app/library/forms.py:29
+msgid "Année de publication"
+msgstr ""
+
+#: app/library/forms.py:30
+msgid "Cote (emplacement en rayon)"
+msgstr ""
+
+#: app/library/forms.py:32
+msgid "Nombre d'exemplaires papier"
+msgstr ""
+
+#: app/library/forms.py:33
+msgid "Indiquez un nombre (0 si numérique seulement)."
+msgstr ""
+
+#: app/library/forms.py:35
+msgid "Résumé"
+msgstr ""
+
+#: app/library/forms.py:36
+msgid "Version numérique (PDF, facultatif)"
+msgstr ""
+
+#: app/library/forms.py:37
+msgid "Retirer la version numérique actuelle"
+msgstr ""
+
+#: app/library/routes.py:27
+msgid "Demande envoyée"
+msgstr ""
+
+#: app/library/routes.py:27 app/templates/library/reservations.html:26
+msgid "Prêt à retirer"
+msgstr ""
+
+#: app/library/routes.py:27 app/templates/library/index.html:36
+msgid "Emprunté"
+msgstr ""
+
+#: app/library/routes.py:28 app/templates/library/reservations.html:28
+msgid "Rendu"
+msgstr ""
+
+#: app/library/routes.py:28
+msgid "Annulée"
+msgstr ""
+
+#: app/library/routes.py:28
+msgid "Refusée"
+msgstr ""
+
+#: app/library/routes.py:95
+msgid "Vous avez déjà une réservation en cours pour ce livre."
+msgstr ""
+
+#: app/library/routes.py:97
+#, python-format
+msgid "Vous avez atteint la limite de %(n)d réservations en cours."
+msgstr ""
+
+#: app/library/routes.py:99
+msgid "Ce livre n'est disponible qu'en version numérique."
+msgstr ""
+
+#: app/library/routes.py:103
+msgid "Demande envoyée. Vous serez prévenu quand le livre sera prêt à retirer."
+msgstr ""
+
+#: app/library/routes.py:124
+msgid "Cette réservation ne peut plus être annulée."
+msgstr ""
+
+#: app/library/routes.py:128
+msgid "Réservation annulée."
+msgstr ""
+
+#: app/library/routes.py:160
+msgid "Action impossible pour cette réservation."
+msgstr ""
+
+#: app/library/routes.py:163
+msgid "Aucun exemplaire disponible."
+msgstr ""
+
+#: app/library/routes.py:169
+#, python-format
+msgid "« %(t)s » est prêt : vous pouvez venir le retirer à la bibliothèque."
+msgstr ""
+
+#: app/library/routes.py:170
+#, python-format
+msgid "Emprunt de « %(t)s » enregistré."
+msgstr ""
+
+#: app/library/routes.py:171
+#, python-format
+msgid "Retour de « %(t)s » enregistré. Merci !"
+msgstr ""
+
+#: app/library/routes.py:172
+#, python-format
+msgid "Votre demande pour « %(t)s » n'a pas pu être satisfaite."
+msgstr ""
+
+#: app/library/routes.py:176
+msgid "Réservation mise à jour."
+msgstr ""
+
+#: app/library/routes.py:205
+msgid "Livre enregistré."
+msgstr ""
+
+#: app/library/routes.py:215
+msgid "Impossible : des exemplaires sont prêtés ou réservés."
+msgstr ""
+
+#: app/library/routes.py:222
+msgid "Livre supprimé."
+msgstr ""
+
+#: app/messages/forms.py:11
+msgid "Envoyer à toute une promotion (facultatif)"
+msgstr ""
+
+#: app/messages/forms.py:12
+msgid "Objet"
+msgstr ""
+
+#: app/messages/forms.py:13
+msgid "Message"
+msgstr ""
+
+#: app/messages/forms.py:14
+msgid "Pièces jointes (3 au maximum)"
+msgstr ""
+
+#: app/messages/routes.py:125
+msgid "Message envoyé."
+msgstr ""
+
+#: app/messages/routes.py:136
+msgid "Choisissez au moins un destinataire."
+msgstr ""
+
+#: app/messages/routes.py:138
+#, python-format
+msgid "%(n)d destinataires au maximum."
+msgstr ""
+
+#: app/messages/routes.py:140
+#, python-format
+msgid "%(n)d pièces jointes au maximum."
+msgstr ""
+
+#: app/messages/routes.py:144
+msgid "Trop de messages envoyés récemment. Réessayez plus tard."
+msgstr ""
+
+#: app/messages/routes.py:160
+#, python-format
+msgid "Message de %(name)s : %(subject)s"
+msgstr ""
+
+#: app/messages/routes.py:189
+msgid "Message supprimé."
+msgstr ""
+
+#: app/news/forms.py:12 app/templates/messages/compose.html:11
+msgid "Destinataires"
+msgstr ""
+
+#: app/news/forms.py:14
+msgid "Texte"
+msgstr ""
+
+#: app/news/forms.py:16
+msgid "Texte simple. Laissez une ligne vide entre deux paragraphes."
+msgstr ""
+
+#: app/news/forms.py:18
+msgid "Épingler en haut de la liste"
+msgstr ""
+
+#: app/news/forms.py:19
+msgid "Publier (les destinataires reçoivent une notification)"
+msgstr ""
+
+#: app/news/forms.py:23
+msgid "Nouvelle catégorie"
+msgstr ""
+
+#: app/news/routes.py:56
+msgid "Cette catégorie existe déjà."
+msgstr ""
+
+#: app/news/routes.py:60
+msgid "Catégorie ajoutée."
+msgstr ""
+
+#: app/news/routes.py:68
+msgid "Sans catégorie"
+msgstr ""
+
+#: app/news/routes.py:71 app/templates/news/manage.html:18
+msgid "Tout l'institut"
+msgstr ""
+
+#: app/news/routes.py:108
+msgid "Actualité enregistrée."
+msgstr ""
+
+#: app/news/routes.py:119
+msgid "Actualité supprimée."
+msgstr ""
+
+#: app/profile/forms.py:11
+msgid "Langue de l'application"
+msgstr ""
+
+#: app/profile/routes.py:34
+msgid "Profil mis à jour."
+msgstr ""
+
+#: app/schedule/forms.py:9 app/templates/schedule/manage.html:19
+msgid "Lundi"
+msgstr ""
+
+#: app/schedule/forms.py:9 app/templates/schedule/manage.html:19
+msgid "Mardi"
+msgstr ""
+
+#: app/schedule/forms.py:9 app/templates/schedule/manage.html:19
+msgid "Mercredi"
+msgstr ""
+
+#: app/schedule/forms.py:10 app/templates/schedule/manage.html:19
+msgid "Jeudi"
+msgstr ""
+
+#: app/schedule/forms.py:10 app/templates/schedule/manage.html:19
+msgid "Vendredi"
+msgstr ""
+
+#: app/schedule/forms.py:10 app/templates/schedule/manage.html:19
+msgid "Samedi"
+msgstr ""
+
+#: app/schedule/forms.py:10 app/templates/schedule/manage.html:19
+msgid "Dimanche"
+msgstr ""
+
+#: app/schedule/forms.py:13
+msgid "Cours magistral"
+msgstr ""
+
+#: app/schedule/forms.py:14
+msgid "Examen"
+msgstr ""
+
+#: app/schedule/forms.py:20
+msgid "L'heure de fin doit être après l'heure de début."
+msgstr ""
+
+#: app/schedule/forms.py:27
+msgid "Enseignant (compte)"
+msgstr ""
+
+#: app/schedule/forms.py:29
+msgid "Enseignant (texte libre)"
+msgstr ""
+
+#: app/schedule/forms.py:30
+msgid "Si l'enseignant n'a pas de compte."
+msgstr ""
+
+#: app/schedule/forms.py:32 app/schedule/forms.py:61
+msgid "Salle"
+msgstr ""
+
+#: app/schedule/forms.py:33
+msgid "Fréquence"
+msgstr ""
+
+#: app/schedule/forms.py:33
+msgid "Chaque semaine"
+msgstr ""
+
+#: app/schedule/forms.py:33
+msgid "Une seule fois"
+msgstr ""
+
+#: app/schedule/forms.py:34 app/templates/schedule/index.html:25
+msgid "Jour"
+msgstr ""
+
+#: app/schedule/forms.py:35
+msgid "Date (séance unique)"
+msgstr ""
+
+#: app/schedule/forms.py:36 app/schedule/forms.py:59
+msgid "Début"
+msgstr ""
+
+#: app/schedule/forms.py:37 app/schedule/forms.py:60
+msgid "Fin"
+msgstr ""
+
+#: app/schedule/forms.py:38
+msgid "À partir du"
+msgstr ""
+
+#: app/schedule/forms.py:39
+msgid "Jusqu'au"
+msgstr ""
+
+#: app/schedule/forms.py:40
+msgid "Remarque"
+msgstr ""
+
+#: app/schedule/forms.py:41 app/schedule/forms.py:64
+msgid "Prévenir les étudiants concernés"
+msgstr ""
+
+#: app/schedule/forms.py:48
+msgid "Indiquez la date de la séance."
+msgstr ""
+
+#: app/schedule/forms.py:52
+msgid "La date de fin doit suivre la date de début."
+msgstr ""
+
+#: app/schedule/forms.py:58
+msgid "Annuler cette séance"
+msgstr ""
+
+#: app/schedule/forms.py:62
+msgid "Remarque (motif, consignes...)"
+msgstr ""
+
+#: app/schedule/routes.py:142
+#, python-format
+msgid "Emploi du temps modifié : %(title)s"
+msgstr ""
+
+#: app/schedule/routes.py:144
+msgid "Séance enregistrée."
+msgstr ""
+
+#: app/schedule/routes.py:157
+msgid "Séance supprimée."
+msgstr ""
+
+#: app/schedule/routes.py:188
+#, python-format
+msgid "Séance annulée : %(title)s, %(when)s"
+msgstr ""
+
+#: app/schedule/routes.py:189
+#, python-format
+msgid "Séance modifiée : %(title)s, %(when)s"
+msgstr ""
+
+#: app/schedule/routes.py:192
+msgid "Modification enregistrée pour cette date."
+msgstr ""
+
+#: app/schedule/routes.py:205
+msgid "La séance habituelle est rétablie."
+msgstr ""
+
+#: app/services/users.py:32
+#, python-format
+msgid "L'identifiant « %(v)s » est déjà utilisé."
+msgstr ""
+
+#: app/services/users.py:35
+#, python-format
+msgid "Le matricule « %(v)s » est déjà utilisé."
+msgstr ""
+
+#: app/services/users.py:37
+#, python-format
+msgid "L'e-mail « %(v)s » est déjà utilisé."
+msgstr ""
+
+#: app/services/users.py:82
+#, python-format
+msgid "Colonnes manquantes : %(cols)s"
+msgstr ""
+
+#: app/services/users.py:95
+#, python-format
+msgid "rôle inconnu « %(v)s »"
+msgstr ""
+
+#: app/services/users.py:97
+msgid "prénom et nom obligatoires"
+msgstr ""
+
+#: app/services/users.py:99
+msgid "matricule obligatoire pour un étudiant"
+msgstr ""
+
+#: app/services/users.py:101
+msgid "matricule obligatoire"
+msgstr ""
+
+#: app/services/users.py:103
+#, python-format
+msgid "promotion inconnue « %(v)s »"
+msgstr ""
+
+#: app/services/users.py:105
+msgid "doublon dans le fichier"
+msgstr ""
+
+#: app/services/users.py:109
+#, python-format
+msgid "Ligne %(n)d : %(problem)s"
+msgstr ""
+
+#: app/templates/_macros.html:21
+msgid "Donnée de démonstration à remplacer"
+msgstr ""
+
+#: app/templates/_macros.html:26
+msgid "Pagination"
+msgstr ""
+
+#: app/templates/_macros.html:27 app/templates/schedule/index.html:31
+msgid "Précédent"
+msgstr ""
+
+#: app/templates/_macros.html:28
+#, python-format
+msgid "Page %(n)s sur %(total)s"
+msgstr ""
+
+#: app/templates/_macros.html:29 app/templates/schedule/index.html:36
+msgid "Suivant"
+msgstr ""
+
+#: app/templates/base.html:7
+msgid "L'application étudiante de l'Institut de Statistique Appliquée"
+msgstr ""
+
+#: app/templates/base.html:24
+msgid "Aller au contenu"
+msgstr ""
+
+#: app/templates/base.html:32 app/templates/notifications/index.html:3
+#: app/templates/notifications/index.html:6
+msgid "Notifications"
+msgstr ""
+
+#: app/templates/base.html:37
+msgid "Changer de thème"
+msgstr ""
+
+#: app/templates/base.html:44
+msgid "Vous êtes hors ligne. Les pages déjà consultées restent disponibles."
+msgstr ""
+
+#: app/templates/base.html:63
+msgid "Institut de Statistique Appliquée · Université du Burundi"
+msgstr ""
+
+#: app/templates/base.html:67
+msgid "Navigation principale"
+msgstr ""
+
+#: app/templates/errors.html:3
+msgid "Requête invalide"
+msgstr ""
+
+#: app/templates/errors.html:4
+msgid "Accès refusé"
+msgstr ""
+
+#: app/templates/errors.html:5
+msgid "Page introuvable"
+msgstr ""
+
+#: app/templates/courses/show.html:49 app/templates/errors.html:6
+msgid "Fichier trop volumineux"
+msgstr ""
+
+#: app/templates/errors.html:7
+msgid "Erreur du serveur"
+msgstr ""
+
+#: app/templates/errors.html:10
+msgid ""
+"La demande n'a pas pu être traitée. Si vous envoyiez un formulaire, "
+"rechargez la page et réessayez."
+msgstr ""
+
+#: app/templates/errors.html:11
+msgid "Vous n'avez pas les droits nécessaires pour accéder à cette page."
+msgstr ""
+
+#: app/templates/errors.html:12
+msgid "Cette page n'existe pas ou a été déplacée."
+msgstr ""
+
+#: app/templates/errors.html:13
+msgid "Le fichier dépasse la taille autorisée."
+msgstr ""
+
+#: app/templates/errors.html:14
+msgid "Un problème est survenu. Réessayez dans quelques instants."
+msgstr ""
+
+#: app/templates/errors.html:22 app/templates/main/offline.html:8
+msgid "Retour à l'accueil"
+msgstr ""
+
+#: app/templates/admin/academic.html:13
+msgid ""
+"Les informations reprises de l'ancienne plateforme sont à confirmer par "
+"l'ISTA (voir DONNEES_A_COMPLETER.md)."
+msgstr ""
+
+#: app/templates/admin/academic.html:29
+#, python-format
+msgid "%(n)d étudiant(s)"
+msgstr ""
+
+#: app/templates/admin/academic.html:31
+msgid "Archivée"
+msgstr ""
+
+#: app/templates/admin/academic.html:36
+msgid "Aucune promotion."
+msgstr ""
+
+#: app/templates/admin/academic.html:39
+msgid "Aucune filière."
+msgstr ""
+
+#: app/templates/admin/academic.html:43
+msgid "Aucun département. Commencez par en créer un."
+msgstr ""
+
+#: app/templates/admin/academic_form.html:12
+#: app/templates/admin/user_form.html:19
+#: app/templates/auth/change_password.html:15 app/templates/campus/edit.html:16
+#: app/templates/clubs/edit.html:15 app/templates/courses/edit.html:14
+#: app/templates/grades/sheet.html:38 app/templates/library/edit.html:18
+#: app/templates/news/edit.html:17 app/templates/profile/edit.html:12
+#: app/templates/schedule/edit.html:20
+msgid "Enregistrer"
+msgstr ""
+
+#: app/templates/admin/academic_form.html:13
+#: app/templates/admin/user_form.html:20 app/templates/campus/edit.html:17
+#: app/templates/clubs/edit.html:16 app/templates/courses/edit.html:15
+#: app/templates/library/edit.html:19 app/templates/messages/compose.html:29
+#: app/templates/news/edit.html:18 app/templates/profile/edit.html:13
+#: app/templates/schedule/edit.html:21
+#: app/templates/schedule/occurrence.html:16 app/templates/tips/new.html:18
+msgid "Annuler"
+msgstr ""
+
+#: app/templates/admin/index.html:9
+#, python-format
+msgid ""
+"%(n)d compte(s) de démonstration sont actifs. Désactivez-les avant la "
+"mise en service."
+msgstr ""
+
+#: app/templates/admin/index.html:10
+msgid "Voir"
+msgstr ""
+
+#: app/templates/admin/index.html:15
+#, python-format
+msgid "%(n)d demande(s) de compte en attente de validation."
+msgstr ""
+
+#: app/templates/admin/index.html:16
+msgid "Traiter"
+msgstr ""
+
+#: app/templates/admin/index.html:21
+msgid "étudiants"
+msgstr ""
+
+#: app/templates/admin/index.html:22
+msgid "enseignants"
+msgstr ""
+
+#: app/templates/admin/index.html:23
+msgid "administrateurs"
+msgstr ""
+
+#: app/templates/admin/index.html:26 app/templates/campus/index.html:7
+#: app/templates/clubs/index.html:7 app/templates/courses/index.html:7
+#: app/templates/library/index.html:9 app/templates/news/index.html:7
+#: app/templates/schedule/index.html:8
+msgid "Gérer"
+msgstr ""
+
+#: app/templates/admin/password_issued.html:2
+#: app/templates/admin/password_issued.html:9
+msgid "Mot de passe provisoire"
+msgstr ""
+
+#: app/templates/admin/password_issued.html:4
+msgid "Compte créé"
+msgstr ""
+
+#: app/templates/admin/password_issued.html:4
+msgid "Mot de passe réinitialisé"
+msgstr ""
+
+#: app/templates/admin/password_issued.html:8
+#: app/templates/profile/show.html:25
+msgid "Identifiant"
+msgstr ""
+
+#: app/templates/admin/password_issued.html:13
+msgid ""
+"Ce mot de passe ne sera plus affiché. Remettez-le à la personne concernée"
+" ; il devra être changé à la première connexion. Ne l'envoyez pas par un "
+"canal public."
+msgstr ""
+
+#: app/templates/admin/password_issued.html:15
+msgid "Retour aux utilisateurs"
+msgstr ""
+
+#: app/templates/admin/user_form.html:3 app/templates/admin/user_form.html:5
+msgid "Nouvel utilisateur"
+msgstr ""
+
+#: app/templates/admin/user_form.html:13
+msgid "Obligatoire pour un étudiant. Sert aussi d'identifiant de connexion."
+msgstr ""
+
+#: app/templates/admin/user_form.html:14
+msgid "Facultatif si un matricule est saisi."
+msgstr ""
+
+#: app/templates/admin/user_form.html:16
+msgid "Pour les étudiants uniquement."
+msgstr ""
+
+#: app/templates/admin/user_form.html:25
+msgid ""
+"Générer un nouveau mot de passe provisoire ? L'ancien ne fonctionnera "
+"plus."
+msgstr ""
+
+#: app/templates/admin/user_form.html:27
+msgid "Mot de passe oublié"
+msgstr ""
+
+#: app/templates/admin/user_form.html:28
+msgid ""
+"Génère un mot de passe provisoire à remettre en main propre. "
+"L'utilisateur devra le changer à la connexion."
+msgstr ""
+
+#: app/templates/admin/user_form.html:29
+msgid "Générer un mot de passe provisoire"
+msgstr ""
+
+#: app/templates/admin/users.html:8 app/templates/admin/users_import.html:20
+msgid "Importer"
+msgstr ""
+
+#: app/templates/admin/users.html:9
+msgid "Nouveau"
+msgstr ""
+
+#: app/templates/admin/users.html:14 app/templates/campus/index.html:27
+#: app/templates/courses/index.html:13 app/templates/library/index.html:16
+#: app/templates/messages/directory.html:12
+msgid "Rechercher"
+msgstr ""
+
+#: app/templates/admin/users.html:15
+msgid "Nom, matricule, e-mail…"
+msgstr ""
+
+#: app/templates/admin/users.html:20 app/templates/admin/users.html:29
+#: app/templates/campus/index.html:30 app/templates/clubs/index.html:10
+msgid "Tous"
+msgstr ""
+
+#: app/templates/admin/users.html:21
+msgid "Étudiants"
+msgstr ""
+
+#: app/templates/admin/users.html:22
+msgid "Enseignants"
+msgstr ""
+
+#: app/templates/admin/users.html:27 app/templates/library/reservations.html:9
+msgid "Statut"
+msgstr ""
+
+#: app/templates/admin/users.html:30
+msgid "Actifs"
+msgstr ""
+
+#: app/templates/admin/users.html:31
+msgid "Inactifs ou en attente"
+msgstr ""
+
+#: app/templates/admin/users.html:35
+msgid "Filtrer"
+msgstr ""
+
+#: app/templates/admin/users.html:53
+msgid "Activer"
+msgstr ""
+
+#: app/templates/admin/users.html:61
+msgid "Aucun utilisateur ne correspond."
+msgstr ""
+
+#: app/templates/admin/users_import.html:3
+#: app/templates/admin/users_import.html:5
+msgid "Importer des comptes"
+msgstr ""
+
+#: app/templates/admin/users_import.html:7
+msgid ""
+"Fichier CSV (séparateur point-virgule ou virgule) avec une ligne d'en-"
+"tête :"
+msgstr ""
+
+#: app/templates/admin/users_import.html:9
+msgid ""
+"« promotion » est le code de la promotion (ex. BAC2-ARISK-A). « role » "
+"vaut etudiant, enseignant ou admin (etudiant par défaut). L'e-mail est "
+"facultatif."
+msgstr ""
+
+#: app/templates/admin/users_import.html:10
+msgid ""
+"Si une ligne contient une erreur, rien n'est importé. Sinon, un fichier "
+"avec les mots de passe provisoires est téléchargé : conservez-le en lieu "
+"sûr et supprimez-le après distribution."
+msgstr ""
+
+#: app/templates/auth/change_password.html:3
+#: app/templates/auth/change_password.html:6 app/templates/profile/show.html:31
+msgid "Changer de mot de passe"
+msgstr ""
+
+#: app/templates/auth/change_password.html:8
+msgid ""
+"Vous utilisez un mot de passe provisoire. Choisissez votre propre mot de "
+"passe pour continuer."
+msgstr ""
+
+#: app/templates/auth/change_password.html:13
+#: app/templates/auth/register.html:17
+msgid "Au moins 8 caractères, pas uniquement des chiffres."
+msgstr ""
+
+#: app/templates/auth/change_password.html:20
+#: app/templates/profile/show.html:36
+msgid "Se déconnecter"
+msgstr ""
+
+#: app/templates/auth/login.html:3 app/templates/auth/login.html:7
+msgid "Connexion"
+msgstr ""
+
+#: app/templates/auth/login.html:6
+msgid "Logo de l'Université du Burundi"
+msgstr ""
+
+#: app/templates/auth/login.html:8
+msgid "Institut de Statistique Appliquée"
+msgstr ""
+
+#: app/templates/auth/login.html:14
+msgid "Se connecter"
+msgstr ""
+
+#: app/templates/auth/login.html:16
+msgid ""
+"Mot de passe oublié ? Adressez-vous au secrétariat de l'ISTA pour obtenir"
+" un mot de passe provisoire."
+msgstr ""
+
+#: app/templates/auth/login.html:18
+msgid "Pas encore de compte ? Faire une demande"
+msgstr ""
+
+#: app/templates/auth/register.html:3
+msgid "Demande de compte"
+msgstr ""
+
+#: app/templates/auth/register.html:6
+msgid "Demande de compte étudiant"
+msgstr ""
+
+#: app/templates/auth/register.html:7
+msgid "Votre demande sera vérifiée par l'administration avant activation."
+msgstr ""
+
+#: app/templates/auth/register.html:19
+msgid "Envoyer la demande"
+msgstr ""
+
+#: app/templates/auth/register.html:21
+msgid "J'ai déjà un compte"
+msgstr ""
+
+#: app/templates/campus/edit.html:3 app/templates/campus/edit.html:5
+msgid "Nouveau lieu"
+msgstr ""
+
+#: app/templates/campus/edit.html:14
+msgid ""
+"Facultatif. Coordonnées relevées sur place (par exemple avec "
+"l'application de cartes du téléphone)."
+msgstr ""
+
+#: app/templates/campus/index.html:12
+msgid "Plans"
+msgstr ""
+
+#: app/templates/campus/index.html:22 app/templates/campus/manage.html:9
+msgid "Lieux"
+msgstr ""
+
+#: app/templates/campus/index.html:25
+msgid "Rechercher une salle"
+msgstr ""
+
+#: app/templates/campus/index.html:26
+msgid "Salle, bâtiment, code…"
+msgstr ""
+
+#: app/templates/campus/index.html:29
+msgid "Types de lieux"
+msgstr ""
+
+#: app/templates/campus/index.html:42 app/templates/campus/show.html:13
+#, python-format
+msgid "%(n)d places"
+msgstr ""
+
+#: app/templates/campus/index.html:48
+msgid "Aucun lieu trouvé."
+msgstr ""
+
+#: app/templates/campus/index.html:49
+msgid ""
+"Le plan et la liste des lieux restent disponibles hors connexion une fois"
+" consultés."
+msgstr ""
+
+#: app/templates/campus/manage.html:3 app/templates/campus/manage.html:6
+msgid "Gérer le campus"
+msgstr ""
+
+#: app/templates/campus/manage.html:7
+msgid "Lieu"
+msgstr ""
+
+#: app/templates/campus/manage.html:16
+msgid "Supprimer ce lieu ?"
+msgstr ""
+
+#: app/templates/campus/manage.html:18 app/templates/campus/manage.html:32
+#: app/templates/clubs/show.html:43 app/templates/courses/manage.html:28
+#: app/templates/courses/show.html:31 app/templates/library/show.html:50
+#: app/templates/messages/show.html:26 app/templates/news/manage.html:23
+#: app/templates/schedule/manage.html:32 app/templates/schedule/manage.html:52
+#: app/templates/tips/show.html:30
+msgid "Supprimer"
+msgstr ""
+
+#: app/templates/campus/manage.html:23
+msgid "Aucun lieu."
+msgstr ""
+
+#: app/templates/campus/manage.html:25
+msgid "Plans du campus"
+msgstr ""
+
+#: app/templates/campus/manage.html:30
+msgid "Supprimer ce plan ?"
+msgstr ""
+
+#: app/templates/campus/manage.html:38
+msgid "Ajouter un plan"
+msgstr ""
+
+#: app/templates/campus/manage.html:40
+msgid ""
+"Astuce : une image de moins de 500 Ko se charge vite, même avec une "
+"connexion lente."
+msgstr ""
+
+#: app/templates/campus/manage.html:41 app/templates/messages/compose.html:19
+#: app/templates/news/manage.html:39
+msgid "Ajouter"
+msgstr ""
+
+#: app/templates/campus/show.html:13
+msgid "Capacité"
+msgstr ""
+
+#: app/templates/campus/show.html:18
+msgid "Ouvrir dans l'application de cartes"
+msgstr ""
+
+#: app/templates/campus/show.html:24
+msgid "Séances aujourd'hui dans ce lieu"
+msgstr ""
+
+#: app/templates/campus/show.html:29
+msgid "Aucune séance prévue aujourd'hui."
+msgstr ""
+
+#: app/templates/campus/show.html:31 app/templates/library/show.html:47
+#: app/templates/news/show.html:16 app/templates/profile/show.html:7
+#: app/templates/schedule/_slot.html:26
+msgid "Modifier"
+msgstr ""
+
+#: app/templates/clubs/edit.html:3 app/templates/clubs/edit.html:5
+#: app/templates/clubs/manage.html:7
+msgid "Nouveau club"
+msgstr ""
+
+#: app/templates/clubs/edit.html:12
+msgid ""
+"Par exemple : bureau du club, jour de permanence. Évitez les numéros "
+"personnels sans accord."
+msgstr ""
+
+#: app/templates/clubs/index.html:6
+msgid "Clubs et associations"
+msgstr ""
+
+#: app/templates/clubs/index.html:9 app/templates/library/index.html:18
+#: app/templates/news/index.html:10 app/templates/news/manage.html:34
+#: app/templates/tips/index.html:14
+msgid "Catégories"
+msgstr ""
+
+#: app/templates/clubs/index.html:22 app/templates/clubs/manage.html:14
+#: app/templates/clubs/show.html:8
+#, python-format
+msgid "%(n)d membre(s)"
+msgstr ""
+
+#: app/templates/clubs/index.html:24
+msgid "Membre"
+msgstr ""
+
+#: app/templates/clubs/index.html:28
+msgid "Aucun club dans cette catégorie."
+msgstr ""
+
+#: app/templates/clubs/manage.html:3 app/templates/clubs/manage.html:6
+msgid "Gérer les clubs"
+msgstr ""
+
+#: app/templates/clubs/manage.html:15
+msgid "Inactif"
+msgstr ""
+
+#: app/templates/clubs/manage.html:19
+msgid "Aucun club."
+msgstr ""
+
+#: app/templates/clubs/manage.html:20
+msgid ""
+"Ouvrez un club pour nommer ses responsables : ils pourront publier des "
+"annonces aux membres."
+msgstr ""
+
+#: app/templates/clubs/show.html:13 app/templates/clubs/show.html:57
+msgid "Responsable"
+msgstr ""
+
+#: app/templates/clubs/show.html:13
+msgid "Vous êtes membre"
+msgstr ""
+
+#: app/templates/clubs/show.html:14
+msgid "Quitter ce club ?"
+msgstr ""
+
+#: app/templates/clubs/show.html:15
+msgid "Quitter le club"
+msgstr ""
+
+#: app/templates/clubs/show.html:19
+msgid "Rejoindre le club"
+msgstr ""
+
+#: app/templates/clubs/show.html:28
+msgid "Publier aux membres"
+msgstr ""
+
+#: app/templates/clubs/show.html:32
+msgid "Annonces"
+msgstr ""
+
+#: app/templates/clubs/show.html:42
+msgid "Supprimer cette annonce ?"
+msgstr ""
+
+#: app/templates/clubs/show.html:49
+msgid "Aucune annonce pour le moment."
+msgstr ""
+
+#: app/templates/clubs/show.html:52
+msgid "Membres"
+msgstr ""
+
+#: app/templates/clubs/show.html:60
+msgid "Retirer responsable"
+msgstr ""
+
+#: app/templates/clubs/show.html:60 app/templates/clubs/show.html:72
+msgid "Nommer responsable"
+msgstr ""
+
+#: app/templates/clubs/show.html:64
+msgid "Aucun membre."
+msgstr ""
+
+#: app/templates/clubs/show.html:74
+msgid "Modifier le club"
+msgstr ""
+
+#: app/templates/courses/edit.html:3 app/templates/courses/edit.html:5
+#: app/templates/courses/manage.html:7
+msgid "Nouveau cours"
+msgstr ""
+
+#: app/templates/courses/edit.html:11
+msgid "L'enseignant responsable peut déposer des documents et saisir les notes."
+msgstr ""
+
+#: app/templates/courses/index.html:11 app/templates/courses/index.html:12
+msgid "Rechercher un cours"
+msgstr ""
+
+#: app/templates/courses/index.html:16
+msgid "Promotions"
+msgstr ""
+
+#: app/templates/courses/index.html:17
+msgid "Mes cours"
+msgstr ""
+
+#: app/templates/courses/index.html:24 app/templates/courses/show.html:9
+#: app/templates/grades/sheet.html:7 app/templates/grades/student.html:12
+#, python-format
+msgid "Semestre %(n)d"
+msgstr ""
+
+#: app/templates/courses/index.html:30 app/templates/courses/show.html:10
+#, python-format
+msgid "%(n)d crédits"
+msgstr ""
+
+#: app/templates/courses/index.html:38 app/templates/grades/student.html:7
+#: app/templates/schedule/index.html:40
+msgid ""
+"Votre compte n'est rattaché à aucune promotion. Contactez "
+"l'administration."
+msgstr ""
+
+#: app/templates/courses/index.html:40
+msgid "Aucun cours trouvé."
+msgstr ""
+
+#: app/templates/courses/manage.html:3 app/templates/courses/manage.html:6
+msgid "Gérer les cours"
+msgstr ""
+
+#: app/templates/courses/manage.html:12 app/templates/grades/staff.html:10
+msgid "Toutes les promotions"
+msgstr ""
+
+#: app/templates/courses/manage.html:15 app/templates/grades/staff.html:13
+#: app/templates/schedule/index.html:20 app/templates/schedule/manage.html:15
+msgid "Afficher"
+msgstr ""
+
+#: app/templates/courses/manage.html:25
+msgid "Documents"
+msgstr ""
+
+#: app/templates/courses/manage.html:26
+msgid "Supprimer ce cours et tous ses documents ?"
+msgstr ""
+
+#: app/templates/courses/manage.html:33 app/templates/grades/staff.html:26
+msgid "Aucun cours."
+msgstr ""
+
+#: app/templates/courses/show.html:14
+msgid "Modifier le cours"
+msgstr ""
+
+#: app/templates/courses/show.html:27
+msgid "Télécharger"
+msgstr ""
+
+#: app/templates/courses/show.html:29
+msgid "Supprimer ce document ?"
+msgstr ""
+
+#: app/templates/courses/show.html:38
+msgid "Aucun document pour ce cours pour le moment."
+msgstr ""
+
+#: app/templates/courses/show.html:40
+msgid ""
+"Les documents téléchargés restent disponibles hors connexion sur cet "
+"appareil."
+msgstr ""
+
+#: app/templates/courses/show.html:44
+msgid "Ajouter un document"
+msgstr ""
+
+#: app/templates/courses/show.html:50
+#, python-format
+msgid ""
+"PDF, Word, PowerPoint, Excel, OpenDocument, CSV, texte ou image. %(n)d Mo"
+" maximum."
+msgstr ""
+
+#: app/templates/courses/show.html:51 app/templates/messages/compose.html:28
+#: app/templates/tips/new.html:17
+msgid "Envoyer"
+msgstr ""
+
+#: app/templates/grades/sheet.html:5 app/templates/grades/staff.html:3
+#: app/templates/grades/staff.html:5
+msgid "Saisie des notes"
+msgstr ""
+
+#: app/templates/grades/sheet.html:8
+msgid "Session"
+msgstr ""
+
+#: app/templates/grades/sheet.html:10
+msgid "Session normale"
+msgstr ""
+
+#: app/templates/grades/sheet.html:10
+msgid "Rattrapage"
+msgstr ""
+
+#: app/templates/grades/sheet.html:19
+msgid "Étudiant"
+msgstr ""
+
+#: app/templates/grades/sheet.html:19
+msgid "Note /20"
+msgstr ""
+
+#: app/templates/grades/sheet.html:19 app/templates/grades/sheet.html:31
+#: app/templates/grades/student.html:30
+msgid "Absent"
+msgstr ""
+
+#: app/templates/grades/sheet.html:25
+msgid "publiée"
+msgstr ""
+
+#: app/templates/grades/sheet.html:39
+msgid "Exporter (CSV)"
+msgstr ""
+
+#: app/templates/grades/sheet.html:44
+msgid "Publication"
+msgstr ""
+
+#: app/templates/grades/sheet.html:46
+#, python-format
+msgid "%(n)d note(s) enregistrée(s) mais non visibles par les étudiants."
+msgstr ""
+
+#: app/templates/grades/sheet.html:47
+msgid "Publier ces notes ? Les étudiants seront prévenus."
+msgstr ""
+
+#: app/templates/grades/sheet.html:50
+msgid "Publier les notes"
+msgstr ""
+
+#: app/templates/grades/sheet.html:53
+msgid ""
+"Toutes les notes de cette session sont publiées. Une modification est "
+"visible immédiatement."
+msgstr ""
+
+#: app/templates/grades/sheet.html:55
+msgid "Aucune note enregistrée pour cette session."
+msgstr ""
+
+#: app/templates/grades/sheet.html:59
+msgid "Aucun étudiant actif dans cette promotion."
+msgstr ""
+
+#: app/templates/grades/staff.html:26
+msgid ""
+"Aucun cours ne vous est attribué. L'administration associe les "
+"enseignants aux cours."
+msgstr ""
+
+#: app/templates/grades/student.html:3 app/templates/grades/student.html:5
+msgid "Mes notes"
+msgstr ""
+
+#: app/templates/grades/student.html:18
+#, python-format
+msgid "Crédits validés : %(e)d / %(t)d"
+msgstr ""
+
+#: app/templates/grades/student.html:19
+msgid "résultats incomplets"
+msgstr ""
+
+#: app/templates/grades/student.html:23
+msgid "Note"
+msgstr ""
+
+#: app/templates/grades/student.html:27
+msgid "rattrapage"
+msgstr ""
+
+#: app/templates/grades/student.html:32
+msgid "—"
+msgstr ""
+
+#: app/templates/grades/student.html:41
+msgid "Aucune note publiée pour le moment."
+msgstr ""
+
+#: app/templates/grades/student.html:43
+#, python-format
+msgid ""
+"Moyennes calculées à titre indicatif (pondération par crédits, note de "
+"validation %(m)s/20). Seul le relevé officiel délivré par l'ISTA fait "
+"foi."
+msgstr ""
+
+#: app/templates/library/edit.html:3 app/templates/library/edit.html:5
+msgid "Nouveau livre"
+msgstr ""
+
+#: app/templates/library/edit.html:13
+msgid "0 pour un livre uniquement numérique."
+msgstr ""
+
+#: app/templates/library/edit.html:15
+msgid "Uniquement des ouvrages dont la diffusion est autorisée."
+msgstr ""
+
+#: app/templates/library/index.html:8 app/templates/library/mine.html:3
+#: app/templates/library/mine.html:6
+msgid "Mes réservations"
+msgstr ""
+
+#: app/templates/library/index.html:14 app/templates/library/index.html:15
+msgid "Titre, auteur ou ISBN"
+msgstr ""
+
+#: app/templates/library/index.html:19 app/templates/tips/index.html:15
+msgid "Tout"
+msgstr ""
+
+#: app/templates/library/index.html:34
+msgid "Numérique"
+msgstr ""
+
+#: app/templates/library/index.html:35
+msgid "Disponible"
+msgstr ""
+
+#: app/templates/library/index.html:42
+msgid "Aucun livre trouvé."
+msgstr ""
+
+#: app/templates/library/mine.html:15
+#, python-format
+msgid "à rendre le %(d)s"
+msgstr ""
+
+#: app/templates/library/mine.html:16
+#: app/templates/library/reservations.html:23
+msgid "En retard"
+msgstr ""
+
+#: app/templates/library/mine.html:20
+msgid "À retirer"
+msgstr ""
+
+#: app/templates/library/mine.html:24
+msgid "Aucune réservation."
+msgstr ""
+
+#: app/templates/library/reservations.html:3
+#: app/templates/library/reservations.html:6
+msgid "Gestion de la bibliothèque"
+msgstr ""
+
+#: app/templates/library/reservations.html:7
+msgid "Livre"
+msgstr ""
+
+#: app/templates/library/reservations.html:12
+msgid "En cours"
+msgstr ""
+
+#: app/templates/library/reservations.html:23
+#, python-format
+msgid "retour le %(d)s"
+msgstr ""
+
+#: app/templates/library/reservations.html:26
+#: app/templates/library/reservations.html:27
+msgid "Remis"
+msgstr ""
+
+#: app/templates/library/reservations.html:26
+#: app/templates/library/reservations.html:27
+msgid "Refuser"
+msgstr ""
+
+#: app/templates/library/reservations.html:40
+msgid "Aucune réservation dans cette catégorie."
+msgstr ""
+
+#: app/templates/library/show.html:11
+msgid "Année"
+msgstr ""
+
+#: app/templates/library/show.html:14
+msgid "Cote"
+msgstr ""
+
+#: app/templates/library/show.html:15
+msgid "Exemplaires disponibles"
+msgstr ""
+
+#: app/templates/library/show.html:21
+msgid "Lire la version numérique"
+msgstr ""
+
+#: app/templates/library/show.html:22
+msgid "Une fois ouverte, la version numérique reste disponible hors connexion."
+msgstr ""
+
+#: app/templates/library/show.html:28
+msgid "Votre réservation :"
+msgstr ""
+
+#: app/templates/library/show.html:30
+msgid "Annuler la réservation ?"
+msgstr ""
+
+#: app/templates/library/show.html:32
+msgid "Annuler ma réservation"
+msgstr ""
+
+#: app/templates/library/show.html:38
+msgid "Réserver ce livre"
+msgstr ""
+
+#: app/templates/library/show.html:40
+msgid "La bibliothèque vous préviendra quand le livre sera prêt à retirer."
+msgstr ""
+
+#: app/templates/library/show.html:40
+msgid ""
+"Tous les exemplaires sont empruntés : votre demande sera traitée dès un "
+"retour."
+msgstr ""
+
+#: app/templates/library/show.html:48
+msgid "Supprimer ce livre du catalogue ?"
+msgstr ""
+
+#: app/templates/main/home.html:6
+#, python-format
+msgid "Bonjour %(name)s"
+msgstr ""
+
+#: app/templates/main/home.html:8
+msgid "Bienvenue à l'ISTA"
+msgstr ""
+
+#: app/templates/main/home.html:10
+msgid "Tout l'institut dans votre poche."
+msgstr ""
+
+#: app/templates/main/home.html:19
+msgid "Services"
+msgstr ""
+
+#: app/templates/main/offline.html:2
+msgid "Hors ligne"
+msgstr ""
+
+#: app/templates/main/offline.html:5
+msgid "Pas de connexion"
+msgstr ""
+
+#: app/templates/main/offline.html:6
+msgid ""
+"Cette page n'a pas encore été enregistrée sur votre téléphone. Elle sera "
+"disponible dès le retour de la connexion."
+msgstr ""
+
+#: app/templates/main/offline.html:7
+msgid ""
+"Les pages déjà consultées (emploi du temps, actualités, plan du campus, "
+"cours téléchargés) restent accessibles."
+msgstr ""
+
+#: app/templates/messages/_tabs.html:4
+msgid "Écrire"
+msgstr ""
+
+#: app/templates/messages/_tabs.html:6
+msgid "Dossiers"
+msgstr ""
+
+#: app/templates/messages/_tabs.html:7
+msgid "Reçus"
+msgstr ""
+
+#: app/templates/messages/_tabs.html:8
+msgid "Envoyés"
+msgstr ""
+
+#: app/templates/messages/compose.html:3 app/templates/messages/compose.html:5
+msgid "Nouveau message"
+msgstr ""
+
+#: app/templates/messages/compose.html:16
+#, python-format
+msgid "Retirer %(n)s"
+msgstr ""
+
+#: app/templates/messages/compose.html:26
+#, python-format
+msgid "%(n)d fichiers au maximum, %(mb)d Mo chacun."
+msgstr ""
+
+#: app/templates/messages/compose.html:32
+msgid ""
+"Astuce : les pièces jointes et le texte saisi ne sont pas conservés si "
+"vous ajoutez un destinataire ; choisissez d'abord les destinataires."
+msgstr ""
+
+#: app/templates/messages/directory.html:3
+msgid "Annuaire"
+msgstr ""
+
+#: app/templates/messages/directory.html:6
+msgid "Retour au message"
+msgstr ""
+
+#: app/templates/messages/directory.html:7
+msgid "Choisir un destinataire"
+msgstr ""
+
+#: app/templates/messages/directory.html:10
+msgid "Nom ou matricule"
+msgstr ""
+
+#: app/templates/messages/directory.html:11
+msgid "Nom ou matricule (2 lettres minimum)"
+msgstr ""
+
+#: app/templates/messages/directory.html:27
+msgid "Personne ne correspond."
+msgstr ""
+
+#: app/templates/messages/inbox.html:18
+msgid "Aucun message reçu."
+msgstr ""
+
+#: app/templates/messages/sent.html:3
+msgid "Messages envoyés"
+msgstr ""
+
+#: app/templates/messages/sent.html:13 app/templates/messages/show.html:10
+msgid "À :"
+msgstr ""
+
+#: app/templates/messages/sent.html:21
+msgid "Aucun message envoyé."
+msgstr ""
+
+#: app/templates/messages/show.html:9
+msgid "De :"
+msgstr ""
+
+#: app/templates/messages/show.html:10
+#, python-format
+msgid "promotion %(p)s"
+msgstr ""
+
+#: app/templates/messages/show.html:23
+msgid "Répondre"
+msgstr ""
+
+#: app/templates/messages/show.html:25
+msgid "Supprimer ce message ?"
+msgstr ""
+
+#: app/templates/news/_item.html:4
+msgid "Épinglé"
+msgstr ""
+
+#: app/templates/news/_widget.html:3
+msgid "Dernières actualités"
+msgstr ""
+
+#: app/templates/news/_widget.html:4
+msgid "Tout voir"
+msgstr ""
+
+#: app/templates/news/edit.html:3 app/templates/news/edit.html:5
+msgid "Modifier l'actualité"
+msgstr ""
+
+#: app/templates/news/edit.html:3 app/templates/news/edit.html:5
+msgid "Nouvelle actualité"
+msgstr ""
+
+#: app/templates/news/index.html:11
+msgid "Toutes"
+msgstr ""
+
+#: app/templates/news/index.html:23
+msgid "Aucune actualité pour le moment."
+msgstr ""
+
+#: app/templates/news/manage.html:3 app/templates/news/manage.html:6
+msgid "Gérer les actualités"
+msgstr ""
+
+#: app/templates/news/manage.html:7
+msgid "Nouvelle"
+msgstr ""
+
+#: app/templates/news/manage.html:16
+msgid "Publiée"
+msgstr ""
+
+#: app/templates/news/manage.html:17
+msgid "Brouillon"
+msgstr ""
+
+#: app/templates/news/manage.html:21
+msgid "Supprimer cette actualité ?"
+msgstr ""
+
+#: app/templates/news/manage.html:30
+msgid "Aucune actualité."
+msgstr ""
+
+#: app/templates/news/manage.html:35
+msgid "Aucune catégorie."
+msgstr ""
+
+#: app/templates/news/show.html:11
+#, python-format
+msgid "Pour %(promo)s"
+msgstr ""
+
+#: app/templates/notifications/index.html:10
+msgid "Tout marquer comme lu"
+msgstr ""
+
+#: app/templates/notifications/index.html:19
+msgid "Recevez les alertes sur ce téléphone, même application fermée."
+msgstr ""
+
+#: app/templates/notifications/index.html:21
+#: app/templates/notifications/index.html:22
+msgid "Activer les notifications sur cet appareil"
+msgstr ""
+
+#: app/templates/notifications/index.html:22
+msgid "Désactiver les notifications sur cet appareil"
+msgstr ""
+
+#: app/templates/notifications/index.html:41
+msgid "Aucune notification pour le moment."
+msgstr ""
+
+#: app/templates/profile/edit.html:3 app/templates/profile/edit.html:5
+msgid "Modifier mon profil"
+msgstr ""
+
+#: app/templates/profile/edit.html:6
+msgid ""
+"Le nom, le matricule et la promotion sont gérés par l'administration. "
+"Signalez-lui toute erreur."
+msgstr ""
+
+#: app/templates/profile/show.html:3 app/templates/profile/show.html:6
+msgid "Mon profil"
+msgstr ""
+
+#: app/templates/profile/show.html:26
+msgid "Non renseigné"
+msgstr ""
+
+#: app/templates/profile/show.html:38
+msgid ""
+"La déconnexion efface aussi les pages enregistrées pour la consultation "
+"hors ligne."
+msgstr ""
+
+#: app/templates/schedule/_slot.html:8 app/templates/schedule/manage.html:46
+msgid "Annulé"
+msgstr ""
+
+#: app/templates/schedule/_slot.html:9 app/templates/schedule/manage.html:46
+msgid "Modifié"
+msgstr ""
+
+#: app/templates/schedule/_slot.html:10
+msgid "Exceptionnel"
+msgstr ""
+
+#: app/templates/schedule/_slot.html:24
+msgid "Modifier ou annuler ce jour"
+msgstr ""
+
+#: app/templates/schedule/_widget.html:3 app/templates/schedule/index.html:27
+msgid "Aujourd'hui"
+msgstr ""
+
+#: app/templates/schedule/_widget.html:4 app/templates/schedule/index.html:26
+msgid "Semaine"
+msgstr ""
+
+#: app/templates/schedule/_widget.html:9
+msgid "Pas de cours aujourd'hui."
+msgstr ""
+
+#: app/templates/schedule/edit.html:3 app/templates/schedule/manage.html:7
+msgid "Séance"
+msgstr ""
+
+#: app/templates/schedule/edit.html:5
+msgid "Modifier la séance"
+msgstr ""
+
+#: app/templates/schedule/edit.html:5
+msgid "Nouvelle séance"
+msgstr ""
+
+#: app/templates/schedule/edit.html:16
+msgid ""
+"Pour une séance hebdomadaire, indiquez le jour et, si besoin, la période "
+"(semestre). Pour une séance unique, indiquez la date."
+msgstr ""
+
+#: app/templates/schedule/index.html:17
+msgid "Mes séances"
+msgstr ""
+
+#: app/templates/schedule/index.html:24
+msgid "Affichage"
+msgstr ""
+
+#: app/templates/schedule/index.html:33
+#, python-format
+msgid "Semaine du %(d)s"
+msgstr ""
+
+#: app/templates/schedule/index.html:42
+msgid "Aucune promotion à afficher."
+msgstr ""
+
+#: app/templates/schedule/index.html:48
+msgid "aujourd'hui"
+msgstr ""
+
+#: app/templates/schedule/index.html:52
+msgid "Pas de cours."
+msgstr ""
+
+#: app/templates/schedule/index.html:57
+msgid "Les emplois du temps consultés restent disponibles hors connexion."
+msgstr ""
+
+#: app/templates/schedule/manage.html:3 app/templates/schedule/manage.html:6
+msgid "Gérer l'emploi du temps"
+msgstr ""
+
+#: app/templates/schedule/manage.html:20
+msgid "Séances hebdomadaires"
+msgstr ""
+
+#: app/templates/schedule/manage.html:30
+msgid "Supprimer cette séance et ses modifications ponctuelles ?"
+msgstr ""
+
+#: app/templates/schedule/manage.html:37
+msgid "Aucune séance hebdomadaire."
+msgstr ""
+
+#: app/templates/schedule/manage.html:39
+msgid "Séances ponctuelles et modifications à venir"
+msgstr ""
+
+#: app/templates/schedule/manage.html:50
+msgid "Supprimer cette séance ?"
+msgstr ""
+
+#: app/templates/schedule/manage.html:58
+msgid "Rien de prévu."
+msgstr ""
+
+#: app/templates/schedule/manage.html:59
+msgid ""
+"Pour annuler ou déplacer une seule séance hebdomadaire, ouvrez l'emploi "
+"du temps au jour concerné et choisissez « Modifier ou annuler ce jour »."
+msgstr ""
+
+#: app/templates/schedule/occurrence.html:6
+#, python-format
+msgid "séance habituelle %(start)s–%(end)s"
+msgstr ""
+
+#: app/templates/schedule/occurrence.html:15
+msgid "Enregistrer pour ce jour"
+msgstr ""
+
+#: app/templates/schedule/occurrence.html:22
+msgid "Rétablir la séance habituelle"
+msgstr ""
+
+#: app/templates/tips/index.html:7
+msgid "Partager"
+msgstr ""
+
+#: app/templates/tips/index.html:9
+msgid "Bons plans et conseils entre étudiants, vérifiés par l'administration."
+msgstr ""
+
+#: app/templates/tips/index.html:11 app/templates/tips/mine.html:3
+#: app/templates/tips/mine.html:6
+msgid "Mes tuyaux"
+msgstr ""
+
+#: app/templates/tips/index.html:11
+#, python-format
+msgid "%(n)d en attente"
+msgstr ""
+
+#: app/templates/tips/index.html:12 app/templates/tips/show.html:36
+msgid "Modération"
+msgstr ""
+
+#: app/templates/tips/index.html:20
+msgid "Tri"
+msgstr ""
+
+#: app/templates/tips/index.html:21
+msgid "Plus récents"
+msgstr ""
+
+#: app/templates/tips/index.html:22
+msgid "Plus utiles"
+msgstr ""
+
+#: app/templates/tips/index.html:38
+msgid "Aucun tuyau pour le moment. Soyez le premier à partager !"
+msgstr ""
+
+#: app/templates/tips/mine.html:12
+msgid "Publié"
+msgstr ""
+
+#: app/templates/tips/mine.html:13
+msgid "Refusé"
+msgstr ""
+
+#: app/templates/tips/mine.html:14
+msgid "En attente"
+msgstr ""
+
+#: app/templates/tips/mine.html:18
+msgid "Vous n'avez encore rien partagé."
+msgstr ""
+
+#: app/templates/tips/moderate.html:6
+#, python-format
+msgid "En attente (%(n)d)"
+msgstr ""
+
+#: app/templates/tips/moderate.html:16
+msgid "Rien à valider."
+msgstr ""
+
+#: app/templates/tips/moderate.html:17
+msgid "Signalés"
+msgstr ""
+
+#: app/templates/tips/moderate.html:22
+#, python-format
+msgid "%(n)d signalement(s)"
+msgstr ""
+
+#: app/templates/tips/moderate.html:27
+msgid "Aucun signalement."
+msgstr ""
+
+#: app/templates/tips/new.html:3 app/templates/tips/new.html:5
+msgid "Partager un tuyau"
+msgstr ""
+
+#: app/templates/tips/new.html:7
+msgid ""
+"Partagez un conseil utile : méthode de révision, bon plan logement ou "
+"transport, démarche administrative… Restez bienveillant, ne publiez ni "
+"données personnelles ni documents protégés."
+msgstr ""
+
+#: app/templates/tips/new.html:8
+msgid "Votre tuyau sera publié après validation par l'administration."
+msgstr ""
+
+#: app/templates/tips/new.html:15
+#, python-format
+msgid "%(n)d Mo maximum."
+msgstr ""
+
+#: app/templates/tips/show.html:6
+msgid "En attente de validation par l'administration."
+msgstr ""
+
+#: app/templates/tips/show.html:7
+msgid "Ce tuyau n'a pas été publié."
+msgstr ""
+
+#: app/templates/tips/show.html:7
+msgid "Motif :"
+msgstr ""
+
+#: app/templates/tips/show.html:10
+#, python-format
+msgid "par %(a)s"
+msgstr ""
+
+#: app/templates/tips/show.html:22
+msgid "Utile"
+msgstr ""
+
+#: app/templates/tips/show.html:29
+msgid "Supprimer ce tuyau ?"
+msgstr ""
+
+#: app/templates/tips/show.html:38
+msgid "Signalements :"
+msgstr ""
+
+#: app/templates/tips/show.html:45
+msgid "Publier"
+msgstr ""
+
+#: app/templates/tips/show.html:46
+msgid "Refuser / retirer"
+msgstr ""
+
+#: app/templates/tips/show.html:52
+msgid "Signaler un contenu inapproprié"
+msgstr ""
+
+#: app/templates/tips/show.html:56
+msgid "Signaler"
+msgstr ""
+
+#: app/tips/forms.py:10
+msgid "Cours et révisions"
+msgstr ""
+
+#: app/tips/forms.py:11
+msgid "Examens"
+msgstr ""
+
+#: app/tips/forms.py:12
+msgid "Logement"
+msgstr ""
+
+#: app/tips/forms.py:13
+msgid "Transport"
+msgstr ""
+
+#: app/tips/forms.py:14
+msgid "Restauration"
+msgstr ""
+
+#: app/tips/forms.py:15
+msgid "Démarches administratives"
+msgstr ""
+
+#: app/tips/forms.py:16
+msgid "Stages et emploi"
+msgstr ""
+
+#: app/tips/forms.py:24
+msgid "Cours concerné (facultatif)"
+msgstr ""
+
+#: app/tips/forms.py:25
+msgid "Votre conseil"
+msgstr ""
+
+#: app/tips/forms.py:26
+msgid "Pièce jointe (facultatif)"
+msgstr ""
+
+#: app/tips/forms.py:30
+msgid "Motif (envoyé à l'auteur en cas de refus)"
+msgstr ""
+
+#: app/tips/forms.py:35
+msgid "Pourquoi signaler ce tuyau ?"
+msgstr ""
+
+#: app/tips/routes.py:93
+msgid "Tuyau publié."
+msgstr ""
+
+#: app/tips/routes.py:95
+#, python-format
+msgid "Tuyau à modérer : %(t)s"
+msgstr ""
+
+#: app/tips/routes.py:97
+msgid "Merci ! Votre tuyau sera visible après validation par l'administration."
+msgstr ""
+
+#: app/tips/routes.py:128
+#, python-format
+msgid "Tuyau signalé : %(t)s"
+msgstr ""
+
+#: app/tips/routes.py:131
+msgid "Merci, l'administration va examiner ce tuyau."
+msgstr ""
+
+#: app/tips/routes.py:146
+msgid "Tuyau supprimé."
+msgstr ""
+
+#: app/tips/routes.py:174
+#, python-format
+msgid "Votre tuyau « %(t)s » est publié. Merci !"
+msgstr ""
+
+#: app/tips/routes.py:177
+#, python-format
+msgid "Votre tuyau « %(t)s » n'a pas été publié."
+msgstr ""
+
+#: app/tips/routes.py:180
+msgid "Décision enregistrée."
+msgstr ""
+

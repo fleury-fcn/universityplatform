@@ -1,0 +1,30 @@
+{% from "_macros.html" import icon, demo_badge %}
+<li class="slot{% if e.is_cancelled %} cancelled{% endif %}">
+  <div class="slot-time">{{ e.start_time|time }}<span>{{ e.end_time|time }}</span></div>
+  <div class="grow">
+    <p class="title">
+      {{ e.title }}
+      <span class="badge">{{ e.kind }}</span>
+      {% if e.is_cancelled %}<span class="badge badge-danger">{{ _("Annulé") }}</span>
+      {% elif e.is_change %}<span class="badge badge-warning">{{ _("Modifié") }}</span>
+      {% elif e.date %}<span class="badge badge-info">{{ _("Exceptionnel") }}</span>{% endif %}
+      {{ demo_badge(e) }}
+    </p>
+    <p class="meta">
+      {% if e.room %}{{ icon("pin") }}
+        {% if has_view("campus.show") %}<a href="{{ url_for('campus.show', room_id=e.room.id) }}">{{ e.room.name }}</a>{% else %}{{ e.room.name }}{% endif %}
+      {% endif %}
+      {% if e.teacher_display %} · {{ e.teacher_display }}{% endif %}
+      {% if show_promotion %} · {{ e.promotion.name }}{% endif %}
+    </p>
+    {% if e.note %}<p class="meta">{{ e.note }}</p>{% endif %}
+    {% if current_user.is_admin and day is defined %}
+      {% set base_id = e.replaces_id or (e.id if e.is_recurring else None) %}
+      {% if base_id %}
+        <a class="small" href="{{ url_for('schedule.occurrence', entry_id=base_id, day=day.isoformat()) }}">{{ _("Modifier ou annuler ce jour") }}</a>
+      {% else %}
+        <a class="small" href="{{ url_for('schedule.edit', entry_id=e.id) }}">{{ _("Modifier") }}</a>
+      {% endif %}
+    {% endif %}
+  </div>
+</li>

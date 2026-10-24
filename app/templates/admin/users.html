@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, pagination, empty, demo_badge %}
+{% block title %}{{ _("Utilisateurs") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Utilisateurs") }}</h1>
+  <div class="row">
+    <a class="btn btn-secondary btn-sm" href="{{ url_for('admin.users_import') }}">{{ icon("upload") }} {{ _("Importer") }}</a>
+    <a class="btn btn-sm" href="{{ url_for('admin.user_new') }}">{{ icon("plus") }} {{ _("Nouveau") }}</a>
+  </div>
+</div>
+
+<form method="get" class="card filters">
+  <label class="visually-hidden" for="q">{{ _("Rechercher") }}</label>
+  <input type="search" id="q" name="q" value="{{ q }}" placeholder="{{ _('Nom, matricule, e-mail…') }}">
+  <div class="grid-2">
+    <div class="field">
+      <label for="role">{{ _("Rôle") }}</label>
+      <select id="role" name="role">
+        <option value="">{{ _("Tous") }}</option>
+        <option value="etudiant" {{ "selected" if role == "etudiant" }}>{{ _("Étudiants") }}</option>
+        <option value="enseignant" {{ "selected" if role == "enseignant" }}>{{ _("Enseignants") }}</option>
+        <option value="admin" {{ "selected" if role == "admin" }}>{{ _("Administration") }}</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="statut">{{ _("Statut") }}</label>
+      <select id="statut" name="statut">
+        <option value="">{{ _("Tous") }}</option>
+        <option value="actifs" {{ "selected" if status == "actifs" }}>{{ _("Actifs") }}</option>
+        <option value="inactifs" {{ "selected" if status == "inactifs" }}>{{ _("Inactifs ou en attente") }}</option>
+      </select>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-secondary btn-sm">{{ icon("search") }} {{ _("Filtrer") }}</button>
+</form>
+
+{% if page.items %}
+<ul class="list">
+  {% for u in page.items %}
+  <li class="list-item">
+    <div class="grow">
+      <p class="title"><a href="{{ url_for('admin.user_edit', user_id=u.id) }}">{{ u.last_name }} {{ u.first_name }}</a> {{ demo_badge(u) }}</p>
+      <p class="meta">
+        {{ u.matricule or u.username }} ·
+        {{ {"etudiant": _("Étudiant·e"), "enseignant": _("Enseignant·e"), "admin": _("Administration")}[u.role] }}
+        {% if u.promotion %} · {{ u.promotion.name }}{% endif %}
+      </p>
+    </div>
+    {% if not u.is_active %}
+      <form method="post" action="{{ url_for('admin.user_activate', user_id=u.id) }}" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-sm">{{ _("Activer") }}</button>
+      </form>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{{ pagination(page, "admin.users", q=q, role=role, statut=status) }}
+{% else %}
+{{ empty(_("Aucun utilisateur ne correspond.")) }}
+{% endif %}
+{% endblock %}

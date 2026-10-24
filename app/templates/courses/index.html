@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty, demo_badge %}
+{% block title %}{{ _("Cours") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Cours") }}</h1>
+  {% if current_user.is_admin %}<a class="btn btn-sm" href="{{ url_for('courses.manage') }}">{{ icon("settings") }} {{ _("Gérer") }}</a>{% endif %}
+</div>
+<form method="get" class="search-form" role="search">
+  {% if promotion_id %}<input type="hidden" name="promotion" value="{{ promotion_id }}">{% endif %}
+  <label class="visually-hidden" for="q">{{ _("Rechercher un cours") }}</label>
+  <input type="search" id="q" name="q" value="{{ q }}" placeholder="{{ _('Rechercher un cours') }}">
+  <button class="btn btn-secondary" aria-label="{{ _('Rechercher') }}">{{ icon("search") }}</button>
+</form>
+{% if promotions %}
+<nav class="chips" aria-label="{{ _('Promotions') }}">
+  {% if current_user.is_teacher %}<a class="chip" href="{{ url_for('courses.index', mes=1) }}"{% if mine %} aria-current="true"{% endif %}>{{ _("Mes cours") }}</a>{% endif %}
+  {% for p in promotions %}
+    <a class="chip" href="{{ url_for('courses.index', promotion=p.id) }}"{% if promotion_id == p.id and not mine %} aria-current="true"{% endif %}>{{ p.name }}</a>
+  {% endfor %}
+</nav>
+{% endif %}
+{% for semester, courses in by_semester %}
+  <h2 class="section-title">{{ _("Semestre %(n)d", n=semester) }}</h2>
+  <ul class="list">
+    {% for c in courses %}
+    <li><a class="list-item" href="{{ url_for('courses.show', course_id=c.id) }}">
+      <span class="grow">
+        <span class="title">{{ c.title }} {{ demo_badge(c) }}</span>
+        <span class="meta">{{ c.code }}{% if c.credits %} · {{ _("%(n)d crédits", n=c.credits) }}{% endif %}{% if c.teacher %} · {{ c.teacher.full_name }}{% endif %}{% if promotions %} · {{ c.promotion.name }}{% endif %}</span>
+      </span>
+      <span class="badge">{{ c.resources|length }} {{ icon("file") }}</span>
+    </a></li>
+    {% endfor %}
+  </ul>
+{% else %}
+  {% if current_user.is_student and not current_user.promotion_id %}
+    {{ empty(_("Votre compte n'est rattaché à aucune promotion. Contactez l'administration.")) }}
+  {% else %}
+    {{ empty(_("Aucun cours trouvé.")) }}
+  {% endif %}
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ user.full_name if user else _("Nouvel utilisateur") }}{% endblock %}
+{% block content %}
+<h1>{{ user.full_name if user else _("Nouvel utilisateur") }}</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {{ field(form.role) }}
+  <div class="grid-2">
+    {{ field(form.first_name) }}
+    {{ field(form.last_name) }}
+  </div>
+  {{ field(form.matricule, hint=_("Obligatoire pour un étudiant. Sert aussi d'identifiant de connexion.")) }}
+  {{ field(form.username, hint=_("Facultatif si un matricule est saisi.")) }}
+  {{ field(form.email) }}
+  {{ field(form.promotion_id, hint=_("Pour les étudiants uniquement.")) }}
+  {{ field(form.is_active) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('admin.users') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% if user and user.id != current_user.id %}
+<form method="post" action="{{ url_for('admin.user_reset_password', user_id=user.id) }}" class="card"
+      data-confirm="{{ _('Générer un nouveau mot de passe provisoire ? L\'ancien ne fonctionnera plus.') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h2>{{ _("Mot de passe oublié") }}</h2>
+  <p class="muted">{{ _("Génère un mot de passe provisoire à remettre en main propre. L'utilisateur devra le changer à la connexion.") }}</p>
+  <button type="submit" class="btn btn-secondary">{{ _("Générer un mot de passe provisoire") }}</button>
+</form>
+{% endif %}
+{% endblock %}

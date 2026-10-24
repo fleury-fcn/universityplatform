@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, pagination, empty %}
+{% block title %}{{ _("Messages envoyés") }}{% endblock %}
+{% block content %}
+{% include "messages/_tabs.html" %}
+{% if page.items %}
+<ul class="list">
+  {% for m in page.items %}
+  <li><a class="list-item" href="{{ url_for('messages.show', message_id=m.id) }}">
+    <span class="grow">
+      <span class="title">{{ m.subject }}</span>
+      <span class="meta">
+        {{ _("À :") }} {% if m.promotion %}{{ m.promotion.name }}{% else %}{{ m.recipients[:3]|map(attribute="user.full_name")|join(", ") }}{% if m.recipients|length > 3 %} +{{ m.recipients|length - 3 }}{% endif %}{% endif %}
+        · {{ m.created_at|datetime }}
+      </span>
+    </span>
+  </a></li>
+  {% endfor %}
+</ul>
+{{ pagination(page, "messages.sent") }}
+{% else %}{{ empty(_("Aucun message envoyé.")) }}{% endif %}
+{% endblock %}

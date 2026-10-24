@@ -1,0 +1,12 @@
+{% from "_macros.html" import demo_badge %}
+<a class="list-item" href="{{ url_for('news.show', news_id=item.id) }}">
+  <span class="grow">
+    <span class="title">{{ item.title }} {% if item.is_pinned %}<span class="badge badge-brand">{{ _("Épinglé") }}</span>{% endif %} {{ demo_badge(item) }}</span>
+    <span class="meta">
+      {{ item.published_at|date }}
+      {% if item.category %} · {{ item.category.name }}{% endif %}
+      {% if item.promotion %} · {{ item.promotion.name }}{% endif %}
+    </span>
+    <span class="meta excerpt">{{ item.excerpt }}</span>
+  </span>
+</a>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, field, pagination, empty, demo_badge %}
+{% block title %}{{ _("Gérer les actualités") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Gérer les actualités") }}</h1>
+  <a class="btn btn-sm" href="{{ url_for('news.edit') }}">{{ icon("plus") }} {{ _("Nouvelle") }}</a>
+</div>
+{% if page.items %}
+<ul class="list">
+  {% for item in page.items %}
+  <li class="list-item">
+    <span class="grow">
+      <a class="title" href="{{ url_for('news.edit', news_id=item.id) }}">{{ item.title }}</a> {{ demo_badge(item) }}
+      <span class="meta">
+        {% if item.is_published %}<span class="badge badge-success">{{ _("Publiée") }}</span> {{ item.published_at|date }}
+        {% else %}<span class="badge">{{ _("Brouillon") }}</span>{% endif %}
+        · {{ item.promotion.name if item.promotion else _("Tout l'institut") }}
+      </span>
+    </span>
+    <form method="post" action="{{ url_for('news.delete', news_id=item.id) }}" data-confirm="{{ _('Supprimer cette actualité ?') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-danger btn-sm" aria-label="{{ _('Supprimer') }}">{{ icon("trash") }}</button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{{ pagination(page, "news.manage") }}
+{% else %}
+{{ empty(_("Aucune actualité.")) }}
+{% endif %}
+
+<section class="card">
+  <h2>{{ _("Catégories") }}</h2>
+  <p>{% for c in categories %}<span class="badge">{{ c.name }}</span> {% else %}<span class="muted">{{ _("Aucune catégorie.") }}</span>{% endfor %}</p>
+  <form method="post" class="row">
+    {{ category_form.hidden_tag() }}
+    <div class="spacer">{{ field(category_form.name) }}</div>
+    <button type="submit" class="btn btn-secondary">{{ _("Ajouter") }}</button>
+  </form>
+</section>
+{% endblock %}

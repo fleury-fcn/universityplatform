@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty, demo_badge %}
+{% block title %}{{ _("Questions fréquentes") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Questions fréquentes") }}</h1>
+  {% if current_user.is_admin %}<a class="btn btn-sm" href="{{ url_for('faq.manage') }}">{{ icon("settings") }} {{ _("Gérer") }}</a>{% endif %}
+</div>
+<form method="get" class="search-form" role="search">
+  <label class="visually-hidden" for="q">{{ _("Posez votre question") }}</label>
+  <input type="search" id="q" name="q" value="{{ q }}" placeholder="{{ _('Posez votre question, ex. : comment réserver un livre ?') }}">
+  <button class="btn" aria-label="{{ _('Chercher') }}">{{ icon("search") }}</button>
+</form>
+
+{% if q %}
+  <section aria-live="polite">
+  {% if results %}
+    <h2 class="section-title">{{ _("Réponses proposées") }}</h2>
+    {% for e in results %}
+      <details class="card faq-item"{% if loop.first %} open{% endif %}>
+        <summary>{{ e.question }} {{ demo_badge(e) }}</summary>
+        <div class="prose">{{ e.answer|text }}</div>
+      </details>
+    {% endfor %}
+  {% else %}
+    <p class="empty">{{ _("Aucune réponse trouvée. Reformulez avec d'autres mots, ou écrivez au secrétariat depuis la messagerie.") }}</p>
+  {% endif %}
+  </section>
+{% endif %}
+
+{% for category, entries in grouped %}
+  <h2 class="section-title">{{ category }}</h2>
+  {% for e in entries %}
+    <details class="card faq-item">
+      <summary>{{ e.question }} {{ demo_badge(e) }}</summary>
+      <div class="prose">{{ e.answer|text }}</div>
+    </details>
+  {% endfor %}
+{% else %}
+  {{ empty(_("Aucune question pour le moment.")) }}
+{% endfor %}
+{% endblock %}

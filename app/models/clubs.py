@@ -1,106 +1,60 @@
-'''from datetime import datetime
+"""Clubs et associations étudiantes."""
 from app.extensions import db
 
-class Club(db.Model):
-    __tablename__ = 'clubs'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=False)  # Changé en Text pour descriptions longues
-    category = db.Column(db.String(50), nullable=False)
-    banner = db.Column(db.String(255), default='default-banner.jpg')
-    logo = db.Column(db.String(255), default='default-logo.jpg')
-    meeting_frequency = db.Column(db.String(100))
-    tags = db.Column(db.String(255))  # Pour stocker les tags séparés par des virgules
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    admin_id = db.Column(db.Integer, db.ForeignKey('utilisateurs.id'))  # Supposant que vous avez une table users
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    name = db.Column(db.String(100))
-    
-    # Relations
-    members = db.relationship('Member', back_populates='club', cascade='all, delete-orphan')
-   
-    @property
-    def member_count(self):
-        return self.members.count()
-    
-    def is_member(self, user_id):
-        return self.members.filter_by(user_id=user_id).first() is not None
-    
-    def is_admin(self, user):
-        return user.id == self.admin_id or user.role == 'administrateur'
+from . import TimestampMixin
 
-class Member(db.Model):
-    __tablename__ = 'members'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
-    level = db.Column(db.String(50), nullable=False)  # Ex: '1ère année', '2ème année'
-    department = db.Column(db.String(50), nullable=False)  # Ex: 'Informatique', 'Actuariat'
-    academic_year = db.Column(db.String(20), nullable=False)  # Ex: '2023-2024'
-    joined_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # Clés étrangères
-    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('utilisateurs.id'), nullable=False)  # Lien vers le compte utilisateur
-    
-    # Relations
-    club = db.relationship('Club', back_populates='members')
-    user = db.relationship('User')  # Supposant que vous avez un modèle User
-    
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
-        '''
-from datetime import datetime
-from app.extensions import db
+MEMBER, LEADER = "membre", "responsable"
 
-class Club(db.Model):
-    __tablename__ = 'clubs'
-    
+
+class Club(TimestampMixin, db.Model):
+    __tablename__ = "clubs"
+
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    category = db.Column(db.String(30), nullable=False, default="autre")
     description = db.Column(db.Text, nullable=False)
-    category = db.Column(db.String(50), nullable=False)
-    banner = db.Column(db.String(255), default='default-banner.jpg')
-    logo = db.Column(db.String(255), default='default-logo.jpg')
-    meeting_frequency = db.Column(db.String(100))
+    meeting_frequency = db.Column(db.String(80))
     tags = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    admin_id = db.Column(db.Integer, db.ForeignKey('utilisateurs.id'))
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
-    name = db.Column(db.String(100))
-    
-    members = db.relationship('Member', back_populates='club', cascade='all, delete-orphan')
-   
-    @property
-    def member_count(self):
-        return len(self.members)
-    
-    def is_member(self, user_id):
-        return any(member.user_id == user_id for member in self.members)
-    
-    def is_admin(self, user):
-        return user.id == self.admin_id or user.role == 'administrateur'
+    contact = db.Column(db.String(200))
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+    is_demo = db.Column(db.Boolean, nullable=False, default=False)
 
-class Member(db.Model):
-    __tablename__ = 'members'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
-    level = db.Column(db.String(50), nullable=False)
-    department = db.Column(db.String(50), nullable=False)
-    academic_year = db.Column(db.String(20), nullable=False)
-    joined_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    club_id = db.Column(db.Integer, db.ForeignKey('clubs.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('utilisateurs.id'), nullable=False)
-    
-    club = db.relationship('Club', back_populates='members')
-    user = db.relationship('User')
-    
+    memberships = db.relationship("ClubMembership", back_populates="club", cascade="all, delete-orphan")
+    announcements = db.relationship("ClubAnnouncement", back_populates="club", cascade="all, delete-orphan",
+                                    order_by="ClubAnnouncement.created_at.desc()")
+
     @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+    def tag_list(self):
+        return [t.strip() for t in (self.tags or "").split(",") if t.strip()]
+
+    def membership_of(self, user):
+        return next((m for m in self.memberships if m.user_id == user.id), None)
+
+    def is_leader(self, user):
+        membership = self.membership_of(user)
+        return user.is_admin or (membership is not None and membership.role == LEADER)
+
+
+class ClubMembership(TimestampMixin, db.Model):
+    __tablename__ = "club_memberships"
+    __table_args__ = (db.UniqueConstraint("club_id", "user_id", name="uq_club_member"),)
+
+    id = db.Column(db.Integer, primary_key=True)
+    club_id = db.Column(db.Integer, db.ForeignKey("clubs.id"), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    role = db.Column(db.String(12), nullable=False, default=MEMBER)
+
+    club = db.relationship("Club", back_populates="memberships")
+    user = db.relationship("User")
+
+
+class ClubAnnouncement(TimestampMixin, db.Model):
+    __tablename__ = "club_announcements"
+
+    id = db.Column(db.Integer, primary_key=True)
+    club_id = db.Column(db.Integer, db.ForeignKey("clubs.id"), nullable=False, index=True)
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+
+    club = db.relationship("Club", back_populates="announcements")
+    author = db.relationship("User")

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ label }}{% endblock %}
+{% block content %}
+<h1>{{ label }}{% if obj %} · {{ obj.name }}{% endif %}</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+  {% for f in form if f.widget.input_type != "hidden" %}
+    {{ field(f, hint=f.description or None) }}
+  {% endfor %}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ _("Enregistrer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('admin.academic') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+{% endblock %}

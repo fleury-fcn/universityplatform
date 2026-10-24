@@ -1,53 +1,47 @@
-from app import create_app
+"""Point d'entrée : `python run.py` (développement) ou `gunicorn run:app` (production)."""
 import os
-import socket
-import threading
-import webbrowser
 import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+VENV = ROOT / ".venv"
+VENV_PYTHON = VENV / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+
+
+def _use_project_python():
+    """Lancé avec un Python sans les dépendances (bouton « Run » de l'éditeur, python3 du système) :
+    on relance automatiquement le script avec l'environnement du projet (.venv)."""
+    try:
+        import flask  # noqa: F401
+        return
+    except ModuleNotFoundError:
+        pass
+    if VENV_PYTHON.exists() and Path(sys.prefix).resolve() != VENV.resolve():
+        import subprocess
+
+        print(f"Relance avec l'environnement du projet : {VENV_PYTHON}", flush=True)
+        # Sous-processus (et non os.execv) : fonctionne aussi depuis le débogueur de l'éditeur.
+        try:
+            code = subprocess.call([str(VENV_PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]], cwd=ROOT)
+        except KeyboardInterrupt:
+            code = 0
+        sys.exit(code)
+    sys.exit(
+        "Les dépendances ne sont pas installées pour ce Python.\n"
+        "Installez-les une fois avec :  make install\n"
+        "(ou : python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt)"
+    )
+
+
+if __name__ == "__main__":
+    _use_project_python()
+
+from app import create_app  # noqa: E402
 
 app = create_app()
 
-
-def _is_port_free(port: int) -> bool:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        try:
-            sock.bind(('0.0.0.0', port))
-        except OSError:
-            return False
-    return True
-
-
-def _pick_available_port(preferred_port: int) -> int:
-    """Sélectionne uniquement le port demandé pour éviter les changements dynamiques."""
-    if _is_port_free(preferred_port):
-        return preferred_port
-    raise RuntimeError(f"Le port {preferred_port} est indisponible. Libérez-le puis relancez l'application.")
-
-
-def _schedule_browser_open(url: str, delay: float = 1.0) -> None:
-    def _open():
-        try:
-            webbrowser.open(url, new=2)
-        except webbrowser.Error as err:
-            print(f"Impossible d'ouvrir le navigateur automatiquement: {err}")
-
-    threading.Timer(delay, _open).start()
-
-
-if __name__ == '__main__':
-    try:
-        desired_port = int(os.environ.get('PORT', 5002))
-        selected_port = int(os.environ.get('APP_SELECTED_PORT', desired_port))
-        if 'APP_SELECTED_PORT' not in os.environ:
-            selected_port = _pick_available_port(desired_port)
-            os.environ['APP_SELECTED_PORT'] = str(selected_port)
-        url = f"http://127.0.0.1:{selected_port}"
-        print(f"Application disponible sur {url}")
-        if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
-            _schedule_browser_open(url)
-        app.run(host='0.0.0.0', port=selected_port, use_reloader=True)
-    except Exception as err:
-        print(f"Erreur lors du demarrage du serveur: {err}")
-        sys.exit(1)
-
+if __name__ == "__main__":
+    # 5001 et non 5000 : sur macOS, le port 5000 est occupé par le récepteur AirPlay.
+    port = int(os.environ.get("PORT", "5001"))
+    print(f"Application disponible sur http://127.0.0.1:{port}")
+    app.run(host="127.0.0.1", port=port)

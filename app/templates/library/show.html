@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, demo_badge %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('library.index') }}">{{ icon("chevron-left") }} {{ _("Bibliothèque") }}</a></p>
+<section class="card">
+  <h1>{{ book.title }} {{ demo_badge(book) }}</h1>
+  <p class="muted">{{ book.author }}</p>
+  <dl class="details">
+    <div><dt>{{ _("Catégorie") }}</dt><dd>{{ categories.get(book.category, book.category) }}</dd></div>
+    {% if book.year %}<div><dt>{{ _("Année") }}</dt><dd>{{ book.year }}</dd></div>{% endif %}
+    {% if book.publisher %}<div><dt>{{ _("Éditeur") }}</dt><dd>{{ book.publisher }}</dd></div>{% endif %}
+    {% if book.isbn %}<div><dt>ISBN</dt><dd>{{ book.isbn }}</dd></div>{% endif %}
+    {% if book.call_number %}<div><dt>{{ _("Cote") }}</dt><dd>{{ book.call_number }}</dd></div>{% endif %}
+    <div><dt>{{ _("Exemplaires disponibles") }}</dt><dd>{{ book.copies_available }} / {{ book.copies_total }}</dd></div>
+  </dl>
+  {% if book.description %}<div class="prose">{{ book.description|text }}</div>{% endif %}
+</section>
+
+{% if book.file %}
+  <a class="btn btn-block" href="{{ file_url(book.file) }}">{{ icon("download") }} {{ _("Lire la version numérique") }} ({{ book.file.size|filesize }})</a>
+  <p class="hint">{{ _("Une fois ouverte, la version numérique reste disponible hors connexion.") }}</p>
+{% endif %}
+
+{% if book.copies_total %}
+<section class="card">
+  {% if mine %}
+    <p>{{ _("Votre réservation :") }} <strong>{{ reservation_label(mine.status) }}</strong></p>
+    {% if mine.status in ("en_attente", "prete") %}
+    <form method="post" action="{{ url_for('library.cancel', reservation_id=mine.id) }}" data-confirm="{{ _('Annuler la réservation ?') }}">
+      {{ form.hidden_tag() }}
+      <button class="btn btn-secondary">{{ _("Annuler ma réservation") }}</button>
+    </form>
+    {% endif %}
+  {% else %}
+    <form method="post" action="{{ url_for('library.reserve', book_id=book.id) }}">
+      {{ form.hidden_tag() }}
+      <button class="btn btn-block">{{ _("Réserver ce livre") }}</button>
+    </form>
+    <p class="hint">{{ _("La bibliothèque vous préviendra quand le livre sera prêt à retirer.") if book.copies_available else _("Tous les exemplaires sont empruntés : votre demande sera traitée dès un retour.") }}</p>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if current_user.is_admin %}
+<div class="row">
+  <a class="btn btn-secondary btn-sm" href="{{ url_for('library.edit', book_id=book.id) }}">{{ icon("edit") }} {{ _("Modifier") }}</a>
+  <form method="post" action="{{ url_for('library.delete', book_id=book.id) }}" data-confirm="{{ _('Supprimer ce livre du catalogue ?') }}">
+    {{ form.hidden_tag() }}
+    <button class="btn btn-danger btn-sm">{{ icon("trash") }} {{ _("Supprimer") }}</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

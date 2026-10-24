@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, empty %}
+{% block title %}{{ _("Annuaire") }}{% endblock %}
+{% block content %}
+{% set to_ids = request.args.getlist("to") %}
+<p><a href="{{ url_for('messages.compose', to=to_ids) }}">{{ icon("chevron-left") }} {{ _("Retour au message") }}</a></p>
+<h1>{{ _("Choisir un destinataire") }}</h1>
+<form method="get" class="search-form" role="search">
+  {% for t in to_ids %}<input type="hidden" name="to" value="{{ t }}">{% endfor %}
+  <label class="visually-hidden" for="q">{{ _("Nom ou matricule") }}</label>
+  <input type="search" id="q" name="q" value="{{ q }}" placeholder="{{ _('Nom ou matricule (2 lettres minimum)') }}" autofocus>
+  <button class="btn btn-secondary" aria-label="{{ _('Rechercher') }}">{{ icon("search") }}</button>
+</form>
+{% if people %}
+<ul class="list">
+  {% for p in people %}
+  <li><a class="list-item" href="{{ url_for('messages.compose', to=to_ids + [p.id|string]) }}">
+    {{ icon("user") }}
+    <span class="grow">
+      <span class="title">{{ p.full_name }}</span>
+      <span class="meta">{{ {"etudiant": _("Étudiant·e"), "enseignant": _("Enseignant·e"), "admin": _("Administration")}[p.role] }}{% if p.promotion %} · {{ p.promotion.name }}{% endif %}</span>
+    </span>
+    {{ icon("plus") }}
+  </a></li>
+  {% endfor %}
+</ul>
+{% elif q|length >= 2 %}{{ empty(_("Personne ne correspond.")) }}{% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, field %}
+{% block title %}{{ _("Nouveau message") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Nouveau message") }}</h1>
+{% set to_ids = recipients|map(attribute="id")|list %}
+<form method="post" enctype="multipart/form-data" class="card" novalidate
+      action="{{ url_for('messages.compose', repondre=reply_to.id if reply_to else None) }}">
+  {{ form.hidden_tag() }}
+  <div class="field">
+    <span class="label">{{ _("Destinataires") }}</span>
+    <div class="recipients">
+      {% for r in recipients %}
+        <span class="chip">{{ r.full_name }}
+          <input type="hidden" name="to" value="{{ r.id }}">
+          <a href="{{ url_for('messages.compose', to=to_ids|reject('equalto', r.id)|list) }}" aria-label="{{ _('Retirer %(n)s', n=r.full_name) }}">×</a>
+        </span>
+      {% endfor %}
+      <a class="btn btn-secondary btn-sm" href="{{ url_for('messages.directory', to=to_ids) }}">{{ icon("plus") }} {{ _("Ajouter") }}</a>
+    </div>
+  </div>
+  {% if form.promotion_id.choices|length > 1 %}{{ field(form.promotion_id) }}{% endif %}
+  {{ field(form.subject) }}
+  {{ field(form.body, rows=8) }}
+  {{ field(form.attachments, multiple=true, accept=accept, data_max_bytes=max_bytes,
+           hint=_("%(n)d fichiers au maximum, %(mb)d Mo chacun.", n=max_attachments, mb=max_bytes // 1048576)) }}
+  <div class="form-actions">
+    <button type="submit" class="btn">{{ icon("send") }} {{ _("Envoyer") }}</button>
+    <a class="btn btn-secondary" href="{{ url_for('messages.inbox') }}">{{ _("Annuler") }}</a>
+  </div>
+</form>
+<p class="hint">{{ _("Astuce : les pièces jointes et le texte saisi ne sont pas conservés si vous ajoutez un destinataire ; choisissez d'abord les destinataires.") }}</p>
+{% endblock %}
