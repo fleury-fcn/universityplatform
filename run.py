@@ -17,7 +17,15 @@ def _use_project_python():
     except ModuleNotFoundError:
         pass
     if VENV_PYTHON.exists() and Path(sys.prefix).resolve() != VENV.resolve():
-        os.execv(str(VENV_PYTHON), [str(VENV_PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]])
+        import subprocess
+
+        print(f"Relance avec l'environnement du projet : {VENV_PYTHON}", flush=True)
+        # Sous-processus (et non os.execv) : fonctionne aussi depuis le débogueur de l'éditeur.
+        try:
+            code = subprocess.call([str(VENV_PYTHON), str(Path(__file__).resolve()), *sys.argv[1:]], cwd=ROOT)
+        except KeyboardInterrupt:
+            code = 0
+        sys.exit(code)
     sys.exit(
         "Les dépendances ne sont pas installées pour ce Python.\n"
         "Installez-les une fois avec :  make install\n"
