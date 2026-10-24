@@ -1,4 +1,5 @@
 from flask import abort, current_app, jsonify, make_response, redirect, render_template, request, send_from_directory, url_for
+from flask_login import login_required
 from sqlalchemy import text
 
 from app.core.security import is_safe_redirect
@@ -8,6 +9,7 @@ from . import bp
 
 
 @bp.route("/")
+@login_required
 def home():
     return render_template("main/home.html")
 

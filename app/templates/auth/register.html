@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ _("Demande de compte") }}{% endblock %}
+{% block content %}
+<section class="auth-box">
+  <h1>{{ _("Demande de compte étudiant") }}</h1>
+  <p class="muted">{{ _("Votre demande sera vérifiée par l'administration avant activation.") }}</p>
+  <form method="post" class="card" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(form.matricule, autocapitalize="characters") }}
+    <div class="grid-2">
+      {{ field(form.first_name, autocomplete="given-name") }}
+      {{ field(form.last_name, autocomplete="family-name") }}
+    </div>
+    {{ field(form.email, autocomplete="email") }}
+    {{ field(form.promotion_id) }}
+    {{ field(form.password, autocomplete="new-password", hint=_("Au moins 8 caractères, pas uniquement des chiffres.")) }}
+    {{ field(form.confirm, autocomplete="new-password") }}
+    <button type="submit" class="btn btn-block">{{ _("Envoyer la demande") }}</button>
+  </form>
+  <p><a href="{{ url_for('auth.login') }}">{{ _("J'ai déjà un compte") }}</a></p>
+</section>
+{% endblock %}

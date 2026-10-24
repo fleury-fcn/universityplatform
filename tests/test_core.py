@@ -1,11 +1,11 @@
-def test_home_page_renders(client):
-    response = client.get("/")
+def test_login_page_renders(client):
+    response = client.get("/connexion")
     assert response.status_code == 200
     assert "ISTA" in response.get_data(as_text=True)
 
 
 def test_security_headers(client):
-    response = client.get("/")
+    response = client.get("/connexion")
     csp = response.headers["Content-Security-Policy"]
     assert "default-src 'self'" in csp
     assert "'unsafe-inline'" not in csp
@@ -14,7 +14,7 @@ def test_security_headers(client):
 
 
 def test_inline_script_uses_csp_nonce(client):
-    response = client.get("/")
+    response = client.get("/connexion")
     html = response.get_data(as_text=True)
     nonce = response.headers["Content-Security-Policy"].split("'nonce-")[1].split("'")[0]
     assert f'nonce="{nonce}"' in html
@@ -29,7 +29,7 @@ def test_language_switch_sets_cookie_and_refuses_external_redirect(client):
 
 
 def test_french_is_default_language(client):
-    html = client.get("/", headers={"Accept-Language": "en"}).get_data(as_text=True)
+    html = client.get("/connexion", headers={"Accept-Language": "en"}).get_data(as_text=True)
     assert '<html lang="fr">' in html
 
 

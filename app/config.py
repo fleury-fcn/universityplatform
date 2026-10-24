@@ -50,6 +50,8 @@ class Config:
     PERMANENT_SESSION_LIFETIME = timedelta(hours=12)
     WTF_CSRF_TIME_LIMIT = None
 
+    PASSWORD_HASH_METHOD = "scrypt"
+
     ALLOW_SELF_REGISTRATION = _bool("ALLOW_SELF_REGISTRATION", False)
     # Note minimale (sur 20) pour valider un cours. À confirmer par l'ISTA.
     PASS_MARK = float(os.environ.get("PASS_MARK", "10"))
@@ -74,6 +76,7 @@ class TestingConfig(Config):
     SECRET_KEY = "cle-de-test-uniquement"
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     WTF_CSRF_ENABLED = False
+    PASSWORD_HASH_METHOD = "pbkdf2:sha256:1000"  # rapide, pour les tests uniquement
 
 
 class ProductionConfig(Config):

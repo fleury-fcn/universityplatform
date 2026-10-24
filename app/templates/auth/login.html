@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}{{ _("Connexion") }}{% endblock %}
+{% block content %}
+<section class="auth-box">
+  <img class="auth-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="{{ _('Logo de l\'Université du Burundi') }}" width="96" height="90">
+  <h1>{{ _("Connexion") }}</h1>
+  <p class="muted">{{ _("Institut de Statistique Appliquée") }}</p>
+  <form method="post" class="card" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(form.identifier, autocomplete="username", autocapitalize="none", autofocus=true) }}
+    {{ field(form.password, autocomplete="current-password") }}
+    {{ field(form.remember) }}
+    <button type="submit" class="btn btn-block">{{ _("Se connecter") }}</button>
+  </form>
+  <p class="small muted">{{ _("Mot de passe oublié ? Adressez-vous au secrétariat de l'ISTA pour obtenir un mot de passe provisoire.") }}</p>
+  {% if config.ALLOW_SELF_REGISTRATION %}
+    <p><a href="{{ url_for('auth.register') }}">{{ _("Pas encore de compte ? Faire une demande") }}</a></p>
+  {% endif %}
+</section>
+{% endblock %}

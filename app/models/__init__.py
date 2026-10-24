@@ -11,3 +11,7 @@ def utcnow():
 
 class TimestampMixin:
     created_at = db.Column(db.DateTime, nullable=False, default=utcnow)
+
+
+from .academic import Department, Program, Promotion  # noqa: E402,F401
+from .user import User  # noqa: E402,F401

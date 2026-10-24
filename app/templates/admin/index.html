@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}{{ _("Administration") }}{% endblock %}
+{% block content %}
+<h1>{{ _("Administration") }}</h1>
+
+{% if demo_users %}
+<div class="flash flash-warning">
+  {{ _("%(n)d compte(s) de démonstration sont actifs. Désactivez-les avant la mise en service.", n=demo_users) }}
+  <a href="{{ url_for('admin.users', q='demo') }}">{{ _("Voir") }}</a>
+</div>
+{% endif %}
+{% if pending %}
+<div class="flash flash-info">
+  {{ _("%(n)d demande(s) de compte en attente de validation.", n=pending) }}
+  <a href="{{ url_for('admin.users', statut='inactifs') }}">{{ _("Traiter") }}</a>
+</div>
+{% endif %}
+
+<div class="stats">
+  <div class="card stat"><strong>{{ counts.get("etudiant", 0) }}</strong><span>{{ _("étudiants") }}</span></div>
+  <div class="card stat"><strong>{{ counts.get("enseignant", 0) }}</strong><span>{{ _("enseignants") }}</span></div>
+  <div class="card stat"><strong>{{ counts.get("admin", 0) }}</strong><span>{{ _("administrateurs") }}</span></div>
+</div>
+
+<h2 class="section-title">{{ _("Gérer") }}</h2>
+<ul class="tiles">
+  {% for s in sections %}
+    <li><a class="tile" href="{{ url_for(s.endpoint) }}">{{ icon(s.icon) }}<span>{{ s.label }}</span></a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

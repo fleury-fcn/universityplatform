@@ -1,4 +1,5 @@
 import pytest
+from flask import g
 
 from app import create_app
 from app.extensions import db as _db
@@ -8,6 +9,13 @@ from app.extensions import db as _db
 def app(tmp_path):
     app = create_app("testing")
     app.config["UPLOAD_FOLDER"] = str(tmp_path / "uploads")
+
+    # Le contexte d'application reste ouvert pendant le test : sans ce nettoyage, `g`
+    # (et l'utilisateur chargé par Flask-Login) serait partagé entre les requêtes.
+    @app.teardown_request
+    def _reset_g(exc):
+        for key in list(g):
+            g.pop(key)
     with app.app_context():
         _db.create_all()
         yield app
@@ -23,3 +31,57 @@ def client(app):
 @pytest.fixture
 def db(app):
     return _db
+
+
+PASSWORD = "Mot-de-passe-1"
+
+
+@pytest.fixture
+def make_user(db):
+    from app.models import User
+
+    counter = {"n": 0}
+
+    def _make(role="etudiant", password=PASSWORD, **kwargs):
+        counter["n"] += 1
+        n = counter["n"]
+        values = {
+            "username": f"{role}{n}",
+            "first_name": "Prénom",
+            "last_name": f"Nom{n}",
+            "role": role,
+        }
+        if role == "etudiant":
+            values["matricule"] = f"MAT{n:04d}"
+        values.update(kwargs)
+        user = User(**values)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        return user
+
+    return _make
+
+
+@pytest.fixture
+def login(client):
+    def _login(user_or_identifier, password=PASSWORD, **extra):
+        identifier = getattr(user_or_identifier, "username", user_or_identifier)
+        return client.post("/connexion", data={"identifier": identifier, "password": password, **extra})
+
+    return _login
+
+
+@pytest.fixture
+def student(make_user):
+    return make_user("etudiant")
+
+
+@pytest.fixture
+def teacher(make_user):
+    return make_user("enseignant")
+
+
+@pytest.fixture
+def admin(make_user):
+    return make_user("admin")

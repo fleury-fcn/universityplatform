@@ -23,6 +23,28 @@ def register_cli(app):
         run()
         click.echo("Données de démonstration chargées.")
 
+    @app.cli.command("create-admin")
+    @click.option("--username", prompt="Identifiant")
+    @click.option("--first-name", prompt="Prénom")
+    @click.option("--last-name", prompt="Nom")
+    @click.password_option("--password", prompt="Mot de passe")
+    def create_admin(username, first_name, last_name, password):
+        """Crée un compte administrateur (premier déploiement)."""
+        from .core.security import ROLE_ADMIN
+        from .extensions import db
+        from .models import User
+
+        username = username.strip().lower()
+        if User.query.filter_by(username=username).first():
+            raise click.ClickException("Cet identifiant existe déjà.")
+        if len(password) < 8 or password.isdigit():
+            raise click.ClickException("Mot de passe trop faible (8 caractères minimum, pas uniquement des chiffres).")
+        user = User(username=username, first_name=first_name.strip(), last_name=last_name.strip(), role=ROLE_ADMIN)
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+        click.echo(f"Administrateur « {username} » créé.")
+
     @app.cli.group()
     def translate():
         """Gestion des traductions (fr par défaut, en, rn)."""

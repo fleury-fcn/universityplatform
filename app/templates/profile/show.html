@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon, demo_badge %}
+{% block title %}{{ _("Mon profil") }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>{{ _("Mon profil") }}</h1>
+  <a class="btn btn-secondary btn-sm" href="{{ url_for('profile.edit') }}">{{ icon("edit") }} {{ _("Modifier") }}</a>
+</div>
+
+<section class="card profile-card">
+  <div class="avatar" aria-hidden="true">{{ user.first_name[:1] }}{{ user.last_name[:1] }}</div>
+  <div>
+    <h2>{{ user.full_name }} {{ demo_badge(user) }}</h2>
+    <p class="muted">{{ {"etudiant": _("Étudiant·e"), "enseignant": _("Enseignant·e"), "admin": _("Administration")}[user.role] }}</p>
+  </div>
+</section>
+
+<dl class="card details">
+  {% if user.matricule %}<div><dt>{{ _("Matricule") }}</dt><dd>{{ user.matricule }}</dd></div>{% endif %}
+  {% if user.promotion %}
+    <div><dt>{{ _("Promotion") }}</dt><dd>{{ user.promotion.name }} ({{ user.promotion.academic_year }})</dd></div>
+    <div><dt>{{ _("Filière") }}</dt><dd>{{ user.promotion.program.name }}</dd></div>
+    <div><dt>{{ _("Département") }}</dt><dd>{{ user.promotion.program.department.name }}</dd></div>
+  {% endif %}
+  <div><dt>{{ _("Identifiant") }}</dt><dd>{{ user.username }}</dd></div>
+  <div><dt>{{ _("E-mail") }}</dt><dd>{{ user.email or _("Non renseigné") }}</dd></div>
+  <div><dt>{{ _("Langue") }}</dt><dd>{{ languages.get(user.locale or "fr") }}</dd></div>
+</dl>
+
+<ul class="list">
+  <li><a class="list-item" href="{{ url_for('auth.change_password') }}">{{ icon("settings") }}<span class="grow">{{ _("Changer de mot de passe") }}</span>{{ icon("chevron-right") }}</a></li>
+</ul>
+
+<form method="post" action="{{ url_for('auth.logout') }}" data-clear-offline>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button type="submit" class="btn btn-secondary btn-block">{{ icon("logout") }} {{ _("Se déconnecter") }}</button>
+</form>
+<p class="hint">{{ _("La déconnexion efface aussi les pages enregistrées pour la consultation hors ligne.") }}</p>
+{% endblock %}

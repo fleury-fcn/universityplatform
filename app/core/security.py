@@ -3,7 +3,7 @@ import secrets
 from functools import wraps
 from urllib.parse import urljoin, urlsplit
 
-from flask import abort, g, request
+from flask import abort, g, make_response, request
 from flask_login import current_user, login_required
 
 ROLE_STUDENT = "etudiant"
@@ -30,6 +30,18 @@ def role_required(*roles):
 
 admin_required = role_required(ROLE_ADMIN)
 staff_required = role_required(ROLE_TEACHER, ROLE_ADMIN)
+
+
+def no_store(view):
+    """Empêche la mise en cache (navigateur et hors ligne) d'une page sensible."""
+
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        response = make_response(view(*args, **kwargs))
+        response.headers["Cache-Control"] = "no-store"
+        return response
+
+    return wrapped
 
 
 def is_safe_redirect(target):

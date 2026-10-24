@@ -11,6 +11,9 @@ from .extensions import babel, csrf, db, login_manager, migrate
 # Chaque module expose un Blueprint nommé "bp".
 BLUEPRINTS = [
     "app.main",
+    "app.auth",
+    "app.profile",
+    "app.admin",
 ]
 
 
@@ -46,7 +49,6 @@ def create_app(config_name=None):
     login_manager.login_view = "auth.login"
     login_manager.login_message = None
     login_manager.session_protection = "strong"
-    login_manager.user_loader(lambda user_id: None)  # remplacé à l'étape « comptes »
 
     from .core.i18n import compile_catalogs
 
@@ -60,6 +62,19 @@ def create_app(config_name=None):
 
     for path in BLUEPRINTS:
         app.register_blueprint(import_module(path).bp)
+
+    @login_manager.user_loader
+    def load_user(session_id):
+        from .models import User
+
+        try:
+            user_id, version = (int(part) for part in session_id.split(":"))
+        except ValueError:
+            return None
+        user = db.session.get(User, user_id)
+        if user is None or not user.is_active or user.session_version != version:
+            return None
+        return user
 
     from .cli import register_cli
 
